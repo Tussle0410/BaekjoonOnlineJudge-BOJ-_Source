@@ -1,0 +1,22 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        StringTokenizer st;
+        String text;
+        while((text=br.readLine())!=null){
+            st = new StringTokenizer(text," ");
+            int a = Integer.parseInt(st.nextToken());	//첫번째 값
+            int b = Integer.parseInt(st.nextToken());	//두번째 값
+            if(a>b){					//if문 및 결과값 출력
+                System.out.println(">");
+            }else if(a<b){
+                System.out.println("<");
+            }else if(a==b){
+                System.out.println("==");
+            }
+        }
+    }
+}
