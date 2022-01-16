@@ -1,0 +1,32 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        String text;
+        int[] num = new int[2];		//입력 저장 배열
+        int i=0;
+        while((text=br.readLine())!=null){
+            num[i] = Integer.parseInt(text);		//입력 저장
+            i++;
+        }
+        int firstLine = num[0]*place1(num[1]);		//결과 계산
+        int secondLine = num[0]*place10(num[1]);
+        int thirdLine = num[0]*place100(num[1]);
+        System.out.print(firstLine + "\n" + secondLine + 
+                         "\n" + thirdLine + "\n" + num[0]*num[1]);	//결과 출력
+    }
+    public static int place1(int num){		//일의 자리수
+        int result = num%100%10;
+        return result;
+    }
+    public static int place10(int num){		//십의 자리수
+        int result = (num%100)/10;
+        return result;
+    }
+    public static int place100(int num){		//백의 자리수
+        int result = num/100;	
+        return result;
+    }
+}
