@@ -1,0 +1,17 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        String text;
+        while((text=br.readLine())!=null){
+            int year = Integer.parseInt(text);		//입력 값 형변환
+            if(((year%4==0)&&(year%100!=0))||(year%400==0)){	//if문 및 결과값 출력
+                System.out.println("1");
+            }else {
+                System.out.println("0");
+            }
+        }
+    }
+}
