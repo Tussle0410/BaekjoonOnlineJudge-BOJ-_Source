@@ -1,0 +1,23 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args)throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        String text;
+        while((text=br.readLine())!=null){
+            int num = Integer.parseInt(text);	//성적값 형 변환
+            if(num>=90){			//if문을 이용항 조건 형성 및 출력
+                System.out.println("A");
+            }else if(num<90 && num>=80){
+                System.out.println("B");
+            }else if(num<80 && num>=70){
+                System.out.println("C");
+            }else if(num<70 && num>=60){
+                System.out.println("D");
+            }else{
+                System.out.println("F");
+            }
+        }
+    }
+}
