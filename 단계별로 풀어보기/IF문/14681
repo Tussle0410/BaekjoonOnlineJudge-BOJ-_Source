@@ -1,0 +1,36 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        String text;
+        int[] num = new int[2];		//x,y좌표 저장할 배열
+        int i=0;			//배열 인덱스
+        while((text=br.readLine())!=null){
+            int temp = Integer.parseInt(text);		//입력 값 형변환
+            num[i++] = temp;    			//배열에 저장
+        }
+        if(positiveNum(num[0]) && positiveNum(num[1])){		//조건 형성 및 출력
+            System.out.println("1");
+        }else if(negativeNum(num[0]) && positiveNum(num[1])){
+            System.out.println("2");
+        }else if(negativeNum(num[0]) && negativeNum(num[1])){
+            System.out.println("3");
+        }else if(positiveNum(num[0]) && negativeNum(num[1])){
+            System.out.println("4");
+        }
+    }
+    public static boolean positiveNum(int n){		//양수 확인하는 함수
+        if(n>0)
+            return true;
+        else
+            return false;
+    }
+    public static boolean negativeNum(int n){		//음수 확인하는 함수
+        if(n<0)
+            return true;
+        else
+            return false;
+    }
+}
