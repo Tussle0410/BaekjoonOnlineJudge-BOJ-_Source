@@ -1,0 +1,21 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        int index=Integer.parseInt(br.readLine());	//반복 수 저장
+        StringTokenizer st;
+        String text;
+         for(int i=0;i<index;i++){
+             text = br.readLine();			//계산할 두 값 받기
+             st = new StringTokenizer(text," ");		
+             int a = Integer.parseInt(st.nextToken());	//첫 번째 값
+             int b = Integer.parseInt(st.nextToken());	//두 번째 값
+             resultOutput(a,b);				//결과 출력 함수 호출
+         }
+    }
+    public static void resultOutput(int n, int m){	//결과 출력 함수
+        System.out.println(n+m);			//결과 출력
+    }
+}
