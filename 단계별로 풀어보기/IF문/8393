@@ -1,0 +1,17 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        String text;
+        while((text=br.readLine())!=null){
+            int num = Integer.parseInt(text);	//첫 번째 값
+            int result=0;			//결과 변수 선언
+            for(int i=1;i<=num;i++){		//반복을 통해 결과 계산
+                result+=i;
+            }
+            System.out.println(result);		//결과 출력
+        }
+    }
+}
