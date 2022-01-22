@@ -1,0 +1,12 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String text = br.readLine();		//반복값 
+        int index = Integer.parseInt(text);	//반복값 형변환
+        for(int i=index;i>0;i--){
+            System.out.println(i);		//반복 수만큼 반복하여 결과 출력
+        }
+    }
+}
