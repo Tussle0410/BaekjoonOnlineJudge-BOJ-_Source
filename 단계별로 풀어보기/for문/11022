@@ -1,0 +1,29 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //입력 값을 출력하는 BufferedWriter
+        StringTokenizer st;
+        int index = Integer.parseInt(br.readLine());		//반복수 받기
+        for(int i=1;i<=index;i++){				//반복 수만큼 반복
+            String text = br.readLine();
+            st = new StringTokenizer(text," ");
+            int a = Integer.parseInt(st.nextToken());		//첫번째 값
+            int b = Integer.parseInt(st.nextToken());		//두번째 값
+            int sum = add(a,b);
+            bw.write("Case #" + i + ": " + a + " + "  + b + " = " + sum + "\n");
+            //결과 값 저장
+        }
+        bw.flush();					//결과값 출력
+        bw.close();
+        br.close();
+        
+    }
+    public static int add(int a, int b){		//덧셈 함수
+        int result = a+b;
+        return result;
+    }
+}
