@@ -1,0 +1,24 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        int num = Integer.parseInt(br.readLine());		//입력 값
+        int temp = num;
+        int cycle=0;						//사이클 값
+        while(true){
+            temp = addCycle(temp);
+            cycle++;
+            if(temp==num){					//while 연산 후 입력 값과 동일하면 반복 종료
+                break;
+            }
+        }
+        System.out.println(cycle);				//결과 출력
+    }
+    public static int addCycle(int n){				//연산 함수
+        int result;
+        result = ((n/10) + (n%10))%10 + (n%10)*10;
+        return result;
+    }
+}
