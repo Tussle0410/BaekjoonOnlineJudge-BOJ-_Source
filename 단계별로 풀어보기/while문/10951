@@ -1,0 +1,22 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args)throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //입력 값을 출력하는 BufferedWriter
+        String text;
+        StringTokenizer st;
+        while((text=br.readLine())!=null){
+            st = new StringTokenizer(text," ");
+            int a = Integer.parseInt(st.nextToken());	//첫번째 값
+            int b = Integer.parseInt(st.nextToken());	//두번째 값
+            int sum = a+b;				//덧셈 연산 수행
+            bw.write(sum + "\n");			//연산값 bw에 저장
+        }
+        bw.flush();					//결과 출력
+        bw.close();
+        br.close();
+    }
+}
