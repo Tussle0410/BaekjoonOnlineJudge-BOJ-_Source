@@ -1,1 +1,25 @@
-
+import java.util.*;
+import java.io.*;
+import java.math.*;
+public class Main{
+    public static void main(String[] args)throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과 값을 출력하는 BufferedWriter
+        int index = Integer.parseInt(br.readLine());		//배열 크기값
+        int[] arr = new int[index];		//배열 형성
+        String text = br.readLine();		//배열에 들어갈 값들
+        StringTokenizer st = new StringTokenizer(text, " ");
+        int max=-1000001,min=1000001;		//최솟값과 최대값 형성
+        for(int i=0;i<index;i++){		//배열 값 입력 및 최대값 최소값 구하기
+            arr[i] = Integer.parseInt(st.nextToken());
+            max = Math.max(max,arr[i]);
+            min = Math.min(min,arr[i]);
+        }
+        bw.write(min + " " + max);		//결과 출력
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+}
