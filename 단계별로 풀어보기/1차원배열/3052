@@ -1,0 +1,28 @@
+import java.util.*;
+import java.io.*;
+public class Main {
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        String text;
+        int index=0,result=0;
+        int[] arr = new int[10];				//나머지 저장될 배열값
+        while((text=br.readLine())!=null){
+            arr[index++] = Integer.parseInt(text)%42;		//입력값 42로 나눈 나머지 배열에 저장
+        }
+        for(int i=0;i<arr.length;i++){				//배열 값들이 서로 다른 수인지 확인
+        	for(int j=i+1;j<arr.length;j++){
+                    if(arr[i]==arr[j]){
+                          arr[i]=-1;
+                     }
+                 }
+        }
+        for(int i=0;i<arr.length;i++) {		//다른 수를 가진 배열 값 개수 구하기
+        	if(arr[i]!=-1) {
+        		result++;
+        	}
+        }
+        System.out.println(result);		//결과출력
+        br.close();
+    }
+}
