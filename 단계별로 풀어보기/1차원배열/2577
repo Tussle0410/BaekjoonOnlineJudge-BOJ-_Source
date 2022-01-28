@@ -1,0 +1,27 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과 값을 출력하는 BufferedWriter
+        String text;
+        int mul = 1;
+        int[] arr = {0,0,0,0,0,0,0,0,0,0};		//배열 초기화
+        while((text=br.readLine())!=null){		//입력값들 곱하기
+            mul *= Integer.parseInt(text);
+        }
+        String result = String.valueOf(mul);
+        for(int i=0;i<result.length();i++){		//곱한 값 각 숫자에 맞게 배열에 +1
+            int index = Character.getNumericValue(result.charAt(i));
+            arr[index]++;
+        }
+        for(int i=0;i<arr.length;i++){			//배열 값 bw에 저장
+            bw.write(arr[i] + "\n");
+        }
+        bw.flush();					//결과출력
+        bw.close();
+        br.close();
+    }
+}
