@@ -1,0 +1,31 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args)throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        int index = Integer.parseInt(br.readLine());		//점수 개수
+        String score = br.readLine();				//점수
+        int max=-1;
+        float sum=0;
+        StringTokenizer st = new StringTokenizer(score," ");
+        int[] arr = new int[index];
+        for(int i=0;i<index;i++){				//점수들 배열에 저장 및 최대값 구하기
+            int num = Integer.parseInt(st.nextToken());
+            arr[i] = num;
+            if(num>max){
+                max = num;
+            }
+        }
+        for(int i=0;i<index;i++){				//조작한 점수 모두 더하기
+            float temp = cal(arr[i],max);
+            sum+=temp;
+        }
+        System.out.println(sum/index);				//조작한 점수 평균값 출력
+        br.close();
+    }
+    public static float cal(int score,int max){			//점수 조작하기 함수
+        float result = (float)score/max * 100;
+        return result;
+    }
+}
