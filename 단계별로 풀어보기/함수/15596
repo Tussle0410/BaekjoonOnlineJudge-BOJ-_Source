@@ -1,0 +1,10 @@
+public class Test {
+    long sum(int[] a) {
+        long ans = 0;
+        for(int i=0;i<a.length;i++){		//배열 값 모두 더하기
+            ans+=a[i];
+        }
+        return ans;				// 결과값 보내기
+    }
+}
+
