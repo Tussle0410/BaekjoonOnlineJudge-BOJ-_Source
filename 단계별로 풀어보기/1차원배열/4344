@@ -1,0 +1,38 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+public class Main{
+    public static void main(String[] args)throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //입력 값을 출력하는 BufferedWriter
+        int index = Integer.parseInt(br.readLine());		//성적 계산 반복 횟수
+        String[] arr = new String[index];			//입력 열 값 저장 배열
+        StringTokenizer st;
+        for(int i=0;i<index;i++){
+            float avg=0;					//평균값
+            int stack=0;
+            arr[i] = br.readLine();
+            st = new StringTokenizer(arr[i]," ");
+            int arrSize = Integer.parseInt(st.nextToken());	//열의 성적 개수
+            int[] score = new int[arrSize];
+            for(int j=0;j<score.length;j++){
+                score[j] = Integer.parseInt(st.nextToken());	//성적 점수 배열에 저장
+                avg +=score[j];					//평균 구하기 위해 점수들 더하기
+            }
+            avg = avg/arrSize;					//평균 구하기
+            for(int j=0;j<arrSize;j++){				//평균보다 높은 점수 수 구하기
+                if(score[j]>avg){
+                    stack++;
+                }
+            }
+            float temp = (float)stack/arrSize * 100;		//퍼센트율 구하기
+            String result = String.format("%.3f", temp);	//소수 3자리 숫자까지 구하고 반올림 진행
+            bw.write(result + "%\n");				//열의 결과 bw에 저장
+        }
+        bw.flush();						//결과 출력
+        bw.close();
+        br.close();
+    }
+}
