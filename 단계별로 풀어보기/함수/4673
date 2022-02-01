@@ -1,0 +1,29 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args)throws IOException{
+        selfNum(10000);		//함수 호출
+    }
+    public static void selfNum(int index) throws IOException{		//셀프 넘버 계산 함수
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과 값을 출력하는 BufferedWriter
+        int[] arr = new int[index];					//더하기 연산 저장할 배열
+        for(int i=0;i<index;i++){					//더하기 연산 후 값 배열에 저장
+            int num = i+1;
+            arr[i] = num + (num/10000) + (num%10000)/1000 + (num%1000)/100 + (num%100)/10 + (num%10);
+        }
+        for(int i=1;i<=index;i++){				//1~10000까지 셀프넘버 찾아서 bw에 저장하기
+            int stack=0;
+            for(int j=0;j<index;j++){
+                 if(i==arr[j]){
+                    stack++;
+                }
+            }
+            if(stack==0){
+                bw.write(i+"\n");
+            }
+        }
+        bw.flush();							//결과 출력하기
+        bw.close();
+    }
+}
