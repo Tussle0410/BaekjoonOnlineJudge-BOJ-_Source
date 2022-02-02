@@ -1,0 +1,24 @@
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        int index = Integer.parseInt(br.readLine());	//숫자 개수
+        String num = br.readLine();			//String형태에 숫자
+        int result = sum(num,index);			//함수 호출 및 결과 저장
+        bw.write(result + "\n");			//결과 bw에 저장
+        bw.flush();					//결과 출력
+        bw.close();
+        
+    }
+    public static int sum(String str, int index){	//합을 구하는 함수
+        int result=0;
+        for(int i=0;i<index;i++){
+            result += Character.getNumericValue(str.charAt(i));		
+            //문자열 각 char형태로 나눠서 int형으로 더함
+        }
+        return result;
+    }
+}
