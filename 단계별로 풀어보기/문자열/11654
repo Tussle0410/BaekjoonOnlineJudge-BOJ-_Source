@@ -1,0 +1,12 @@
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        char text = (br.readLine()).charAt(0);		//문자 값 받기
+        asciiCode(text);				//아스키코드 함수 호출
+    }
+    public static void asciiCode(char c){		//아스키코드 함수 호출하는 함수
+        System.out.println((int)c);
+    }
+}
