@@ -1,0 +1,28 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        int size = Integer.parseInt(br.readLine());		//전체 입력 반복횟수 저장
+        StringTokenizer st;
+        for(int i=0;i<size;i++){			
+            String text = br.readLine();			//줄 입력 저장
+            st = new StringTokenizer(text," ");			//띄어쓰기 기준 나누기
+            int index = Integer.parseInt(st.nextToken());	//반복 횟수 저장
+            String temp = st.nextToken();			//반복할 text 저장
+            String result = "";					//bw에 저장할 결과 변수
+            for(int j=0;j<temp.length();j++){			//for문을 통한 반복
+                for(int k=0;k<index;k++) {
+                	result += temp.charAt(j);
+                }
+            }
+            bw.write(result + "\n");				//결과 bw에 저장
+        }
+        bw.flush();						//결과 출력
+        bw.close();
+        br.close();
+    }
+}
