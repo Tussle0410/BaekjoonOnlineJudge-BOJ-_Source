@@ -1,0 +1,17 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        String text = br.readLine();					//입력값 저장
+        StringTokenizer st = new StringTokenizer(text, " ");		//띄어쓰기를 기준으로 나누기
+        int result=st.countTokens();					//나누어진 개수
+        bw.write(result + "\n");					//개수 bw에 저장
+        bw.flush();							//결과 출력
+        bw.close();	
+        br.close();
+    }
+}
