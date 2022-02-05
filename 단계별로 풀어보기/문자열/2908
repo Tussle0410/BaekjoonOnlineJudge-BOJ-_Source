@@ -1,0 +1,31 @@
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        String text = br.readLine();					//입력값 저장
+        StringTokenizer st = new StringTokenizer(text, " ");		//띄어쓰기 기준 숫자 나누기
+        int num1 = reverseNum(st.nextToken());				//숫자 거꾸로 저장
+        int num2 = reverseNum(st.nextToken());		
+        int result = compareNum(num1,num2);				//숫자 비교하기
+        bw.write(result + "\n");					//결과 저장하기
+        bw.flush();							//결과 출력하기
+        bw.close();
+        br.close();
+        
+    }
+    public static int reverseNum(String num){				//숫자 거꾸로 함수
+        String temp = "";
+        for(int i=num.length()-1;i>=0;i--){
+            temp +=num.charAt(i);
+        }
+        int result = Integer.parseInt(temp);
+        return result;
+    }
+    public static int compareNum(int n, int m){				//숫자 비교하기 함수
+        int result = Math.max(n,m);
+        return result;
+    }
+}
+
