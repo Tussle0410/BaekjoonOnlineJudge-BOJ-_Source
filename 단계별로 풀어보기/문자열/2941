@@ -1,0 +1,22 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        String text = br.readLine();			//입력값 저장
+        String result = croatiaAlphabet(text);		//크로아티아 대체된 문자열
+        bw.write(result.length() + "\n");		//대체된 문자열 길이 bw에 저장
+        bw.flush();					//결과 출력
+        bw.close();
+        br.close();
+      
+    }
+    public static String croatiaAlphabet(String text) {	//표현할 수 없는 크로아티아 기호 '1'로 대체
+    	String patten = "c=|c-|dz=|d-|lj|nj|s=|z=";
+    	String result = text.replaceAll(patten, "1");
+    	return result;
+    }
+}
