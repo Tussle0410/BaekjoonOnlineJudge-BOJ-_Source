@@ -1,0 +1,25 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");	//입력 값 띄어쓰기 기준 나누기
+        long fixMoney = Integer.parseInt(st.nextToken());			//고정비용
+        long variableMoney = Integer.parseInt(st.nextToken());			//가변 비용
+        long price = Integer.parseInt(st.nextToken());				//가격
+        long result = break_even_point(fixMoney,variableMoney,price);		//함수 사용으로 결과 받기
+        bw.write(result + "\n");						//결과 bw에 저장
+        bw.flush();								//결과 출력
+        bw.close();
+        br.close();
+    }
+    public static long break_even_point(long fix,long variable,long price) {	//손익분기점 함수
+    	if(variable>=price)		//가변비용이 가격보다 크거나 같으면 손익분기점이 일어나지 않음
+    		return -1;
+    	long result = fix/(price-variable)+1;					//손익 분기점 구하는 식
+    	return result;								//결과 반환
+    }
+}
