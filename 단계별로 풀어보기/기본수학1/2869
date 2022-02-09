@@ -1,0 +1,22 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");	//입력 값 띄어쓰기 기준 나누기
+        long move = Integer.parseInt(st.nextToken());			//낮 움직임 거리
+        long reduce = Integer.parseInt(st.nextToken());			//밤 떨어지는 거리
+        long height = Integer.parseInt(st.nextToken());			//높이
+        height -= move;							//높이에서 움직임 거리 빼기
+        move -= reduce;							//하루에 움직이는 거리 구하기
+        long result = (int)Math.ceil((double)height/move) + 1;		//달팽이가 움직인 날 구하기
+        bw.write(result + "\n");					//결과 bw에 저장
+        bw.flush();							//결과 도출
+        bw.close();
+        br.close();
+    }
+}
