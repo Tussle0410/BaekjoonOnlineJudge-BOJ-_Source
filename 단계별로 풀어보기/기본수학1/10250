@@ -1,0 +1,30 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        int index = Integer.parseInt(br.readLine());				//반복 횟수 값
+        String result;	
+        for(int i=0;i<index;i++) {
+        	 StringTokenizer st = new StringTokenizer(br.readLine()," ");	//입력 값 띄어쓰기 기준 나누기
+        	 int height = Integer.parseInt(st.nextToken());			//높이
+        	 int weight = Integer.parseInt(st.nextToken());			//방 개수
+        	 int num = Integer.parseInt(st.nextToken());			//몇 번째 손님
+        	 int floor;							//층수
+        	 if(num%height==0) 						//층수 구하는 식
+        		 floor = height;
+        	 else
+        		 floor = num%height;
+        	 int room = (int)Math.ceil((double)num/height);			//방 번호 및 방 번호 구하는 식
+        	 result = String.valueOf(floor) + String.format("%02d", room);	//결과 String형으로
+        	 bw.write(result + "\n");					//결과 bw에 저장
+        }
+        bw.flush();								//결과 출력
+        bw.close();
+        br.close();
+    }
+}
