@@ -1,0 +1,28 @@
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        int index = Integer.parseInt(br.readLine());		//반복 횟수
+        for(int i=0;i<index;i++) {
+        	int floor = Integer.parseInt(br.readLine());	//층 받기
+        	int room = Integer.parseInt(br.readLine());	//방 받기
+        	int[][] arr = new int[floor+1][room];		//건물 배열 형성
+        	for(int j=0;j<room;j++) {			//0층 초기화
+        		arr[0][j] = j+1;
+        	}
+        	for(int n=1;n<floor+1;n++) {			//각 층 숫자 삽입
+        		arr[n][0]=1;
+        		for(int m=1;m<room;m++) {
+        			arr[n][m] = arr[n][m-1] + arr[n-1][m];
+        		}
+        	}
+        	bw.write(arr[floor][room-1] + "\n");		//결과 bw에 저장
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
