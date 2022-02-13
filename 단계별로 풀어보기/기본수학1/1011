@@ -1,0 +1,53 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        StringTokenizer st;
+        int index = Integer.parseInt(br.readLine());			//반복 횟수
+        for(int i=0;i<index;i++){					//변수 저장 및 함수 실행
+            st = new StringTokenizer(br.readLine()," ");		//줄마다 띄어쓰기 기준 나누기
+            int currentLocation = Integer.parseInt(st.nextToken());	//현재 위치
+            int arrivalLocation = Integer.parseInt(st.nextToken());	//목표 위치
+            int distance = arrivalLocation - currentLocation;		//거리
+            int result = FlyMeToTheAlphaCentauri(distance);		//함수 실행
+            bw.write(result + "\n");					//결과 bw에 저장
+        }
+        bw.flush();							//결과 출력
+        bw.close();
+        br.close();
+    }
+    public static int FlyMeToTheAlphaCentauri(int distance){	//최소값 계산 함수
+        int result = 0, sum = 1, num = 1;	//횟수, 최소거리, 현재 숫자
+        boolean check = true;			//숫자 올라가는지 내려가는지 확인
+        for(;;){
+            if(distance>sum && check){		
+            //숫자 올라갈 때 거리가 최소거리보다 클 때
+                distance -= num;
+                num++;
+                sum += num;
+                result++;
+            }else if(distance==sum){		//거리랑 최소거리와 같을 때
+                result +=num;
+                break;
+            }else if(distance<sum && check){	
+            //숫자 올라갈 때 거리가 최소거리보다 작을 때
+                sum-=num;
+                num--;
+                check = false;
+            }else if(distance>sum && !check){	
+            //숫자 내려갈 때 거리가 최소거리보다 클 때
+                distance -= num;
+                result++;
+            }else if(distance<sum && !check){	
+            //숫자 내려갈 때 거리가 최소거리보다 작을 때
+                sum-=num;
+                num--;
+            }
+        }
+        return result;		//결과 반환
+    }
+}
