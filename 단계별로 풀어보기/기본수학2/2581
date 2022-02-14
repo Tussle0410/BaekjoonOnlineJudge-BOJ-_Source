@@ -1,0 +1,38 @@
+import java.io.*;
+import java.math.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        int start = Integer.parseInt(br.readLine());	//시작 값
+        int end = Integer.parseInt(br.readLine());	//끝 값
+        int sum = 0;					//합
+        int min=-1;					//최소값
+        for(int i=start;i<=end;i++){	
+            if(findPrimeNumber(i)){		//각 수를 소수인지 판단
+                sum+=i;				//소수이면 합 더하기
+                if(min==-1)			//최소값 구하기
+                    min = i;
+            }
+        }
+        if(sum==0)	//합이 0이면 소수가 없다고 판단 -1을 bw에 저장
+            bw.write("-1\n");
+        else
+            bw.write(sum + "\n" + min + "\n");
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+    public static boolean findPrimeNumber(int num){	//소수 확인 함수
+        if(num==1)
+            return false;
+        for(int i=2;i<=Math.sqrt(num);i++){
+            if(num%i==0)
+                return false;
+        }
+        return true;
+    }
+}
+
