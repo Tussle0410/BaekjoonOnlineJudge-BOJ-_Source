@@ -1,0 +1,26 @@
+import java.io.*;
+import java.math.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        int num = Integer.parseInt(br.readLine());		//입력값 저장
+        for(int i=2;i<=Math.sqrt(num);i++) {			//소수인 인수 구해서 나누기
+        	for(;;) {
+        		if(num%i!=0)
+        			break;
+        		else {
+        			num/=i;
+        			bw.write(i + "\n");
+        		}
+        	}
+        }
+        if(num!=1)		//나눈 마지막 값이 1이 아닌경우도 인수로 포함
+        	bw.write(num + "\n");
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+}
