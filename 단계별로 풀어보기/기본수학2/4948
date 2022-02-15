@@ -1,0 +1,35 @@
+import java.io.*;
+import java.util.*;
+import java.math.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        int result = 0;						//결과 값
+        for(;;) {
+        	int num = Integer.parseInt(br.readLine());	//숫자 받기
+        	if(num==0)			//숫자 0을 받으면 끝내기
+        		break;
+        	for(int i = num+1;i<=2*num;i++) {	//범위 값 소수 확인
+        		if(checkPrimeNumber(i)) 
+        			result++;
+        	}
+        	bw.write(result + "\n");		//결과 bw에 저장
+        	result = 0;
+        }
+        bw.flush();					//결과 출력
+        bw.close();
+        br.close();
+    }
+    public static boolean checkPrimeNumber(int num) {	//소수 찾는 함수
+    	for(int i=2;i<=Math.sqrt(num);i++) {
+    		if(num%i==0)
+    			return false;
+    	}
+    	if(num==1)
+    		return false;
+    	return true;
+    }
+}
