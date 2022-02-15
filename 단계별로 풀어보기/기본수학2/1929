@@ -1,0 +1,30 @@
+import java.io.*;
+import java.util.*;
+import java.math.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");	//입력값 띄어쓰기 기준 나누기
+        int start = Integer.parseInt(st.nextToken());		//시작 값
+        int end = Integer.parseInt(st.nextToken());		//끝 값
+        for(int i=start;i<=end;i++) {		//범위 값 소수인지 확인하기
+        	if(checkPrimeNumber(i))
+        		bw.write(i + "\n");	//소수이면 bw에 저장
+        }
+        bw.flush();				//결과 출력
+        bw.close();
+        br.close();
+    }
+    public static boolean checkPrimeNumber(int num) {	//소수 찾는 함수
+    	for(int i=2;i<=Math.sqrt(num);i++) {
+    		if(num%i==0)
+    			return false;
+    	}
+    	if(num==1)
+    		return false;
+    	return true;
+    }
+}
