@@ -16,7 +16,7 @@ public class Main{
         int height = Integer.parseInt(st.nextToken());	//사각형 y값
         int minWidth = Math.min(Math.min(x, y),Math.min(width-x, height-y));	//가장작은 거리 비교
         bw.write(minWidth + "\n");	//결과 bw에 저장
-        bw.flush();		//결과 출력
+        bw.flush();		    //결과 출력
         bw.close();
         br.close();
     }
