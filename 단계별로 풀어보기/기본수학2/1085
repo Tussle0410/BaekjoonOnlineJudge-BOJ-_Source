@@ -1,0 +1,23 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        squreEscape();	//함수 호출
+    }
+    public static void squreEscape() throws IOException {	//직사각형 탈출 함수
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //입력 값을 받는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과를 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");	//띄어쓰기 기준 나누기
+        int x = Integer.parseInt(st.nextToken());	//x값
+        int y = Integer.parseInt(st.nextToken());	//y값
+        int width = Integer.parseInt(st.nextToken());	//사각형 x값
+        int height = Integer.parseInt(st.nextToken());	//사각형 y값
+        int minWidth = Math.min(Math.min(x, y),Math.min(width-x, height-y));	//가장작은 거리 비교
+        bw.write(minWidth + "\n");	//결과 bw에 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
