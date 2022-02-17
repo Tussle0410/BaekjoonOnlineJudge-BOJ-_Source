@@ -1,0 +1,34 @@
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력 값을 받는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과를 출력하는 BufferedWriter
+        int index = Integer.parseInt(br.readLine());		//입력 반복 횟수
+        for(int i=0;i<index;i++) {
+        	int num = Integer.parseInt(br.readLine());	//입력 값 받기
+        	for(int j=num/2;j<num;j++) {
+        		if(checkPrimeNumber(j)) {		//소수 확인
+        			int temp = num-j;
+        			if(checkPrimeNumber(temp)) {	//뺀 값 소수 확인
+            			bw.write(temp + " " + j + "\n");	//결과 bw에 저장
+            			break;
+        			}
+        		}  			
+        	}
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    public static boolean checkPrimeNumber(int num) {		//소수 확인 함수
+    	for(int i=2;i<=Math.sqrt(num);i++) {
+    		if(num%i==0)
+    			return false;
+    	}
+    	if(num==1)
+    		return false;
+    	return true;
+    }
+}
