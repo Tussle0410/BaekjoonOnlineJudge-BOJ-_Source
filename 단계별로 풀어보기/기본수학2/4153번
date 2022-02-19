@@ -1,0 +1,37 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	StringTokenizer st;
+	String text;
+    	for(;;) {
+    		text = br.readLine();
+    		if(text.equals("0 0 0"))
+    			break;
+    		st = new StringTokenizer(text," ");		//띄어쓰기 기준 나누기
+    		int n1 = Integer.parseInt(st.nextToken());	//숫자 저장하기
+    		int n2 = Integer.parseInt(st.nextToken());
+    		int n3 = Integer.parseInt(st.nextToken());
+            	//직각 삼각형인지 확인
+    		if(checkRightTriangle(n1,n2,n3) || checkRightTriangle(n1, n3, n2)	
+    				|| checkRightTriangle(n2, n3, n1))
+    			bw.write("right\n");	//bw에 저장
+    		else
+    			bw.write("wrong\n");
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+	public static boolean checkRightTriangle(int w,int h,int d) {	//직각 삼각형 확인 함수
+		int temp = w*w + h*h;
+		if(temp==(d*d) && w+h>d)
+			return true;
+		else
+			return false;
+	}
+}
