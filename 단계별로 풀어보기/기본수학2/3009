@@ -1,0 +1,41 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	String text = br.readLine();
+    	StringTokenizer st = new StringTokenizer(text," ");//띄어쓰기 기준 나누기
+    	int x1 = Integer.parseInt(st.nextToken());	//첫 좌표
+    	int y1 = Integer.parseInt(st.nextToken());
+    	int x2=0,y2=0, x_stack=1,y_stack=1;
+    	for(int i=0;i<2;i++) {		//다음 좌표들 받기
+    		text = br.readLine();
+    		st = new StringTokenizer(text," ");
+    		int x = Integer.parseInt(st.nextToken());
+    		int y = Integer.parseInt(st.nextToken());
+    		if(x1 == x)		//첫 좌표와 동일한지 비교
+    			x_stack++;	//같으면 stack +1
+    		else
+    			x2 = x;		//다르면 두 번째 좌표에 저장
+    		if(y1 == y)
+    			y_stack++;
+    		else
+    			y2 = y;
+    	}
+    	int result_x = stackCal(x1,x2,x_stack);	//네 번째 좌표 결정
+    	int result_y = stackCal(y1,y2,y_stack);
+    	bw.write(result_x + " " + result_y + "\n"); //좌표 bw에 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+	public static int stackCal(int n, int m, int stack) {		//네 번째 좌표 결정 함수
+		if(stack==2)
+			return m;
+		else
+			return n;
+	}
+}
