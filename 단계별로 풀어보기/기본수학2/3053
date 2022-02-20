@@ -1,0 +1,25 @@
+import java.io.*;
+import java.math.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int r = Integer.parseInt(br.readLine());		//반지름 저장
+    	bw.write(circleArea(r) + "\n" + texiArea(r) + "\n");	//함수 결과 bw에 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();	
+	}
+	public static String circleArea(int r) {		//원의 넓이 구하기
+		double temp= r*r*Math.PI;
+		String result = String.format("%.6f", temp);
+		return result;
+	}
+	public static String texiArea(int r) {	//택시 기하학 원의 넓이 구하기
+		double temp = Math.pow(r*2, 2) / 2;
+		String result = String.format("%.6f", temp);
+		return result;
+	}
+}
