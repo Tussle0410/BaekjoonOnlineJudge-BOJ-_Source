@@ -1,0 +1,25 @@
+import java.io.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int num = Integer.parseInt(br.readLine())+1;	//숫자 입력 받기
+    	int[] arr = new int[21];	//피보나치 값 들어갈 배열 초기화
+    	arr[1] = 1;	//1번째 값 1로 초기화
+    	arr = fibonacci(arr,num,2);	//피보나치 함수 결과 받기
+    	bw.write(arr[num-1] + "\n");	//결과 bw에 저장
+    	bw.flush();	//결과 출력
+    	bw.close();
+    	br.close();	
+	}
+	public static int[] fibonacci(int[] arr, int size, int current) {	//피포나치 함수
+		if(current>=size)
+			return arr;
+		else {	//재귀 실행
+			arr[current] = arr[current-1] + arr[current-2];
+			return fibonacci(arr,size,current+1);
+		}
+	}
+}
