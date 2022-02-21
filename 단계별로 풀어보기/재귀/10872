@@ -1,0 +1,20 @@
+import java.io.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int num = Integer.parseInt(br.readLine());	//숫자 받기
+    	bw.write(factorial(num) + "\n");	//함수 결과 bw에 저장
+    	bw.flush();
+    	bw.close();
+    	br.close();	
+	}
+	public static int factorial(int n) {	//팩토리얼 구하는 함수
+		if(n>1)
+			return n*factorial(n-1);
+		else
+			return 1;
+	}
+}
