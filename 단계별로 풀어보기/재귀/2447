@@ -1,0 +1,52 @@
+import java.io.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int num = Integer.parseInt(br.readLine());	//입력값 받기
+    	char[][] arr = new char[num][num];		//별 찍기 배열
+    	arr = star(arr,0,0,num,false);			//함수 결과 받기
+    	for(int i=0;i<arr.length;i++) {
+    		for(int j=0;j<arr.length;j++) {
+    			bw.write(arr[i][j]);		//배열값 bw에 저장
+    		}
+    		bw.write("\n");
+    	}
+    	bw.flush();				//결과 출력
+    	bw.close();
+    	br.close();	
+	}
+	public static char[][] star(char[][] arr, int x, int y,
+			int num, boolean blank) {	//별찍기 함수
+		if(blank) {				//빈 공간 넣기
+			for(int i=x;i<x+num;i++) {
+				for(int j=y;j<y+num;j++) {
+					arr[i][j] = ' ';
+				}
+			}
+			return arr;
+		}
+		if(num==1) {		//별 찍기
+			for(int i=x;i<x+num;i++) {
+				for(int j=y;j<y+num;j++) {
+					arr[i][j] = '*';
+				}
+			}
+			return arr;
+		}
+		int size = num/3;		//다음 사이즈
+		int stack = 0;			//반복 스택
+		for(int i=x;i<x+num;i+=size) {
+			for(int j=y;j<y+num;j+=size) {
+				stack++;
+				if(stack==5)
+					arr = star(arr,i,j,size,true);
+				else
+					arr = star(arr,i,j,size,false);
+			}
+		}
+		return arr;			//결과 반환
+	}
+}
