@@ -1,0 +1,26 @@
+import java.io.*;
+public class Main{
+	static StringBuilder sb = new StringBuilder();	//이동 방향 저장
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int num = Integer.parseInt(br.readLine());	//입력값 저장
+    	hanoi(num,1,2,3);
+    	bw.write((int)Math.pow(2, num)-1 + "\n");	//반복 횟수 bw에 저장
+    	bw.write(sb + "\n");	//이동 방향 bw에 저장
+    	bw.flush();
+    	bw.close();
+    	br.close();	
+	}
+	public static void hanoi(int num,int start, int mid, int end){//하노이탑 함수
+    	if(num==1) {	//가장큰 값 end에 옮기기
+    		sb.append(start + " " + end + "\n");
+    		return;
+    	}
+    	hanoi(num-1,start,end,mid);	//n-1개를 mid에 옮기기
+    	sb.append(start + " " + end + "\n");
+    	hanoi(num-1,mid,start,end); //n-1개를 end에 옮기기
+	}
+}
