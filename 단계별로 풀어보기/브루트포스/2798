@@ -1,0 +1,40 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	int card = Integer.parseInt(st.nextToken());	//카드 수
+    	int sum = Integer.parseInt(st.nextToken());	//합 값
+    	st = new StringTokenizer(br.readLine()," ");	//띄어쓰기 기준 나누기
+    	int[] arr = new int[card];		
+    	for(int i=0;i<card;i++)		//카드 값 배열에 저장
+    		arr[i] = Integer.parseInt(st.nextToken());
+    	bw.write(blackJack(arr,sum) + "\n");	//함수 결과 bw에 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();	
+	}
+	public static int blackJack(int[] arr, int sum){	//블랙잭 함수
+		int result=-1;	//반환 값
+		int min=sum;	//차이 최소값
+		for(int i=0;i<arr.length;i++) {
+			for(int j=i+1;j<arr.length;j++) {
+				for(int k = j+1;k<arr.length;k++) {
+					int temp = arr[i]+ arr[j] + arr[k];	//카드의 합
+					if(temp<=sum) {
+						int dif = sum-temp;	//합 차이 구하기
+						if(dif<min) {
+							min = dif;
+							result = temp;
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+}
