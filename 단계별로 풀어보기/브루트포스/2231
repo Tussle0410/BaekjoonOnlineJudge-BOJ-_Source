@@ -1,0 +1,23 @@
+import java.io.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int num = Integer.parseInt(br.readLine());	//숫자 받기
+    	bw.write(decompose(num) + "\n");	//함수 결과 bw에 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();	
+	}
+	public static int decompose(int num){		//분해합 함수
+		for(int i=num/2;i<num;i++) {		//분해 합인지 확인하기
+			int temp = i + (i/100000) + (i%100000)/10000 
+					+ (i%10000)/1000 + (i%1000)/100 + (i%100)/10 + i%10;
+			if(temp==num)	//분해합이면 반환
+				return i;
+		}
+		return 0;		//분해합이 아니면 0 반환
+	}
+}
