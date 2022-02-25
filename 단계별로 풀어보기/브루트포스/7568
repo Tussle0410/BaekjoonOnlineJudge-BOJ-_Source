@@ -1,0 +1,37 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int num = Integer.parseInt(br.readLine());	//반복횟수 받기
+	StringTokenizer st;
+    	int[][] arr = new int[num][num];
+    	for(int i=0;i<num;i++) {	//몸무게, 키 배열에 저장
+    		st = new StringTokenizer(br.readLine(), " ");
+    		arr[i][0] = Integer.parseInt(st.nextToken());
+    		arr[i][1] = Integer.parseInt(st.nextToken());
+    	}
+    	int[] result = new int[num];
+    	result = bulkRanking(arr);	//함수 결과 받기
+    	for(int i=0;i<num;i++)		//배열 값 bw에 저장
+    		bw.write((result[i]+1) + " ");
+    	bw.flush();
+    	bw.close();
+    	br.close();	
+	}
+	public static int[] bulkRanking(int[][] arr){	//덩치 순위 구하는 함수
+		int[] result = new int[arr.length];
+		for(int i=0;i<arr.length;i++) {
+			for(int j=i+1;j<arr.length;j++) {
+				if(arr[i][0]>arr[j][0] && arr[i][1]>arr[j][1])	//덩치가 큰 경우
+					result[j]++;
+				else if(arr[i][0]<arr[j][0] && arr[i][1]<arr[j][1])//덩치가 작은 경우
+					result[i]++;
+			}
+		}
+		return result;
+	}
+}
