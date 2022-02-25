@@ -1,0 +1,57 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+	StringTokenizer st = new StringTokenizer(br.readLine()," ");//띄어쓰기 기준 나누기
+	int x_size = Integer.parseInt(st.nextToken());	//행의 크기
+	int y_size = Integer.parseInt(st.nextToken());	//열의 크기
+    	char[][] arr = new char[x_size][y_size];	//체스판 배열
+    	for(int i=0;i<x_size;i++) {		//체스판 배열 초기화
+    		String text = br.readLine();
+    		for(int j=0;j<y_size;j++) {
+    			arr[i][j] = text.charAt(j);
+    		}
+    	}
+    	int result = 65;
+		for(int i=0;i<=x_size-8;i++) {
+			for(int j=0;j<=y_size-8;j++) {	//첫색깔 B일때 W일 때 모두 검사 
+				result = Math.min(result, chessPainting(arr, i, j,'B'));
+				result = Math.min(result, chessPainting(arr, i, j,'W'));
+			}
+		}
+    	bw.write(result + "\n");	//결과 bw에 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();	
+	}
+	public static int chessPainting(char[][] arr,int row, int col,
+			char firstLetter){	//색칠 횟수 구하는 함수
+		int result = 0;	
+		int row_end = row+8 , col_end = col+8;
+		char check = firstLetter;	//첫 색깔
+		for(int i=row;i<row_end;i++) {
+			if(arr[i][col]!=check)	//열의 첫 색깔 정하기
+				result++;
+			for(int j = col+1;j<col_end;j++) {	//이후 색깔 정하기
+				if(check==arr[i][j]) {
+					check=paintingChange(check);
+					result++;
+				}else
+					check = arr[i][j];
+				}
+			}
+		return result;
+	}
+	public static char paintingChange(char c) {		//색깔 바꾸기 함수
+		char result=' ';
+		if(c=='B')
+			result ='W';
+		else
+			result ='B';
+		return result;
+	}
+}
