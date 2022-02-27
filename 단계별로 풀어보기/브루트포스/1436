@@ -1,0 +1,68 @@
+import java.io.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+	int num = Integer.parseInt(br.readLine());	//입력값 저장
+	String result = movieName(num);		//함수 결과 저장
+	bw.write(result + "\n");	//결과 bw에 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();	
+	}
+	public static String movieName(int n) {	//영화이름 함수
+		String basic = "666";
+		int current = 2, first_digit = 1;	//현재 작품, 들어갈 첫 번호
+		if(n==1)		//첫 영화일 경우
+			return basic;
+		else{
+			while(true) {
+				int dif = n-current;
+                		//첫 숫자가 X666일 경우
+				if(first_digit%1000==666) {
+					if(dif<1000) {
+						if(dif>100)
+							return first_digit + String.valueOf(dif);
+						else if(dif>10)
+							return first_digit + "6" + dif;
+						else
+							return first_digit + "60" + dif;
+					}
+					else {
+						current +=1000;
+						first_digit++;
+					}
+                 		// 첫 숫자가 XX66일 경우
+				}else if(first_digit%100==66){
+							if(dif<100) {
+								if(dif>=10)
+									return first_digit + "6" + dif;
+								else
+									return first_digit + "60" + dif;
+							}
+							else {
+							current +=100;
+							first_digit++;
+						}
+                 		 // 첫 숫자가 XXX6일 경우
+				}else if(first_digit%10==6) {
+					if(dif<10)
+						return first_digit + "66" + dif;
+					else {
+						current +=10;
+						first_digit++;
+					}
+				}else {
+                		if(current==n)	//첫 글자가 6이 아닌 경우
+						return first_digit + basic;
+					else {
+						current++;
+						first_digit++;
+					}
+				}
+			}
+		}
+	}
+}
