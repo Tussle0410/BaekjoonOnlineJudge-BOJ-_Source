@@ -1,0 +1,34 @@
+import java.io.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+	int index = Integer.parseInt(br.readLine());	//숫자 개수
+	int[] arr = new int[index];
+	for(int i=0;i<index;i++) {			//배열 초기화
+		arr[i] = Integer.parseInt(br.readLine());
+	}
+	arr = sort(arr);			//함수 결과 저장
+	for(int i=0;i<index;i++)		//배열 bw에 저장
+		bw.write(arr[i] + "\n");
+    	bw.flush();				//결과 출력
+    	bw.close();
+    	br.close();	
+	}
+	public static int[] sort(int[] arr) {		//선택 정렬 함수
+		for(int i=0;i<arr.length-1;i++) {
+			int minIndex = i;
+			for(int j=i+1;j<arr.length;j++) {
+				if(arr[j]<arr[minIndex]) {		//최소값 찾기
+					minIndex = j;
+				}
+			}
+			int temp = arr[i];		//값 바꾸기
+			arr[i] = arr[minIndex];
+			arr[minIndex] = temp;
+		}
+		return arr;
+	}
+}
