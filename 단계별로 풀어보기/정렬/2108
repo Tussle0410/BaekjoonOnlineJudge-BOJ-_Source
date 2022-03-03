@@ -1,0 +1,64 @@
+import java.io.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+		statistics();
+	}
+	public static void statistics() throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	
+    	int index = Integer.parseInt(br.readLine());	//숫자 개수
+    	int[] arr = new int[8001];
+    	int sum = 0, max = -4001, min = 4001;
+    	
+    	for(int i=0;i<index;i++) {			//배열 초기화 및 합/최대값/최소값 구하기
+    		int num = Integer.parseInt(br.readLine());
+    		sum+=num;
+    		arr[num+4000]++;
+    		max = Math.max(max, num);
+    		min = Math.min(min, num);
+    	}
+    	bw.write(Math.round((double)sum/index) + "\n");	//산술 평균
+    	
+    	int count=-1;	//중앙값 구하기 위한 횟수
+    	int median=0, mode=0, repeatNum = 0;	//중앙값,최빈값,반복횟수
+    	boolean check=false;
+    	for(int i=0;i<arr.length;i++) {
+    		if(arr[i]==0)
+    			continue;
+    		//중앙값 구하기
+    		if(index==1) {
+    			median = i-4000;
+    		}else {
+    			if(count<(index/2)) {
+    				count +=arr[i];
+        			if(count>=index/2)
+        				median = i-4000;
+        		}
+    		}
+    		//최빈값 구하기
+    		if(check) {
+    			if(arr[i]>repeatNum) {
+    				repeatNum = arr[i];
+    				mode = i-4000;
+    			}else if(arr[i]==repeatNum) {
+    				check = false;
+    				mode = i-4000;
+    			}
+    		}
+    		if(!check && arr[i]>repeatNum) {
+    			check = true;
+    			repeatNum = arr[i];
+    			mode = i-4000;
+    		}
+    	}
+    	bw.write(median + "\n");	//중앙값 저장
+    	bw.write(mode + "\n");		//최빈값 저장
+    	bw.write(max-min + "\n");	//범위 저장
+    	bw.flush();				//결과 출력
+    	bw.close();
+    	br.close();	
+	}
+}
