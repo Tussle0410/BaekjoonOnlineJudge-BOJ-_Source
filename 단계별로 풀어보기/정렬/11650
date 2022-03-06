@@ -1,0 +1,50 @@
+import java.io.*;
+import java.util.*;
+class location implements Comparable<location>{	//좌표 객체
+	int x,y;
+	location(int x, int y){
+		this.x = x;
+		this.y = y;
+	}
+	public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
+	@Override
+	public int compareTo(location temp) {	//Compartor 구성
+		if(this.x>temp.x)
+			return 1;
+		else if(this.x==temp.x) {
+			if(this.y>temp.y)
+				return 1;
+			}
+		return -1;
+		}
+}
+
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int index = Integer.parseInt(br.readLine());	//좌표 횟수 저장
+    	StringTokenizer st;
+    	ArrayList<location> list = new ArrayList<location>();	//리스트 초기화
+    	for(int i=0;i<index;i++) {	//리스트에 값 저장
+    		st = new StringTokenizer(br.readLine(), " ");
+    		int x = Integer.parseInt(st.nextToken());
+    		int y = Integer.parseInt(st.nextToken());
+    		list.add(new location(x,y));
+    	}
+    	Collections.sort(list);		//정렬
+    	for(int i=0;i<list.size();i++) {	//결과 bw에 저장
+    		bw.write(list.get(i).getX() + " " + list.get(i).getY() + "\n");
+    	}
+    	bw.flush();					//결과 출력
+    	bw.close();
+    	br.close();
+	}
+}
