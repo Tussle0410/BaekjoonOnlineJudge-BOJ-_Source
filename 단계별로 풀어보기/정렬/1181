@@ -1,0 +1,33 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int index = Integer.parseInt(br.readLine());	//입력 반복 횟수
+    	ArrayList<String> list = new ArrayList<String>();	//리스트 초기화
+    	for(int i=0;i<index;i++) {
+    		String text = br.readLine();
+    		if(!list.contains(text))	//입력 값 중복되는지 확인후 리스트에 값 저장
+    			list.add(text);
+    	}
+    	Collections.sort(list, new Comparator<String>() {	//정렬
+    		@Override
+    		public int compare(String s1, String s2) {	//Comparator 구성
+    			if(s1.length()==s2.length())	//글자수가 같을 때
+    				return s1.compareTo(s2);
+    			else		//그 외에
+    				return s1.length()-s2.length();
+    		}
+		});
+    	for(int i=0;i<list.size();i++) {	//리스트 값 BufferedWriter에 저장
+    		bw.write(list.get(i) + "\n");
+    	}
+    	bw.flush();					//결과 출력
+    	bw.close();
+    	br.close();
+	}
+}
+
