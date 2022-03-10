@@ -1,0 +1,38 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 출력
+    	int index = Integer.parseInt(br.readLine());	//입력 횟수
+        //띄어쓰기 나누는 StringTokenizer
+    	StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        //----------------배열 초기화 및 값 저장---------------------
+    	int[] arr = new int[index];
+    	int[] sortedArr = new int[index];
+    	for(int i=0;i<index;i++) {
+    		int temp = Integer.parseInt(st.nextToken());
+    		arr[i] = temp;
+    		sortedArr[i] = temp;
+    	}
+    	Arrays.sort(sortedArr);	//배열 정렬
+       	//----------------HashMap 초기화 및 값 저장-----------------
+    	HashMap<Integer,Integer> map = new HashMap<>();
+    	int stack = 0;
+    	for(int val : sortedArr) {
+    		if(!map.containsKey(val)) {
+    			map.put(val, stack);
+    			stack++;
+    		}
+    	}
+        //---------------결과 출력-----------------
+    	for(int val : arr) {
+    		bw.write(map.get(val) + " ");
+    	}
+    	bw.flush();
+    	bw.close();
+    	br.close();
+	}
+}
