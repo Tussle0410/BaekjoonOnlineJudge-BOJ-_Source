@@ -1,0 +1,57 @@
+import java.io.*;
+import java.util.*;
+class person implements Comparable<person>{	//person 객체
+	int age,regNo;	//나이, 가입번호
+	String name;	//이름
+	person(int age, int regNo, String name){	//생성자
+		this.age = age;
+		this.regNo = regNo;
+		this.name = name;
+	}
+    ---------Getter--------------
+	public int getAge() {
+		return age;
+	}
+	public String getName() {
+		return name;
+	}
+	public int getRegNo() {
+		return regNo;
+	}
+    ----------Comparator------------
+	@Override
+	public int compareTo(person temp) {
+		if(this.age==temp.age) {	//나이가 같을 때
+			if(this.regNo>temp.regNo)	//가입번호 비교
+				return 1;
+			else
+				return -1;
+		}else if(this.age>temp.age)	//나이 오름차순 정렬
+			return 1;
+		else		//그 이외에 정렬 X
+			return -1;
+	}
+}
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+       	//BufferedWriter를 통해 결과 출력
+    	int index = Integer.parseInt(br.readLine());	//입력 횟수
+    	StringTokenizer st;
+    	ArrayList<person> list = new ArrayList<person>();	//리스트 초기화
+    	for(int i=0;i<index;i++) {
+    		st = new StringTokenizer(br.readLine(), " ");	//띄어쓰기 기준 나누기
+            //list에 나이, 가입번호, 이름 저장
+    		list.add(new person(Integer.parseInt(st.nextToken()),i,st.nextToken()));
+    	}
+    	Collections.sort(list);	//정렬
+    	for(int i=0;i<list.size();i++) {	//리스트 값 BufferedWriter를 저장
+    		bw.write(list.get(i).getAge() + " " + list.get(i).getName() + "\n");
+    	}
+    	bw.flush();					//결과 출력
+    	bw.close();
+    	br.close();
+	}
+}
