@@ -1,0 +1,32 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] result;
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //띄어쓰기 기준 나누기
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //----------입력값 저장 및 배열 초기화, 함수 실행--------
+    	int N = Integer.parseInt(st.nextToken());
+    	int M = Integer.parseInt(st.nextToken());
+    	result = new int[M];
+    	backTracking(N, M, 0, 1);	
+    	br.close();
+	}
+	public static void backTracking(int N, int M, int current, int curNum) {
+   	 //-----------current 값이 길이와 같을 때 결과 출력-------
+		if(current==M) {
+			for(int i=0;i<result.length;i++)
+				System.out.print(result[i] + " ");
+			System.out.println();
+			return;
+		}
+   	 //-----------backTracking을 통해 수열의 값 배열에 저장-------
+		for(int i=curNum;i<=N;i++) {
+			result[current] = i;
+			backTracking(N, M, current+1, i+1);
+		}
+		return;
+	}
+}
