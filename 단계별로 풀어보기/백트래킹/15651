@@ -1,0 +1,35 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] result;
+	static int N,M;
+	static StringBuilder sb = new StringBuilder();
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //띄어쓰기 기준 나누기
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //----------입력값 저장 및 배열 초기화, 함수 실행--------
+    	N = Integer.parseInt(st.nextToken());
+    	M = Integer.parseInt(st.nextToken());
+    	result = new int[M];
+    	backTracking(0);
+    	System.out.println(sb);
+    	br.close();
+	}
+	public static void backTracking(int current) {
+    //-----------current 값이 길이와 같을 때 결과 출력-------
+		if(current==M) {
+			for(int i=0;i<result.length;i++)
+				sb.append(result[i] + " ");
+			sb.append("\n");
+			return;
+		}
+    //-----------backTracking을 통해 수열의 값 배열에 저장-------
+		for(int i=1;i<=N;i++) {
+			result[current] = i;
+			backTracking(current+1);
+		}
+		return;
+	}
+}
