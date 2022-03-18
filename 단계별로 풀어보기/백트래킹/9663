@@ -1,0 +1,40 @@
+import java.io.*;
+public class Main{
+	static int[] chess;		//체스판 열 기준 배열
+	static int size, result=0;	//체스판 사이즈, 결과
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //----------입력값 저장 및 배열 초기화, 함수 실행--------
+    	size = Integer.parseInt(br.readLine());
+    	chess = new int[size];
+    	queen(0);
+    	System.out.println(result);	//결과 출력
+    	br.close();
+	}
+	public static void queen(int current) {
+    //-------------퀸의 개수가 사이즈와 같을 때------------
+		if(current==size) {
+			result++;
+			return;
+		}
+   //---------backTracking으로 퀸의 자리 저장------------
+		for(int i=0;i<size;i++) {
+			chess[current] = i;
+			if(check(current))
+				queen(current+1);
+		}
+	}
+	public static boolean check(int n) {
+  //------------queen 자리 조건-----------------
+		for(int i=0;i<n;i++) {
+  //----------------같은 행/열에 퀸이 존재할 경우------------
+			if(chess[i]==chess[n])
+				return false;
+//----------------대각선에 퀸이 존재할 경우------------
+			else if(Math.abs(n-i)==Math.abs(chess[n]-chess[i]))
+				return false;
+		}
+		return true;
+	}
+}
