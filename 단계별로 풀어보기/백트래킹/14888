@@ -1,0 +1,55 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] num;		//수열 저장 배열
+	static int[] operator = new int[4];		//연산자 횟수 저장 배열
+    //최대값, 최솟값, 수열 크기
+	static int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE, size;
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	size = Integer.parseInt(br.readLine());
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	num = new int[size];		//배열 초기화
+    	
+        //----------------입력값 배열에 저장------------------
+    	for(int i=0;i<size;i++)
+    		num[i] = Integer.parseInt(st.nextToken());
+    	
+    	st = new StringTokenizer(br.readLine()," ");
+    	for(int i=0;i<4;i++)
+    		operator[i] = Integer.parseInt(st.nextToken());
+        //-----------------함수 실행 및 결과 출력------------------
+    	operatorInsert(num[0], 1);
+    	System.out.print(max + "\n" + min);
+    	br.close();
+	}
+    //-------------------연산자 끼어넣기 함수-----------------
+	public static void operatorInsert(int current, int depth) {
+ 	//----------연산 완료후 최대값 최소값 비교----------------
+		if(depth==size) {
+			max = Math.max(current, max);
+			min = Math.min(current, min);
+			return;
+		}
+        //-------------백트래킹을 통해 모든 경우의 수 연산-------------
+			for(int j=0;j<4;j++) {
+				if(operator[j]!=0) {
+					operator[j]--;
+					operatorInsert(operatorResult(j, depth, current), depth+1);
+					operator[j]++;
+				}
+			}		
+	}
+    //----------연산자 확인하여 연산하기----------------
+	public static int operatorResult(int n,int index, int current) {
+		if(n==0)
+			return current + num[index];
+		else if(n==1)
+			return current - num[index];
+		else if(n==2)
+			return current * num[index];
+		else
+			return current / num[index];
+	}
+}
