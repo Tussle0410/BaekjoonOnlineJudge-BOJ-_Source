@@ -1,0 +1,59 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[][] ablity;		//능력치 저장 배열
+	static int size,result=Integer.MAX_VALUE;	//크기, 결과
+	static boolean[] check;		//확인 배열
+	static StringBuilder sb = new StringBuilder();
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //----------------입력값 저장 및 배열 초기화
+    	size = Integer.parseInt(br.readLine());
+    	ablity = new int[size][size];
+    	check = new boolean[size];
+    	StringTokenizer st;
+    	for(int i=0;i<size;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		for(int j=0;j<size;j++)
+    			ablity[i][j] = Integer.parseInt(st.nextToken());
+    	}
+    	startAndlink(0,0);	//함수 실행
+    	System.out.println(result);		//결과 출력
+    	br.close();
+	}
+    //-----------------백 트래킹 함수----------
+	public static void startAndlink(int depth, int current) {
+		if(depth==size/2) {	//인원 정해질 시 능력치 계산
+			ablityCal();
+			return;
+		}
+        //백트래킹 실행
+		for(int i=current;i<size;i++) {
+			if(!check[i]) {
+				check[i] = true;
+				startAndlink(depth+1,i+1);
+				check[i]=false;
+			}
+		}
+		return;
+	}
+    //---------------능력치 계산 함수-------------
+	public static void ablityCal() {
+		int startScore=0, linkScore=0;
+		for(int i=0;i<size-1;i++) {
+			for(int j=i+1;j<size;j++) {
+				if(check[i] && check[j])	//start팀
+					startScore += ablity[i][j] + ablity[j][i];
+				else if(!check[i] && !check[j])		//link팀
+					linkScore += ablity[i][j] + ablity[j][i];
+			}
+		}
+		int dif = Math.abs(startScore-linkScore);
+		if(dif==0) {		//0은 최소값
+			System.out.println(dif);
+			System.exit(0);		//시스템 종료
+		}
+		result = Math.min(result, dif);
+	}
+}
