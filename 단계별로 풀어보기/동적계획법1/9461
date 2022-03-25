@@ -1,0 +1,33 @@
+import java.io.*;
+public class Main{
+	static long[] check = new long[101];	//메모이제이션배열
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //BufferedWriter를 통해 결과 값 출력
+        //-------입력값 저장 및 함수 실행---------
+    	int index = Integer.parseInt(br.readLine());
+    	checkInit();
+    	for(int i=0;i<index;i++) {
+    		int num = Integer.parseInt(br.readLine());
+        	bw.write(wave(num) + "\n");	//함수 결과 BufferedWriter에 저장
+    	}
+    	bw.flush();	//결과 출력
+    	bw.close();
+    	br.close();
+	}
+    //-------------파도반 수열 함수-----------
+	public static long wave(int n) {
+		if(check[n]!=0)		//메모이제이션 값 존재시 그 값 반환
+			return check[n];
+		check[n]=wave(n-2) + wave(n-3);	//재귀 진행
+		return check[n];
+	}
+    //---------------배열 초기화----------------
+	public static void checkInit() {
+		check[1] = 1;	//N=1일 때 1
+		check[2] = 1;	//N=2일 때 1
+		check[3] = 1;	//N=3일 때 1
+	}
+}
