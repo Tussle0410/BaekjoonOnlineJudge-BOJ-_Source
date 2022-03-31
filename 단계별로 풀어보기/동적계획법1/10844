@@ -1,0 +1,33 @@
+import java.io.*;
+public class Main{
+	static long[][] check;		//메모이제이션 배열
+	static int num;		//입력값
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //-------입력값 저장 및 배열 초기화----------------
+    	num = Integer.parseInt(br.readLine());
+    	check = new long[num+1][10];
+    	long result=0;		//결과값
+    	for(int i=1;i<=9;i++)
+    		result +=stair(num, i);	//함수 호출
+    	System.out.println(result%1000000000);	//결과 출력
+    	br.close();
+	}
+    //------------계단수 구하는 함수---------------
+	public static long stair(int depth, int start) {
+		if(depth==1)		//길이만큼 완성했을 때
+			return 1;
+		//재귀
+		if(check[depth][start]==0) {
+			if(start==0)	//이전 숫자가 0일 때
+				check[depth][start] = stair(depth-1,start+1);
+			else if(start==9)	//이전 숫자가 9일 때
+				check[depth][start] = stair(depth-1,start-1);
+			else	//그 이외
+				check[depth][start] = stair(depth-1,start+1) + stair(depth-1, start-1);
+		}
+
+		return check[depth][start]%1000000000;	//결과 반환
+		}
+	}
