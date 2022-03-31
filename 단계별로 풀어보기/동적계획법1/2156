@@ -1,0 +1,43 @@
+import java.io.*;
+public class Main{
+	static long[][] check;		//메모이제이션
+	static int[] wine;		//포도주 숫자 저장 배열
+	static int index;		//포도주 개수
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //-----------입력 저장 및 배열 초기화-----------
+    	index = Integer.parseInt(br.readLine());
+    	wine = new int[index+1];
+    	check = new long[index+1][3];
+    	checkInit();
+    	for(int i=1;i<=index;i++)
+    		wine[i] = Integer.parseInt(br.readLine());
+    	System.out.println(wineTasting(0,0));	//결과 출력
+    	br.close();
+	}
+    //-------포도주 시식 최대값 구하는 함수------------
+	public static long wineTasting(int depth, int stack) {
+		if(depth>index)	//마지막 포도주 넘어갔을 때
+			return 0;
+		
+		if(depth==index)	//마지막 포도주 마셨을 때
+			return wine[index];
+	
+		if(check[depth][stack]==-1) {
+			if(stack==2)	//2연속 포도주를 마셨을 때
+				check[depth][stack] = wineTasting(depth+2,1) + wine[depth];
+			else		//그 이외
+				check[depth][stack] = Math.max(wineTasting(depth+1, stack+1)+wine[depth],
+						Math.max(wineTasting(depth+2, 1) + wine[depth], wineTasting(depth+1, 1)));
+		}
+
+		return check[depth][stack];
+		}
+     //---------------메모이제이션 배열 초기화 함수--------
+	public static void checkInit() {
+		for(int i=0;i<=index;i++)
+			for(int j=0;j<3;j++)
+				check[i][j]=-1;
+	}
+	}
