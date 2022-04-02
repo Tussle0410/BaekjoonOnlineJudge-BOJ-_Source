@@ -1,0 +1,41 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] check;		//메모이제이션
+	static int[] num;		//수열 저장 배열
+	static int index;		//수열 크기
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //----------입력 저장 및 배열 초기화-----------
+    	index = Integer.parseInt(br.readLine());
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	num = new int[index];
+    	check = new int[index];
+    	int max = Integer.MIN_VALUE;                          
+    	for(int i=0;i<index;i++)
+    		num[i] = Integer.parseInt(st.nextToken());
+    	
+    	for(int i=0;i<index;i++)
+    		check[i] = seqCal(i);
+    	
+    	for(int i=0;i<index;i++)
+    		max = Math.max(max, check[i]);	//최대 길이 구하기
+    	
+    	System.out.println(max);		//결과 출력
+    	br.close();
+	}
+    //-----------수열 길이 구하는 함수---------
+	public static int seqCal(int depth) {
+		if(depth==0)
+			return 1;
+		int result = 1;
+		for(int i=depth;i>=0;i--) {
+			if(num[depth]>num[i] && result<=check[i]) {
+				result =check[i]+1;
+			}
+		}
+		return result;
+		}
+
+	}
