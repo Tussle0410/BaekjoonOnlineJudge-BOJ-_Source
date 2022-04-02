@@ -1,0 +1,54 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] left;		//left 메모이제이션
+	static int[] right;		//right 메모이제이션
+	static int[] num;		//수열 값 저장 배열
+	static int index;		//수열 크기
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //----------입력 저장 및 배열 초기화------------
+    	index = Integer.parseInt(br.readLine());
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	num = new int[index];
+    	left = new int[index];
+    	right = new int[index];
+    	int max = Integer.MIN_VALUE;                    
+    	for(int i=0;i<index;i++)
+    		num[i] = Integer.parseInt(st.nextToken());
+    	//--------함수 실행------------
+    	for(int i=0;i<index;i++) {
+    		leftCal(i);
+    		rightCal(index-1-i);
+    	}
+		//---------최대값 구하기----------
+    	for(int i=0;i<index;i++)
+    		max = Math.max(max, left[i] + right[i]+1);
+    	
+    	System.out.println(max);		//결과 출력
+    	br.close();
+	}
+    //------------숫자 기준 왼쪽에 올 수 있는 수 구하는 함수-------------
+	public static void leftCal(int depth) {
+		int leftResult = 0;
+		
+		for(int i=depth;i>=0;i--) {
+			if(num[depth]>num[i] && leftResult<=left[i])
+				leftResult = left[i]+1;
+		}
+		
+		left[depth] = leftResult;
+	}
+    //------------숫자 기준 오른쪽에 올 수 있는 수 구하는 함수-------------
+	public static void rightCal(int depth) {
+		int rightResult = 0;
+		
+		for(int i=depth;i<index;i++) {
+			if(num[depth]>num[i] && rightResult<=right[i])
+				rightResult = right[i]+1;
+		}
+		
+		right[depth] = rightResult;
+	}
+}
