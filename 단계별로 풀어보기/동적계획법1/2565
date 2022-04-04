@@ -1,0 +1,45 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] check;		//메모이제이션 배열
+	static int[][] num;		//전깃줄 저장 배열
+	static int index;
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //---------입력 값 저장 및 배열 초기화----------
+    	index = Integer.parseInt(br.readLine());
+    	num = new int[index][2];
+    	check = new int[index];
+    	int max = Integer.MIN_VALUE;
+    	for(int i=0;i<index;i++) {
+        	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    		num[i][0] = Integer.parseInt(st.nextToken());
+    		num[i][1] = Integer.parseInt(st.nextToken());
+    	}
+    	//----------전깃줄 정렬-----------
+    	Arrays.sort(num, new Comparator<int[]>() {
+    		@Override
+    		public int compare(int[] o1, int[] o2) {
+    			return o1[0]-o2[0];
+    		}
+		});
+    	//함수 실행 및 최대값 구하기
+    	for(int i=0;i<index;i++) 
+    		max = Math.max(electricWire(i), max);
+    	
+    	System.out.println(index-max);		//결과 출력
+    	br.close();
+	}
+    //----------전깃줄 구하는 함수-------------
+	public static int electricWire(int depth) {
+		if(check[depth]==0) {
+			check[depth]=1;
+			for(int i=0;i<depth;i++) {
+				if(num[depth][1]>num[i][1])
+					check[depth] = Math.max(check[depth], electricWire(i)+1);
+			}
+		}
+		return check[depth];
+	}
+}
