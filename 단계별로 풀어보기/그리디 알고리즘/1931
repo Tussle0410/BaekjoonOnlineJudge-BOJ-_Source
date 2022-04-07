@@ -1,0 +1,46 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[][] room;	//회의실 시간 저장 배열
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+        //---------입력값 저장 및 배열 초기화-------------
+    	StringTokenizer st;
+    	int index = Integer.parseInt(br.readLine());
+    	room = new int[index][2];
+    	for(int i=0;i<index;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		room[i][0] = Integer.parseInt(st.nextToken());
+    		room[i][1] = Integer.parseInt(st.nextToken());
+    	}
+        //---------------배열 정렬----------
+    	Arrays.sort(room,new Comparator<int[]>(){
+    		@Override
+    		public int compare(int[] o1, int[] o2) {
+    			if(o1[1]==o2[1])	//끝나는 시간 같을 때 시작 시간 기준 정렬
+    				return o1[0]-o2[0];
+    			return o1[1] - o2[1];	//끝나는 시간 정렬
+    		}
+		});
+    	
+    	bw.write(meetingRoom(index) + "\n");	//함수 결과 출력
+    	bw.flush();
+    	bw.close();
+    	br.close();
+	}
+    //------------회의실 사용횟수 최대값 구하는 함수-------------
+	public static int meetingRoom(int index) {
+		int currentTime = room[0][1];	//현재 시간
+		int result=1;	//회의실 사용 횟수
+		for(int i=1;i<index;i++) {
+			if(room[i][0]>=currentTime) {	//다른 회의실 사용
+				result++;
+				currentTime = room[i][1];
+			}
+		}
+		return result;	//결과 반환
+	}
+}
