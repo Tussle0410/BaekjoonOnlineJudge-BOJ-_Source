@@ -1,0 +1,37 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] coin;	//동전 저장 배열
+	static int maxValue;	//최대 값
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+        //------입력값 저장 및 배열 초기화----------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	int index = Integer.parseInt(st.nextToken());
+    	maxValue = Integer.parseInt(st.nextToken());
+    	coin = new int[index];
+    	for(int i=0;i<index;i++) 
+    		coin[i] = Integer.parseInt(br.readLine());
+
+    	bw.write(coinZero(index) + "\n");	//함수 결과 출력
+    	bw.flush();
+    	bw.close();
+    	br.close();
+	}
+    //-----------동전 0이 되는 최소값 구하는 함수------
+	public static int coinZero(int index) {
+		int result=0;
+		for(int i=index-1;i>=0;i--) {
+			if(maxValue==0)
+				break;
+			else {
+				result += maxValue/coin[i];
+				maxValue = maxValue%coin[i];
+			}
+		}
+		return result;
+	}
+}
