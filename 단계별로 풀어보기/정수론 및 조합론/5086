@@ -1,0 +1,44 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+    	StringTokenizer st;
+        //------------입력값 저장 및 결과 저장----------
+    	while(true) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int num1 = Integer.parseInt(st.nextToken());
+    		int num2 = Integer.parseInt(st.nextToken());
+    		if(num1 == 0 & num2 == 0)	//0 0받을시 반복 종료
+    			break;
+    		boolean div = divisor(num1, num2);
+    		boolean mul = multiple(num1, num2);
+    		if(div) 	//1. 첫 번째 숫자가 두 번째 숫자의 약수이다.
+    			bw.write("factor" + "\n");
+    		else if(mul) //2. 첫 번째 숫자가 두 번째 숫자의 배수이다.
+    			bw.write("multiple" + "\n");
+    		else //3. 첫 번째 숫자가 두 번째 숫자의 약수와 배수 모두 아니다.
+    			bw.write("neither" + "\n");
+    	}
+    	bw.flush();	//결과 출력
+    	bw.close();
+    	br.close();
+	}
+    //----------약수 확인 함수-----------
+	public static boolean divisor(int num1, int num2) {
+		if(num2%num1==0)
+			return true;
+		else
+			return false;
+	}
+    //------------배수 확인 함수-----------
+	public static boolean multiple(int num1, int num2) {
+		if(num1%num2==0)
+			return true;
+		else
+			return false;
+	}
+}
