@@ -1,0 +1,42 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int index;
+	static int[] distance;	//거리 저장 배열
+	static int[] oilPrice;	//기름 가격 저장 배열
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+        //---------입력값 저장 및 배열 초기화-----------
+    	index = Integer.parseInt(br.readLine());
+    	distance = new int[index-1];
+    	oilPrice = new int[index];
+    	
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	for(int i=0;i<index-1;i++)
+    		distance[i] = Integer.parseInt(st.nextToken());
+    	
+    	st = new StringTokenizer(br.readLine()," ");
+    	for(int i=0;i<index;i++)
+    		oilPrice[i] = Integer.parseInt(st.nextToken());
+    	
+    	bw.write(minOilPrice() + "\n");	//함수 호출 및 결과 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+    //----------최소 기름값 구하는 함수---------------
+	public static long minOilPrice() {
+		long currentPrice=oilPrice[0];
+		long result=distance[0]*currentPrice;
+		for(int j=1;j<index-1;j++) {
+			if(currentPrice>oilPrice[j]) {
+				currentPrice=oilPrice[j];
+			}
+			result += distance[j]*currentPrice;
+		}
+		return result;
+	}
+}
