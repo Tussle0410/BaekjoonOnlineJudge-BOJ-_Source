@@ -1,0 +1,45 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+        //-------------입력값 저장----------------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	int num1 = Integer.parseInt(st.nextToken());
+    	int num2 = Integer.parseInt(st.nextToken());
+        //결과 BufferedWriter에 저장
+    	bw.write( GCD(num1,num2)+ "\n" + LCM(num1, num2) + "\n");
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+	//-----------최대 공약수 구하는 함수------------
+	public static int GCD(int num1, int num2) {
+		int result = 0;
+		for(int i=1;i<=num1;i++) {
+			if(num1%i != 0)
+				continue;
+			if(num2%i==0) {
+				result = i;
+			}
+		}
+		return result;
+	}
+	//-----------최소 공배수 구하는 함수----------------
+	public static int LCM(int num1, int num2) {
+		int curnum1 = num1;
+		int curnum2 = num2;
+		while(true) {
+			if(curnum1>curnum2)
+				curnum2 +=num2;
+			else if(curnum1<curnum2)
+				curnum1 +=num1;
+			else
+				break;
+		}
+		return curnum1;
+	}
+}
