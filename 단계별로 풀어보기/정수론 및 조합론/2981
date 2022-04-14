@@ -1,0 +1,40 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int index;	//숫자의 개수
+	static int[] num;	//숫자 저장 배열
+	static StringBuilder sb = new StringBuilder();
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+        //------------입력값 저장 및 배열 초기화--------
+    	index = Integer.parseInt(br.readLine());
+    	num = new int[index];
+    	for(int i=0;i<index;i++) 
+        	num[i] = Integer.parseInt(br.readLine());
+    
+    	Arrays.sort(num);	//배열 오름차순 정렬
+		int temp = num[1] - num[0];
+    	for(int i=2;i<index;i++) 	//최대 공약수 구하기
+    		temp = GCD(temp, num[i]-num[i-1]);
+    	
+    	for(int i=2;i<=temp;i++) 	//최대 공약수의 약수 구하기
+    		if(temp%i==0)
+    			sb.append(i + " ");
+    	
+    	bw.write(sb.toString() + "\n");		//결과 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+    //----------최대 공약수 구하는 함수--------
+    //유클리드 호제법
+	public static int GCD(int num1, int num2) {
+		if(num2==0)
+			return num1;
+		else
+			return GCD(num2, num1%num2);
+	}
+}
