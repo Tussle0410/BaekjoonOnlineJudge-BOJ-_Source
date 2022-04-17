@@ -1,0 +1,33 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static Integer num[][];		//메모이제이션 배열
+	static int N,K;		//입력 값
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+        //----------입력값 저장 및 배열 초기화-----
+    	StringTokenizer st = new StringTokenizer(br.readLine());
+    	N = Integer.parseInt(st.nextToken());
+    	K = Integer.parseInt(st.nextToken());
+    	
+    	num = new Integer[N+1][N+1];
+    	int result = binomialCoefficient(N,K);	//함수 실행
+
+    	bw.write(result + "\n");	//결과 BufferedWriter에 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+    //----------이항 계수 구하는 함수---------
+	public static int binomialCoefficient(int N, int K) {
+		if(K==0 || N==K)
+			return 1;
+		if(num[N][K]==null) 
+			num[N][K] = (binomialCoefficient(N-1, K-1) + binomialCoefficient(N-1, K))%10007;
+		
+		return num[N][K];
+	}
+}
