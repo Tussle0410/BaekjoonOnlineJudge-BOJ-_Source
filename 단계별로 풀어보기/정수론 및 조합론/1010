@@ -1,0 +1,36 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static Integer num[][] = new Integer[31][31];	//메모이제이션 배열
+	static int index;	//입력 개수
+	static int N,K;	//오른쪽,왼쪽
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+        //-----------입력값 저장------------
+    	StringTokenizer st;
+    	index = Integer.parseInt(br.readLine());
+    	int result;
+    	for(int i=0;i<index;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+        	K = Integer.parseInt(st.nextToken());
+        	N = Integer.parseInt(st.nextToken());
+        	result = binomialCoefficient(N,K);	//이항계수 구하기
+        	bw.write(result + "\n");	//결과 BufferedWriter에 저장
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+    //----------이항 계수 구하는 함수--------------
+	public static int binomialCoefficient(int N, int K) {
+		if(K==0 || N==K)
+			return 1;
+		if(num[N][K]==null) 
+			num[N][K] = binomialCoefficient(N-1, K-1) + binomialCoefficient(N-1, K);
+		
+		return num[N][K];
+	}
+}
