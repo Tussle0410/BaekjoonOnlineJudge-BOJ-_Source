@@ -1,0 +1,19 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+        //----------입력값 저장-------
+    	int num = Integer.parseInt(br.readLine());
+    	int result = num/5;		//5의 배수
+    	result += num/25;		//25의 배수
+    	result += num/125;		//125의 배수
+    	bw.write(result + "\n");	//결과 BufferedWriter에 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+}
