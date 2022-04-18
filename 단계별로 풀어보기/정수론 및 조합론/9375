@@ -1,0 +1,37 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static HashMap<String,Integer> map;		//옷관련 저장 Map
+	static int index;		//입력 개수
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+    	map = new HashMap<String,Integer>();	//맵 초기화
+    	index = Integer.parseInt(br.readLine());
+        //----------입력값 저장--------------
+    	for(int i=0;i<index;i++) {
+    		int temp = Integer.parseInt(br.readLine());
+    		int result = 1;
+    		for(int j=0;j<temp;j++) {
+            	StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            	String wear = st.nextToken();
+            	String kind = st.nextToken();
+            	map.put(kind, map.getOrDefault(kind, 1)+1);
+    		}
+            //-----------경우의 수 구하기----------
+    		for(String key : map.keySet()) {
+    			result  *= map.get(key);
+    		}
+    		result--;
+    		bw.write(result + "\n");	//결과 BufferedWriter에 저장
+    		map.clear();	//맵 초기화
+    	}
+
+    
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+}
