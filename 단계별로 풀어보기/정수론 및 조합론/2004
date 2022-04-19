@@ -1,0 +1,45 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	//BufferedWriter를 통해 결과 값 출력
+        //-----------입력 값 저장-------------
+    	StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+    	int N = Integer.parseInt(st.nextToken());
+    	int K = Integer.parseInt(st.nextToken());
+    	int temp = N-K;	//(n-m)!
+    	int two = twodivisorCal(N) - twodivisorCal(K) - twodivisorCal(temp);
+    	int five = fivedivisorCal(N) - fivedivisorCal(K) - fivedivisorCal(temp);
+    	bw.write(Math.min(two, five) + "\n");	//2의 배수, 5의 배수 개수 중 더 큰 것 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+    //2의 배수 개수 구하는 함수
+	public static int twodivisorCal(int num) {
+		int result = 0;
+		long temp = 2;
+		while(true) {
+			if(num/temp<1)
+				break;
+			result += num/temp;
+			temp *= 2;
+		}
+		return result;
+	}
+    //5의 배수 개수 구하는 함수
+	public static int fivedivisorCal(int num) {
+		int result = 0;
+		long temp = 5;
+		while(true) {
+			if(num/temp<1)
+				break;
+			result += num/temp;
+			temp *= 5;
+		}
+		return result;
+	}
+}
