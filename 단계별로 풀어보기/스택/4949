@@ -1,0 +1,58 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static Stack<Character> stack = new Stack<Character>();
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //BufferedWriter를 통해 결과 값 출력
+        //------입력 값 저장 및 함수 실행-----------
+    	while(true) {
+    		String text = br.readLine();
+    		if(text.equals("."))	//"."일 때 반복 종료
+    			break;
+    		for(int i=0;i<text.length();i++) {	//스택 관련 명령
+    			stackPush(text.charAt(i));
+    			boolean check = stackPop(text.charAt(i));
+    			if(!check) {
+    				stack.push('!');
+    				break;
+    			}
+    		}
+    		bw.write(VPS() + "\n");		//결과 저장
+    		stack.clear();
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+	}
+    //----------스택 push 함수-----------
+	public static void stackPush(char c) {
+		if(c=='(' || c=='[')
+			stack.push(c);
+	}
+    //---------스택 pop 함수--------------
+	public static boolean stackPop(char c) {
+		if(c==')') {
+			if(stack.empty() || stack.peek() !='(')
+				return false;
+			else
+				stack.pop();
+		}
+		if(c==']') {
+			if(stack.empty() || stack.peek()!='[')
+				return false;
+			else
+				stack.pop();
+		}
+		return true;
+	}
+    //---------VPS 확인 함수------------
+	public static String VPS() {
+		if(stack.empty())
+			return "yes";
+		else
+			return "no";
+	}
+}
