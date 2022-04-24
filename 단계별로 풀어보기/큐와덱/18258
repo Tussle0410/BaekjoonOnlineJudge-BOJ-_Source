@@ -1,0 +1,75 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int size,last = 0;	//명령개수, 마지막 저장 값
+	static Queue<Integer> queue = new LinkedList<Integer>();	//사용할 큐
+	static StringBuilder sb = new StringBuilder();	//결과
+	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader를 통해 입력 값 받기
+        //--------입력값 저장 및 함수 실행------
+    	size = Integer.parseInt(br.readLine());
+    	StringTokenizer st;
+    	for(int i=0;i<size;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		String text = st.nextToken();
+    		if(text.equals("push")) {
+    			int temp = Integer.parseInt(st.nextToken());
+    			push(temp);
+    		}
+            else if(text.equals("pop"))
+    			pop();
+    		else if(text.equals("size"))
+    			size();
+    		else if(text.equals("empty"))
+    			empty();
+    		else if(text.equals("front"))
+    			front();
+    		else if(text.equals("back"))
+    			back();
+    	}
+    	System.out.println(sb.toString());	//결과 출력
+    	br.close();
+	}
+    	//push 함수
+	public static void push(int n) {
+		queue.offer(n);
+		last = n;
+	}
+    	//pop 함수
+	public static void pop() {
+		if(queue.isEmpty())
+			sb.append("-1\n");
+		else {
+			int temp = queue.poll();
+			sb.append(temp + "\n");
+		}
+	}
+    	//size 함수
+	public static void size() {
+		sb.append(queue.size() + "\n");
+	}
+    	//empty 함수
+	public static void empty() {
+		if(queue.isEmpty()) {
+			sb.append("1\n");
+		}
+		else {
+			sb.append("0\n");
+		}
+	}
+        //front 함수
+	public static void front() {
+		if(queue.isEmpty())
+			sb.append("-1\n");
+		else
+			sb.append(queue.peek() + "\n");
+	}
+    	//back 함수
+	public static void back() {
+		if(queue.isEmpty())
+			sb.append("-1\n");
+		else
+			sb.append(last + "\n");
+	}
+}
