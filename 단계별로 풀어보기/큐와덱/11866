@@ -1,0 +1,30 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static Queue<Integer> queue = new LinkedList<>();	//인원 순서 저장 큐
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		//입력 값을 받는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		//결과 값을 출력하는 BufferedWriter
+       		//-------입력값 저장, 큐 초기화-----------
+		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		int N = Integer.parseInt(st.nextToken());
+		int K = Integer.parseInt(st.nextToken());
+		bw.write("<");
+		for(int i=1;i<=N;i++)
+			queue.offer(i);
+        	// K번째 인원 구하는 연산
+		for(int i=1;i<N;i++) {
+			for(int j=1;j<K;j++) {
+				int temp = queue.poll();
+				queue.offer(temp);
+			}
+			bw.write(queue.poll() + ", ");	//결과 BufferedWriter에 저장
+		}
+		bw.write(queue.poll() + ">\n");
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+}
