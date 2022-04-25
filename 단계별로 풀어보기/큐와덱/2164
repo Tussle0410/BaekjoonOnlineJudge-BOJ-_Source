@@ -1,0 +1,26 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static Queue<Integer> queue = new LinkedList<>();	//번호 저장하는 큐
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		//입력 값을 받는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		//결과 값을 출력하는 BufferedWriter
+		int num = Integer.parseInt(br.readLine());	//입력 값 저장
+		for(int i=1;i<=num;i++)		//큐 초기화
+			queue.offer(i);	
+        	//-------카드 연산----------
+		while(true) {
+			if(queue.size()==1)
+				break;
+			queue.poll();
+			int temp = queue.poll();
+			queue.offer(temp);
+		}
+		bw.write(queue.poll() + "\n");	//결과 BufferedWriter에 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+}
