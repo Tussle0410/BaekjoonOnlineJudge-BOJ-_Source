@@ -1,0 +1,79 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static Deque<Integer> deque = new ArrayDeque<>();	//배열 저장 데크
+	static StringBuilder sb;	//결과 저장 StringBuilder
+	static boolean empty;		//데크 비어있는지 확인
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //값 출력하는 BufferedWriter
+        //-----------입력값 저장 및 데크 초기화--------
+        int index = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+        for(int i=0;i<index;i++) {
+        	sb = new StringBuilder();
+        	String command = br.readLine();
+        	int arrSize = Integer.parseInt(br.readLine());
+        	st = new StringTokenizer(br.readLine(), "[],");
+        	//데크 초기화
+        	for(int j=0;j<arrSize;j++) 
+        		deque.offer(Integer.parseInt(st.nextToken()));
+        	
+        	empty = false;
+            //함수 실행
+        	boolean isRight = commandCheck(command);
+        	AC(isRight);
+        	
+        	bw.write(sb.toString() + "\n");	//결과 BufferedWriter에 저장
+        	deque.clear();		//데크 초기화
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //-------------명령어 실행하는 함수--------
+    public static boolean commandCheck(String command) {
+    	boolean isRight = true;
+    	for(int j=0;j<command.length();j++) {
+    		if(command.charAt(j)=='R')	//명령어가 R인 경우
+    			isRight = !isRight;
+    		if(command.charAt(j)=='D') {	//명령어가 D인 경우
+    			if(deque.isEmpty()) {	//데크가 비어있을 때
+    				empty = true;	
+    				break;
+    			}
+    			if(isRight)
+    				deque.pollFirst();
+    			else
+    				deque.pollLast();
+    		}
+    	}
+    	return isRight;
+    }
+    //------------AC 함수 결과 반환하는 함수------
+    public static void AC(boolean isRight) {
+    	int size = deque.size();
+    	if(empty) {	//데크가 비어있으면 오류처리
+    		sb.append("error");
+    	}else{
+        //-----------데크 결과 StringBuilder에 저장---------
+    		sb.append("[");
+    		if(isRight){
+        		for(int j=1;j<size;j++)
+        			sb.append(deque.pollFirst() + ",");
+        		
+        		if(deque.peek()!=null)
+            		sb.append(deque.poll());
+    		}else {
+    			for(int j=1;j<size;j++) 
+    				sb.append(deque.pollLast() + ",");
+    			
+    			if(deque.peek()!=null)
+    				sb.append(deque.poll());
+    		}
+    		sb.append("]");
+    	}
+    }
+}
