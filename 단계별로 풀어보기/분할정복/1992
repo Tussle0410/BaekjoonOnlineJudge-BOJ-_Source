@@ -1,0 +1,57 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static StringBuilder sb = new StringBuilder();	//결과 BuilderString
+	static int[][] screen;		//화면 숫자 저장 배열
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 가져오는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //---------입력값 저장 및 배열 초기화
+        int size = Integer.parseInt(br.readLine());
+        screen = new int[size][size];
+        for(int i=0;i<size;i++) {
+        	String line = br.readLine();
+        	for(int j=0;j<size;j++)
+        		screen[i][j] = Character.getNumericValue(line.charAt(j));
+        }
+        QuadTree(0, 0, size);	//함수 실행
+        bw.write(sb.toString() + "\n");		//결과 BufferedWriter에 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //---------쿼드 트리 함수-----------
+    public static void QuadTree(int start, int end, int size) {
+    	if(size == 1) {		//화면 크기가 1인 경우
+    		sb.append(screen[start][end]);
+    		return;
+    	}	
+    	if(screenCheck(start, end, size))
+    		sb.append(screen[start][end]);	//화면이 출력될 때
+    	else {
+        	sb.append("(");
+    		int tempSize = size/2;
+    		QuadTree(start, end, tempSize);		//2사분면
+    		QuadTree(start, end + tempSize, tempSize);	//1사분면
+    		QuadTree(start + tempSize, end, tempSize);	//3사분면	
+    		QuadTree(start + tempSize, end + tempSize, tempSize);	//4사분면
+        	sb.append(")");
+    	}
+    	
+    }
+    //-----화면이 모두 1이거나 0인 경우를 확인하는 함수--------
+    public static boolean screenCheck(int start, int end, int size) {
+    	int firstValue = screen[start][end];
+    	int start_end = start + size;
+    	int end_end  = end + size;
+    	for(int i=start;i<start_end;i++) {
+    		for(int j=end;j<end_end;j++) {
+    			if(screen[i][j]!=firstValue)
+    				return false;
+    		}
+    	}
+    	return true;
+    }
+}
