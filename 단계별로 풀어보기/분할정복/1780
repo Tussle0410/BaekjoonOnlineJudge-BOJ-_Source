@@ -1,0 +1,71 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[][] paper;	//종이 값 저장 배열
+	static int minus = 0, zero = 0, plus = 0;	// 1,0,-1 종이 개수 변수
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----------입력 값 저장 및 배열 초기화----------
+        StringTokenizer st;
+        int size = Integer.parseInt(br.readLine());
+        paper = new int[size][size];
+        for(int i=0;i<size;i++) {
+        	st = new StringTokenizer(br.readLine()," ");
+        	for(int j=0;j<size;j++)
+        		paper[i][j] = Integer.parseInt(st.nextToken());
+        }
+        paperCount(0, 0, size);		//함수 실행
+        bw.write(minus + "\n" + zero + "\n" + plus + "\n");	//결과 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //--------종이 개수 구하는 함수----------
+    public static void paperCount(int start, int end, int size) {
+    	if(size == 1) {		//크기가 1일 때
+    		countPlus(paper[start][end]);
+    		return;
+    	}	
+    	if(paperCheck(start, end, size))	//모두 1,0,-1로 이루어질 때
+    		countPlus(paper[start][end]);
+    	else {
+        	//---------9분할 진행-------------
+    		int tempSize = size/3;
+    		paperCount(start, end, tempSize);
+    		paperCount(start, end + tempSize, tempSize);
+    		paperCount(start, end + (tempSize*2), tempSize);
+    		paperCount(start + tempSize, end, tempSize);
+    		paperCount(start + tempSize, end + tempSize, tempSize);
+    		paperCount(start + tempSize, end + (tempSize*2), tempSize);
+    		paperCount(start + (tempSize*2), end, tempSize);
+    		paperCount(start + (tempSize*2), end + tempSize, tempSize);
+    		paperCount(start + (tempSize*2), end + (tempSize*2), tempSize);
+    	}
+    	
+    }
+    //-------종이가 모두 동일한 1,0,-1으로 되어있는지 확인하는 함수---------- 
+    public static boolean paperCheck(int start, int end, int size) {
+    	int firstValue = paper[start][end];
+    	int start_end = start + size;
+    	int end_end  = end + size;
+    	for(int i=start;i<start_end;i++) {
+    		for(int j=end;j<end_end;j++) {
+    			if(paper[i][j]!=firstValue)
+    				return false;
+    		}
+    	}
+    	return true;
+    }
+    //---------종이 개수 더하는함수----------
+    public static void countPlus(int n) {
+    	if(n==-1)
+    		minus++;
+    	else if(n==0)
+    		zero++;
+    	else
+    		plus++;
+    }
+}
