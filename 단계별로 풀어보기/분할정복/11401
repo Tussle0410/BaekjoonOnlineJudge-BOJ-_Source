@@ -1,0 +1,50 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static long[] arr;		//팩토리얼 메모이제이션
+	static int p = 1000000007;	// 나누는 값, 소수
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //---------입력값 저장------------
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        factorial(N);		//팩토리얼 함수 수행
+        long molecules = arr[N] % p;	//n! 구하기
+        long denominator = arr[K] * arr[N-K] % p; //k!(n-k)! 구하기
+        bw.write(binomialCoefficient(molecules, denominator) + "\n");	//결과 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //------메모이제이션에 팩토리얼 값 저장하는 함수----------
+    public static void factorial(int n) {
+    	arr = new long[n+1];
+    	arr[0] = 1;
+    	arr[1] = 1;
+    	for(int i=2;i<=n;i++)
+    		arr[i] = i * arr[i-1] % p;
+    	
+    }
+    //----------이항 계수 구하는 함수---------
+    public static long binomialCoefficient(long N, long K) {
+    	long temp = mul(K, p-2);
+    	return N * temp % p;
+    }
+    //---------계수 제곱을 수행하는 함수---------
+    public static long mul(long n, int depth) {
+    	if(depth==1)
+    		return n % p;
+    	
+    	long temp = mul(n,depth/2);
+    	
+    	if(depth%2 == 0) {	//계수가 짝수일 때
+    		return temp * temp % p;
+    	}
+    	else		//계수가 홀수일 때
+    		return (temp * temp % p) * (n % p) % p; 
+    }
+}
