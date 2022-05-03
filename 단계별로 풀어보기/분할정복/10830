@@ -1,0 +1,62 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int N;	//행렬 크기
+	static int MOD = 1000;	//나머지 구할 때 나누는 값
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-----입력값 저장 및 배열 초기화---------
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        long B = Long.valueOf(st.nextToken());
+        int[][] arr = new int[N][N];
+        for(int i=0;i<N;i++) {
+        	st = new StringTokenizer(br.readLine(), " ");
+        	for(int j=0;j<N;j++) {
+        		arr[i][j] = Integer.parseInt(st.nextToken()) % MOD;
+        	}
+        }
+        int[][] result = arrPow(arr, B);	//함수 실행
+        //결과 BufferedWriter 저장
+        for(int i=0;i<N;i++) {
+        	for(int j=0;j<N;j++) {
+        		bw.write(result[i][j] + " ");
+        	}
+        	bw.newLine();
+        }
+        bw.flush();	//결과 출력
+        bw.close();
+        br.close();
+    }
+    //-------행렬 제곱 함수---------
+    public static int[][] arrPow(int[][] A, long size) {
+    	if(size==1)
+    		return A;
+    	
+    	int[][] temp = arrPow(A, size/2);
+    	
+    	if(size%2==0) {
+    		return arrMul(temp,temp);
+    	}else {
+    		return arrMul(arrMul(temp, temp), A);
+    	}
+    }
+    //--------행렬 곱셈 함수-----------
+    public static int[][] arrMul(int[][] A, int[][] B){
+    	int[][] temp = new int[N][N];
+    	for(int i=0;i<N;i++) {
+    		for(int j=0;j<N;j++) {
+    			for(int k=0;k<N;k++) {
+    				temp[i][j] += A[i][k] * B[k][j];
+    				temp[i][j] %= MOD;
+    			}
+    		}
+    	}
+    	return temp;
+    	
+    }
+}
+
