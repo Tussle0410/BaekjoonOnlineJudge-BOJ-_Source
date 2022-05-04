@@ -1,0 +1,45 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] arr;		//N개의 정수 저장 배열
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        int size = Integer.parseInt(br.readLine());	//정수의 개수
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        arr = new int[size];	//배열 초기화
+        for(int i=0;i<size;i++)
+        	arr[i] = Integer.parseInt(st.nextToken());
+        Arrays.sort(arr);		//배열 오름차순 정렬
+        int M = Integer.parseInt(br.readLine());	//찾는 수 개수
+        st = new StringTokenizer(br.readLine()," ");
+        //-------함수 실행 및 BufferedWriter에 결과 저장--------
+        for(int i = 0;i<M;i++) {
+        	int num = Integer.parseInt(st.nextToken());
+        	bw.write(find(num) + "\n");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //--------이분 탐색 함수----------
+    public static int find(int n) {
+    	int size = arr.length;
+    	int start = 0;	//시작값
+    	int end = arr.length-1;	//최대값
+    	while(!(size==0)) {
+    		int median = (start + end)/2;	//중간값
+    		if(arr[median]==n) {	//찾는 값 동일한 경우
+    			return 1;
+    		}else if(arr[median]>n) {	//중간값이 찾는값보다 큰 경우
+    			end = median-1;
+    		}else {		//중간값이 찾는값보다 작은 경우
+    			start = median + 1;
+    		}
+    		size /= 2;
+    	}
+       	return 0;		//배열에 찾는 값이 없을때 반환
+    }
+}
