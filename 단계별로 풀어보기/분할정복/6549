@@ -1,0 +1,58 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] histogram;		//히스토그램 값 저장 배열
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //---------입력값 저장 및 배열 초기화---------
+        StringTokenizer st;
+        while(true) {
+        	String text = br.readLine();
+        	if(text.equals("0"))
+        		break;
+        	st = new StringTokenizer(text, " ");
+        	int N = Integer.parseInt(st.nextToken());
+        	histogram = new int[N];
+        	for(int i=0;i<N;i++) 
+        		histogram[i] = Integer.parseInt(st.nextToken());
+        	bw.write(areaCal(N) + "\n");	//함수 실행 및 결과 BufferedWriter 저장
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //---------직사각형 최대 넓이 구하는 함수---------
+    public static long areaCal(int N) {
+    	Stack<Integer> stack = new Stack<Integer>();	//인덱스 저장 스택
+    	long result = Integer.MIN_VALUE;		//결과값
+    	for(int i=0;i<N;i++) {
+        	//스택 peek()값이 다음 히스토그램값보다 크거나 같을 경우
+    		while(!stack.isEmpty() && histogram[stack.peek()]>=histogram[i]) {
+    			int height = histogram[stack.pop()];
+    			long width;
+    			if(stack.isEmpty()) {
+    				width = i;	//시작부터 지금까지의 범위
+    			}else {		//직사각형 범위
+    				width = i - 1 - stack.peek();
+    			}
+    			result = Math.max(result, width * height);
+    		}
+    		stack.push(i);
+    	}
+        //스택에 남아있는 범위의 직사각형 계산
+    	while(!stack.isEmpty()) {
+    		int height = histogram[stack.pop()];
+    		long width;
+    		if(stack.isEmpty()) {
+    			width = N;
+    		}else {
+    			width = N - 1 - stack.peek();
+    		}
+    		result = Math.max(result, width * height);
+    	}
+    	return result;		//결과 반환
+    }
+}
