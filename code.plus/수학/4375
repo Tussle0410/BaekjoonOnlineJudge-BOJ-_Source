@@ -1,0 +1,31 @@
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferdWriter
+        //----------입력값 저장 및 함수 실행---------
+        String text;
+        while((text=br.readLine())!=null) {
+        	int N = Integer.parseInt(text);	//입력값 저장
+        	int result = one(N);		//함수실행
+        	bw.write(result + "\n");	//결과 BufferedWriter에 저장
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //-----------1로 이루어진 수열중 나누어 떨어지는 자릿수 얻는 함수----------
+    public static int one(int N) {
+    	int temp = 1;
+    	int count = 1;	//자릿수 변수
+    	for(;;) {
+    		if(temp % N ==0)	//나누어 떨어질 때
+    			break;
+    		temp = (temp * 10 +1) % N;
+    		count++;
+    	}
+    	return count;
+    }
+}
