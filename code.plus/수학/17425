@@ -1,0 +1,42 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int maxNum = 1000001;	//입력 최대값
+	static long[] fx = new long[maxNum];	//f(x) 값 배열
+	static long[] gx = new long[maxNum];	//g(x) 값 배열
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        Arrays.fill(fx, 1);		//f(x)를 모두 1로 초기화
+        gx[1] = 1;		//g(x) = 1
+        for(int i=2;i<maxNum;i++) 	//f(x) 배열 완성시키기
+        	fxCal(i);
+        
+        for(int i=2;i<maxNum;i++) 	//g(x) 배열 완성시키기
+        	gx[i] = gx[i-1] + fx[i];
+        
+        //----입력값에 대응하는 g(x)값 BufferedWriter 저장-------
+        int T = Integer.parseInt(br.readLine());
+        for(int i=0;i<T;i++) {
+        	int num = Integer.parseInt(br.readLine());
+        	bw.write(gx[num] + "\n");   	
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //--------f(x)구하는 함수--------
+    public static void fxCal(int n) {
+    	int i=1;
+        /* 배수이면 약수
+        예를 들어 2의 배수이면 2의 약수를 가진 것으로
+        2의 배수의 인덱스를 가진 f(x)의 배열은 모두 +2를 해줍니다.
+        위 과정을 반복*/
+    	while(i*n<maxNum) {
+    		fx[i*n] += n;	
+    		i++;
+    	}
+    }
+}
