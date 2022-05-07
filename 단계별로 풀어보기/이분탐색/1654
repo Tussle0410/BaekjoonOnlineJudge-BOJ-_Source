@@ -1,0 +1,47 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] line;	//랜선 길이 저장 배열
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----------입력값 저장 및 최대 길이 구하기--------
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        int K = Integer.parseInt(st.nextToken());
+        int N = Integer.parseInt(st.nextToken());
+        int max = Integer.MIN_VALUE;
+        line = new int[K];
+        for(int i=0;i<K;i++) {
+        	line[i] = Integer.parseInt(br.readLine());
+        	max = Math.max(max, line[i]);
+        }
+        bw.write(lineLength(N, K, max) + "\n");	//함수 결과 BufferedWrtier 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //---------랜선 자를 수 있는 최대값 구하는 함수--------
+    public static long lineLength(int N, int K, int max) {
+        long start = 1;		//최소 길이
+        long end = max;		//최대 길이
+        while(start<=end) {
+        	long median = (start + end)/2;	//중간값
+        	int temp = quotientSum(K, median);	//중간값으로 잘랐을 때 개수
+        	if(temp<N)	//필요한 개수보다 작았을 때
+        		end = median - 1;
+        	else	//필요한 개수보다 컷을 때
+        		start = median + 1;
+        }
+        return end;
+    }
+    //----------중간값으로 랜선 자를 때 나오는 개수--------
+    public static int quotientSum(int K, long median) {
+    	int temp = 0;
+    	for(int i=0;i<K;i++)
+    		temp += line[i]/median;
+    	
+    	return temp;
+    }
+}
