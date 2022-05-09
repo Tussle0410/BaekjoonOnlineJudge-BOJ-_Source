@@ -1,0 +1,104 @@
+import java.io.*;
+public class Main{
+	static char[][] candis;		//캔디 색깔 저장 배열
+	static int N;			//배열 크기
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-------입력값 저장 및 배열 초기화---------
+        N = Integer.parseInt(br.readLine());
+        int result = Integer.MIN_VALUE;
+        candis = new char[N][N];
+        for(int i=0;i<N;i++) {
+        	String temp = br.readLine();
+        	for(int j=0;j<N;j++) {
+        		candis[i][j] = temp.charAt(j);
+        	}
+        }
+        //------배열의 각 값 변경에 의한 먹을 수 있는 캔디의 최대값 구하기-------
+        for(int i=0;i<N;i++) {
+        	for(int j=0;j<N;j++) {
+        		result = Math.max(result, maxCandi(i, j));
+        	}
+        }
+        bw.write(result + "\n");		//최대값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //---------변경이후 먹을 수 있는 캔디의 최대값 구하는 함수----------
+    public static int maxCandi(int x, int y) {
+    	int max = Integer.MIN_VALUE;
+    	if(x == N-1 && y==N-1)	//row,col이 N-1값일 때
+    		return -1;
+    	if(x==N-1) {	//row가 N-1일 때 가로변경만 진행
+    		candiRowChange(x, y);
+    		max = Math.max(max, candiCheck());
+    		candiRowChange(x, y);
+    	}else if(y==N-1) {	//Col이 N-1일 때 세로 변경만 진행
+    		candiColChange(x, y);
+    		max = Math.max(max, candiCheck());
+    		candiColChange(x, y);
+    	}else {		//가로 및 세로 변경 모두 진행
+    		candiRowChange(x, y);
+    		max = Math.max(max, candiCheck());
+    		candiRowChange(x, y);
+    		
+    		candiColChange(x, y);
+    		max = Math.max(max, candiCheck());
+    		candiColChange(x, y);
+    	}
+    	return max;
+    }
+    //---------가로 변경 함수--------
+    public static void candiRowChange(int x, int y) {
+    	char temp = candis[x][y];
+    	candis[x][y] = candis[x][y+1];
+    	candis[x][y+1] = temp;  	
+    }
+    //---------세로 변경 함수---------
+    public static void candiColChange(int x, int y) {
+    	char temp = candis[x][y];
+    	candis[x][y] = candis[x+1][y];
+    	candis[x+1][y] = temp;  	
+    }
+    //--------변경 후 캔디 최대값 구하는 함수------
+    public static int candiCheck() {
+    	char cur;
+    	int count=0;
+    	int result = Integer.MIN_VALUE;
+        //------가로 기준 최대값-------
+    	for(int i=0;i<N;i++) {
+    		cur = candis[i][0];
+    		count = 1;
+    		for(int j=1;j<N;j++) {
+    			if(cur==candis[i][j])
+    				count++;
+    			else {
+    				result = Math.max(result, count);
+    				count = 1;
+    				cur = candis[i][j];
+    			}
+    		}
+        	result = Math.max(result, count);
+    	}
+        //---------세로 기준 최대값-------
+    	for(int i=0;i<N;i++) {
+    		cur = candis[0][i];
+    		count = 1;
+    		for(int j=1;j<N;j++) {
+    			if(cur==candis[j][i])
+    				count++;
+    			else {
+    				result = Math.max(result, count);
+    				count = 1;
+    				cur = candis[j][i];
+    			}
+    		}
+        	result = Math.max(result, count);
+    	}
+    	return result;
+    }
+}
