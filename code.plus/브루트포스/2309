@@ -1,0 +1,40 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int dwarfMax = 9;	//난쟁이 최대 명수
+	static int[] dwarf = new int[dwarfMax];	//난쟁이 키 저장 배열
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        int sum = 0;
+        //-------입력값 저장 및 입력된 모든 난쟁이의 키의 합 구하기--------
+        for(int i=0;i<dwarfMax;i++) {
+        	dwarf[i] = Integer.parseInt(br.readLine());
+        	sum += dwarf[i];		//모든 난쟁이 키의 합
+        }
+        dwarfCheck(sum);	//빼야하는 난쟁이 2명 구하기 함수 실행
+        
+        Arrays.sort(dwarf);	//난쟁이의 키 오름차순 정렬
+        for(int i=2;i<dwarfMax;i++)
+        	bw.write(dwarf[i] + "\n");	//배열[2~8]값 BufferedWriter에 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //-------빼야하는 난쟁이 2명 구하는 함수---------
+    public static void dwarfCheck(int sum) {
+    	for(int i=0;i<dwarfMax;i++) {
+    		for(int j=i+1;j<dwarfMax;j++) {
+    			if(sum- dwarf[i] - dwarf[j]==100) {	//2명 빼주었을 때 키의 합 100일 경우
+                		//빼야하는 2 난쟁이의 키 -1로 변경
+    				dwarf[i] = -1;
+    				dwarf[j] = -1;
+    				return;		//함수 종료
+    			}
+    		}
+    	}
+    }
+
+}
