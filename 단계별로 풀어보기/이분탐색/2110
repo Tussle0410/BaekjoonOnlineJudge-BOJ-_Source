@@ -1,0 +1,52 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] house;		//집 위치좌표 저장 배열
+	static int N;		// 집의 개수
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //--------입력값 저장 및 배열 초기화---------
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        int C = Integer.parseInt(st.nextToken());
+        house = new int[N];
+        for(int i=0;i<N;i++)
+        	house[i] = Integer.parseInt(br.readLine());
+        Arrays.sort(house);		//오름차순 정렬
+        //-------함수 실행 및 결과 출력---------
+        bw.write(houseDistance(1, house[N-1] - house[0] + 1, C) + "\n");
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+    //----------UpperBound를 이용한 이분탐색 함수---------
+    public static int houseDistance(int start, int end, int C) {
+    	while(start<end) {
+    		int median = (start + end)/2;
+    		if(routerCheck(median)<C)
+    			end = median;		//UpperBound로 median으로 변경
+    		else
+    			start = median + 1;
+    	}
+    	return start-1;		//UpperBound로써 -1을 취해줌
+    }
+    //-------공유기 설치 가능 횟수 구하는 함수---------
+    public static int routerCheck(int median) {
+    	//첫 번째 집 공유기 설치했다는 설정--------
+    	int count = 1;
+    	int lastLocation = house[0];
+        //--------설치 가능 공유기 횟수 구하기------
+    	for(int i=1;i<N;i++) {
+    		int location = house[i];
+    		if(location - lastLocation >= median) {
+    			count++;
+    			lastLocation = location;
+    		}
+    	}
+    	return count;
+    }
+
+}
