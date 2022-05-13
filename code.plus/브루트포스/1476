@@ -1,0 +1,46 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-------------입력값 저장-----------
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int E = Integer.parseInt(st.nextToken());
+        int S = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        //-------함수 실행 및 결과 출력---------
+        bw.write(yearCal(E,S,M) + "\n");
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+    //----------연도 변환 함수----------
+    public static int yearCal(int E, int S, int M) {
+    	//------연도 기본값 설정-----
+    	int year = 1;
+    	int e=1, s=1, m=1;
+    	while(true) {
+    		if(e==E && s==S && m==M)
+    			break;
+    		if(e==15)	//E가 최대값일 때
+    			e=1;
+    		else 
+    			e++;
+    		if(s==28)	//S가 최대값일 때
+    			s=1;
+    		else
+    			s++;
+    		if(m==19)	//M이 최대값일 때
+    			m=1;
+    		else
+    			m++;
+    		
+    		year++;		//연도 더하기
+    	}
+    	return year;
+    }
+
+}
