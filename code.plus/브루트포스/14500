@@ -1,0 +1,79 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[][] board;	//종이 값 저장 배열
+	static boolean[][] visit;		//종이 방문 여부 확인 배열
+   	//상하좌우 이동 x,y 관련 값
+	static int[] dx = {-1,1,0,0};
+	static int[] dy = {0,0,-1,1};
+	static int result = Integer.MIN_VALUE,N,M;
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-----입력값 저장 및 배열 초기화-----------
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        board = new int[N][M];
+        visit = new boolean[N][M];
+        for(int i=0;i<N;i++) {
+        	st = new StringTokenizer(br.readLine()," ");
+        	for(int j=0;j<M;j++)
+        		board[i][j] = Integer.parseInt(st.nextToken());
+        }
+        //-----배열의 각 값 dfs와 'ㅜ' 모형 함수 실행
+        for(int i=0;i<N;i++) {
+        	for(int j=0;j<M;j++) {
+        		visit[i][j] = true;
+        		dfs(i, j, 1, board[i][j]);
+        		notDfsShapeCal(i, j);
+        		visit[i][j] = false;
+        	}
+        }
+        bw.write(result + "\n");	//결과 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //---------dfs를 통해 'ㅜ'제외한 모형 최대값 찾는 함수---------
+    public static void dfs(int x, int y, int depth, int sum) {
+    	if(depth==4) {		//깊이가 4일 때
+    		result = Math.max(result, sum);
+    		return;
+    	}
+        //깊이가 4가 아닐 때 상하좌우 깊이탐색
+    	for(int i=0;i<4;i++) {
+    		int tempX = x + dx[i];
+    		int tempY = y + dy[i];
+    		if(tempX>-1 && tempX<N && tempY>-1 && tempY<M && !visit[tempX][tempY]) {
+    			visit[tempX][tempY] = true;
+    			dfs(tempX, tempY, depth+1, sum + board[tempX][tempY]);
+    			visit[tempX][tempY] = false;
+    		}
+    	}
+    }
+    //------'ㅜ'모형 관련 최대값 찾는 함수-------
+    public static void notDfsShapeCal(int x, int y) {
+    	int sum = board[x][y];
+        //꼭짓점일 경우
+    	if((x==0 || x==N-1) && (y==0||y==M-1)) {
+    		sum = -1;
+    	}else if(x==0) {	//x = 0일 때 'ㅜ'
+    		sum += board[x][y-1] + board[x][y+1] + board[x+1][y];
+    	}else if(x==N-1) {	//x = arr.length-1일 때 'ㅗ'
+    		sum += board[x][y-1] + board[x][y+1] + board[x-1][y];
+    	}else if(y==0) {	//y = 0일 때 'ㅏ'
+    		sum += board[x-1][y] + board[x+1][y] + board[x][y+1];
+    	}else if(y==M-1) {	//y = arr.length-1 'ㅓ'
+    		sum += board[x-1][y] + board[x+1][y] + board[x][y-1];
+    	}else {		// 그 이외에 'ㅜ', 'ㅗ', 'ㅓ', 'ㅏ'
+    		sum +=  board[x][y-1] + board[x][y+1] + board[x+1][y];
+    		sum = Math.max(sum, board[x][y-1] + board[x][y+1] + board[x-1][y] + board[x][y]);
+    		sum = Math.max(sum, board[x-1][y] + board[x+1][y] + board[x][y+1] + board[x][y]);
+    		sum = Math.max(sum, board[x-1][y] + board[x+1][y] + board[x][y-1] + board[x][y]);
+    	}
+    	result = Math.max(result, sum);	//최대값 비교
+    }
+}
