@@ -1,0 +1,28 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//우선순위 큐 선언
+	static PriorityQueue<Integer> queue = new PriorityQueue<Integer>(Collections.reverseOrder());
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWrtier
+        //-----입력값 저장 및 명령어 실행-----
+        int size = Integer.parseInt(br.readLine());
+        for(int i=0;i<size;i++) {
+        	int command = Integer.parseInt(br.readLine());
+        	if(command == 0) {	//입력 '0'인 경우 poll()
+        		if(queue.size()==0)
+        			bw.write("0\n");
+        		else
+        			bw.write(queue.poll() + "\n");
+        	}else	//자연수일 경우 push()
+        		queue.add(command);
+        	
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
