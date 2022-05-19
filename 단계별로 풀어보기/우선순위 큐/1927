@@ -1,0 +1,26 @@
+import java.io.*;
+public class Main{
+	//우선순위 큐(default 조건 오름차순)
+    static PriorityQueue<Integer> queue = new PriorityQueue<Integer>();
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //출력값 출력하는 BufferedWriter
+        //-------입력값 저장 및 명령어 실행--------
+        int N = Integer.parseInt(br.readLine());
+        for(int i=0;i<N;i++) {
+        	int command = Integer.parseInt(br.readLine());
+        	if(command==0) {	//입력값 '0'일 때
+        		if(queue.size()==0)	//큐에 아무것도 없을 때
+        			bw.write("0\n");
+        		else	//큐에 값이 존재할 때
+        			bw.write(queue.poll() + "\n");
+        	}else	//입력값이 자연수일 경우
+        		queue.add(command);
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
