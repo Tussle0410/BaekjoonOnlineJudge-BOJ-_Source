@@ -1,0 +1,48 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-----입력값 저장 및 함수 실행------
+    	StringTokenizer st;
+        int T = Integer.parseInt(br.readLine());
+        for(int i=0;i<T;i++) {
+        	st = new StringTokenizer(br.readLine()," ");
+        	int M = Integer.parseInt(st.nextToken());
+        	int N = Integer.parseInt(st.nextToken());
+        	int x = Integer.parseInt(st.nextToken());
+        	int y = Integer.parseInt(st.nextToken());
+        	bw.write(kayingYear(M, N, x, y) + "\n");	//함수 결과 저장
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //카잉 달력 현재 연도 구하는 함수
+    public static int kayingYear(int M,int N,int x,int y) {
+    	/*
+        처음 x의 값을 고정하기 위해 x의 값만큼 +1을 진행해야 하므로
+        기본 연도의 값을 x로 설정하였습니다.
+        */
+    	int result = x;
+    	int tempY = x%N==0 ? N : x%N;	//삼항연산으로 처음 y의 값 구하기
+    	if(tempY == y)	//x를 고정한 첫 x,y값이 입력값과 동일한 경우
+    		return result;
+    	int check = tempY;	//x를 고정한 첫번째 y값 저장
+        //--------입력값 y가 존재하는지 확인-------
+    	while(true) {
+    		tempY = (tempY+M)%N;
+    		if(tempY==0)
+    			tempY=N;
+    		result += M;
+    		if(tempY == y)		//존재할 때
+    			break;
+    		if(tempY==check)	//존재하지 않을 때(첫번째 y값으로 돌아왔을 때)
+    			return -1;
+    	}
+    	return result;
+    }
+}
