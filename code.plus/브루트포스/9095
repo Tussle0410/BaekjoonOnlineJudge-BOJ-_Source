@@ -1,0 +1,33 @@
+import java.io.*;
+public class Main{
+	public static int count = 0;	//경우의 수 개수
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //------입력값 저장 및 함수 실행------
+    	int N = Integer.parseInt(br.readLine());
+    	for(int i=0;i<N;i++) {
+    		int num = Integer.parseInt(br.readLine());
+    		addingCount(num);
+    		bw.write(count + "\n");		//결과 저장
+    		count = 0;
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //------1, 2, 3 더하기로 만들 수 있는 경우의 수 구하는 함수------
+    public static void addingCount(int cur) {
+    	if(cur<=0) {		//현재 값이 음수일 때
+    		if(cur==0)		//현재 값이 '0' 일 때
+    			count++;
+    		return;
+    	}
+        //1, 2, 3의 경우의 수 재귀
+    	for(int i=1;i<=3;i++) {
+    		addingCount(cur-i);
+    	}
+    }
+}
