@@ -1,0 +1,32 @@
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	int N = Integer.parseInt(br.readLine());		//입력값
+    	int result = 0;			//결과값
+    	int maxValue = 1000000000;	//자릿수 기본값
+    	int i=10;		//자릿수
+    	boolean check  = false;		//입력값 자릿수 찾았는지 확인
+    	while(maxValue!=0) {
+        	//자릿수 감소
+    		i--;
+    		maxValue /= 10;	
+    		if(check) {		//자릿수 찾았을 때 9 × 10ⁿ 진행
+    			result += (maxValue*9)*i;
+    			continue;
+    		}
+    		if(N>=maxValue) {	//입력값 자릿수일 때 개수
+    			result += (N-maxValue+1)*i;
+    			check = true;
+    		}
+    	}
+        //------결과 저장 및 결과 출력-------
+    	bw.write(result + "\n");
+    	bw.flush();
+    	bw.close();
+    	br.close();
+    }
+}
