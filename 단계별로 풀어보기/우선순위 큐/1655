@@ -1,0 +1,45 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//Left(내림차순),Right(오름차순) 우선순위 큐 작성
+	private static PriorityQueue<Integer> rightQueue = new PriorityQueue<Integer>();
+	private static PriorityQueue<Integer> leftQueue = 
+    				new PriorityQueue<Integer>(Collections.reverseOrder());
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-------입력값 저장 및 큐의 저장-------
+    	int N = Integer.parseInt(br.readLine());
+    	for(int i=0;i<N;i++) {
+    		int num = Integer.parseInt(br.readLine());
+    		if(leftQueue.size()==0) 	//첫 숫자일 때
+    			leftQueue.add(num);
+       		//Left,Right 큐의 크기가 같을 때
+    		else if(leftQueue.size()==rightQueue.size()) {
+            		//입력값 RightQueue의 Peek보다 클 경우
+    			if(num>rightQueue.peek()) {		
+    				int temp = rightQueue.poll();
+    				rightQueue.add(num);
+    				leftQueue.add(temp);
+    			}else
+    				leftQueue.add(num);
+    		}else {
+            		//입력값 LeftQueue의 Peek보다 작을 경우
+    			if(num<leftQueue.peek()) {
+    				int temp = leftQueue.poll();
+    				leftQueue.add(num);
+    				rightQueue.add(temp);
+    			}else
+    				rightQueue.add(num);
+    		}
+    		bw.write(leftQueue.peek() + "\n");		//중간값 BufferedWriter에 저장
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    	
+    }
+}
+
