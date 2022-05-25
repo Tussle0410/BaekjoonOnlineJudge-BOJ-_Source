@@ -1,0 +1,49 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int[] num;		//수열에 들어가는 숫자 배열
+	public static int[] result;		//수열 값 저장 배열
+	public static boolean[] check;	//num에 숫자 수열에 들어갔는지 확인 배열
+    public static StringBuilder sb = new StringBuilder();
+    	public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-----입력값 저장 및 배열 초기화---------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	int N = Integer.parseInt(st.nextToken());
+    	int M = Integer.parseInt(st.nextToken());
+    	num = new int[N];
+    	check = new boolean[N];
+    	result = new int[M];
+    	st = new StringTokenizer(br.readLine()," ");
+    	for(int i=0;i<N;i++) 
+    		num[i] = Integer.parseInt(st.nextToken());
+    	
+    	Arrays.sort(num);		//num배열 오름차순 정렬
+    	NandM(N,M,0);		// NandM 함수실행
+    	bw.write(sb.toString() + "\n");		//결과 BufferedWriter에 저장
+    	bw.flush();			//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //---------수열 경우의 수 구하는 재귀함수--------
+    public static void NandM(int N, int M, int depth) {
+    	if(M==depth) {		//수열 길이가 M일 때
+    		for(int i=0;i<M;i++)
+    			sb.append(result[i] + " ");
+    		sb.append("\n");
+    		return;
+    	}
+        //-----수열에 값 추가------
+    	for(int i=0;i<N;i++) {
+    		if(!check[i]) {
+        		check[i] = true;
+        		result[depth] = num[i];
+        		NandM(N, M, depth+1);
+        		check[i] = false;
+    		}
+    	}
+    }
+}
