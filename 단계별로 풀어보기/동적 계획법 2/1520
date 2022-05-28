@@ -1,0 +1,54 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int[][] board;	//지도 값 저장 배열
+	public static int[][] DP = new int[501][501];	//도착지점 갈 경우의 수 저장 배열
+	public static int[] dx = {-1,1,0,0};		//상, 하, 좌, 우 x좌표 변경
+	public static int[] dy = {0,0,-1,1};		//상, 하, 좌, 우 y좌표 변경
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-----------입력값 저장 및 배열 초기화---------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	int M = Integer.parseInt(st.nextToken());
+    	int N = Integer.parseInt(st.nextToken());
+    	board = new int[M][N];
+    	for(int i=0;i<M;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		for(int j=0;j<N;j++) {
+    			board[i][j] = Integer.parseInt(st.nextToken());
+    			DP[i][j] = -1;		//DP -1로 초기화
+    		}
+    	}
+    	downhill(M, N, 0, 0);		//함수 실행
+    	bw.write((DP[0][0]) + "\n");		//결과 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //(0,0) -> (M-1,N-1) 경우의 수 구하는 함수
+    public static int downhill(int M, int N, int curX, int curY) {
+    	if(curX==M-1 && curY==N-1) {	//목적지 도착했을 때
+    		return 1;
+    	}
+    	if(DP[curX][curY]!=-1)		//DP의 값이 -1이 아닌경우(탐색 했을 경우)
+    		return DP[curX][curY];
+    	
+        //탐색 안했을 경우
+    	int height = board[curX][curY];
+    	DP[curX][curY] = 0;		//해당 DP값 0으로 초기화
+    	for(int i=0;i<4;i++) {
+    		int tempX = curX + dx[i];	//x값 상, 하, 좌, 우 이동
+    		int tempY = curY + dy[i];	//y값 상, 하, 좌, 우 이동
+    		if(tempX<0 || tempY<0 || tempX>=M || tempY>=N|| height<=board[tempX][tempY]) {
+    			continue;		//배열의 값이 아니거나 조건에 불만족 할 경우
+    		}else {
+            		//조건에 만족한 경우 DFS 탐색
+    			DP[curX][curY] += downhill(M, N, tempX, tempY);
+    		}
+    	}
+    	return DP[curX][curY];
+    }
+}
