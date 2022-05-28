@@ -1,0 +1,45 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int[] num;		//숫자 저장 배열
+	public static int[] result;		//수열 저장 배열
+	public static StringBuilder sb = new StringBuilder();	//결과
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferdWriter
+        //-------입력값 처리 및 배열 초기화---------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	int N = Integer.parseInt(st.nextToken());
+    	int M = Integer.parseInt(st.nextToken());
+    	num = new int[N+1];
+    	result = new int[M+1];
+    	st = new StringTokenizer(br.readLine()," ");
+    	for(int i=1;i<=N;i++) {
+    		num[i] = Integer.parseInt(st.nextToken());
+    	}
+    	Arrays.sort(num);		//오름차순 정렬
+    	NandM(N, M, 1);		//함수 실행
+    	bw.write(sb.toString() + "\n");		//결과 BufferedWriter 저장
+    	bw.flush();			//결과 출력
+    	bw.close();
+    	br.close();
+    	
+    }
+    //-------비내림차순 수열 경우의 수 구하는 함수-------
+    public static void NandM(int N, int M, int depth) {
+    	if(depth==M+1) {		//수열이 완성되었을 때
+    		for(int i=1;i<=M;i++)
+    			sb.append(result[i] + " ");
+    		sb.append("\n");
+    		return;
+    	}
+    	for(int i=1;i<=N;i++) {		//수열의 값 추가
+    		if(result[depth-1]<=num[i]) {	//비내림차순인지 확인
+    			result[depth] = num[i];
+    			NandM(N, M, depth+1);
+    		}
+    	}
+    }
+}
