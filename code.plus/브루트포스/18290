@@ -1,0 +1,63 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int[][] num;	//격자판 값 저장 배열
+	public static boolean[][] check;		//선택 가능한지 확인 함수
+	public static int[] dx = {-1,1,0,0};	//상, 하, 좌, 우 x값
+	public static int[] dy = {0,0,-1,1};	//상, 하, 좌, 우 y값
+	public static int N,M,K, maxNum = Integer.MIN_VALUE;
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----------입력값 저장 및 배열 초기화--------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N = Integer.parseInt(st.nextToken());
+    	M = Integer.parseInt(st.nextToken());
+    	K = Integer.parseInt(st.nextToken());
+    	num = new int[N][M];
+    	check = new boolean[N][M];
+    	for(int i=0;i<N;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		for(int j=0;j<M;j++) {
+    			num[i][j] = Integer.parseInt(st.nextToken());
+    		}
+    	}
+    	NMandK(0,0);	//함수 실행
+    	bw.write(maxNum + "\n");	//최대값 BufferedWriter 저장
+    	bw.flush();			//결과 저장
+    	bw.close();
+    	br.close();
+    }
+    //------재귀를 통해 모든 경우의 수의 최대값 구하는 함수--------
+    public static void NMandK(int depth, int sum) {
+    	if(depth==K) {		//모두 선택되었을 때
+    		maxNum = Math.max(maxNum, sum);
+    		return;
+    	}
+    	for(int i=0;i<N;i++) {
+    		for(int j=0;j<M;j++) {
+    			if(!check[i][j]) {	//선택되지 않았을 때
+    	 			if(adjacent(i, j)) {	//인접한 선택된 값 없을 때
+        				check[i][j] = true;
+        				NMandK(depth+1, sum + num[i][j]);	//재귀
+        				check[i][j] = false;
+        			}
+    			}
+    		}
+    	}
+    }
+    //--------기준값에 인접한 선택되었던 값 있는지 확인하는 함수--------
+    public static boolean adjacent(int x, int y) {
+    	for(int i=0;i<4;i++) {
+    		int tempX = x + dx[i];	//상, 하, 좌, 우 x값 변경
+    		int tempY = y + dy[i];	//상, 하, 좌, 우 y값 변경
+    		if(tempX>=0 && tempX<N && tempY>=0 && tempY<M)
+    			if(check[tempX][tempY])
+    				return false;		//선택된 값 인접할 때
+    	}
+    	return true;		//인접한 선택된 값 없을 때
+    }
+
+}
