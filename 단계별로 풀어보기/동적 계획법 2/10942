@@ -1,0 +1,54 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int[] num;		//숫자 저장 배열
+	public static int[][] DP;		//팰린드롭 확인 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----------입력값 저장 및 배열 초기화--------
+    	int N = Integer.parseInt(br.readLine());
+    	num = new int[N+1];
+    	DP = new int[N+1][N+1];
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	for(int i=1;i<=N;i++) {
+    		Arrays.fill(DP[i], -1);		//DP -1로 초기화
+    		num[i] = Integer.parseInt(st.nextToken());
+    	}
+    	int M = Integer.parseInt(br.readLine());
+    	for(int i=0;i<M;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int S = Integer.parseInt(st.nextToken());
+    		int E = Integer.parseInt(st.nextToken());
+    		int median = (S + E)/2;		//중간값
+    		palindrome(S,E,median);		//함수 실행
+    		bw.write(DP[S][E] + "\n");	//DP[S][E] 결과 BufferedWriter 저장
+    	}
+    	bw.flush();		//결과 저장
+    	bw.close();
+    	br.close();
+    }
+    //--------팰린드롭 확인 함수-------
+    public static int palindrome(int curS, int curE, int median) {
+    	if(curS==median || curE==median) {		//중간값까지 범위 감소하였을 때
+    		if(num[curS]==num[curE]) {
+    			DP[curS][curE] = 1;		//팰린드롭 맞음
+    		}else
+    			DP[curS][curE] = 0;		//팰린드롭 아님
+    		return DP[curS][curE];
+    	}
+    	if(DP[curS][curE]!=-1)		//DP[][] 탐색 했을 때
+    		return DP[curS][curE];
+    	
+    	if(num[curS] == num[curE]) {	//해당 범위 팰린드롭 맞을 때
+        	// 범위 감소 후 탐색
+    		DP[curS][curE] = palindrome(curS+1, curE-1, median);
+    	}else
+    		DP[curS][curE] = 0;		//팰린드롭 아님
+    	
+    	return DP[curS][curE];		//결과 반환
+    	
+    }
+}
