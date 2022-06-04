@@ -1,0 +1,54 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int[][] ability;		//i,j의 팀이 되었을 때 능력치의 합 저장 배열
+	public static boolean[] check;		//인덱스의 인원 링크팀인지 확인 배열
+	public static int N,minValue = Integer.MAX_VALUE;	//인원, 결과
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //---------입력값 저장 및 배열 초기화-----------
+    	StringTokenizer st;
+    	N = Integer.parseInt(br.readLine());
+    	ability = new int[N][N];
+    	check = new boolean[N];
+    	for(int i=0;i<N;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		for(int j=0;j<N;j++) {
+    			ability[i][j] = Integer.parseInt(st.nextToken());
+    		}
+    	}
+        linkAndStart(0);		//함수 실행
+    	bw.write(minValue + "\n");		//최소값 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //--------능력치 차 최소값 구하는 함수--------
+    public static void linkAndStart(int depth) {
+    	if(depth==N) {		//팀 나누기 완료시
+    		int tempLink = 0;	//링크팀 능력치 합
+    		int tempStart = 0;	//스타트팀 능력치 합
+    		for(int i=0;i<N;i++) {
+    			for(int j=i+1;j<N;j++) {
+    				if(check[i]!=check[j])	//i와j가 서로 다른 팀일 때
+    					continue;
+    				if(check[i])		//i와 j가 링크팀일 때
+    					tempLink += ability[i][j] + ability[j][i];
+    				else		//i와 j가 스타트팀일 때
+    					tempStart += ability[i][j] + ability[j][i];
+    			}
+    		}
+            //능력치 최소값 비교
+    		minValue = Math.min(minValue, Math.abs(tempLink - tempStart));
+    		return;
+    	}
+    	check[depth] = true;
+    	linkAndStart(depth+1);	//해당 인원 링크팀일 때
+    	check[depth] = false;
+    	linkAndStart(depth+1);	//해당 인원 스타트팀일 때
+    			
+    	}
+    }
