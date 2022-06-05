@@ -1,0 +1,41 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int[][] computer;	//컴퓨터 인접 저장 배열
+	public static boolean[] check;	//컴퓨터 탐색했는지 확인 배열
+	public static int N,M,count = 0;
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //--------입력값 저장 및 배열 초기화---------
+    	StringTokenizer st;
+    	N = Integer.parseInt(br.readLine());
+    	M = Integer.parseInt(br.readLine());
+    	computer = new int[N+1][N+1];
+    	check = new boolean[N+1];
+    	for(int i=0;i<M;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int s = Integer.parseInt(st.nextToken());
+    		int e = Integer.parseInt(st.nextToken());
+    		computer[s][e] = 1;
+    		computer[e][s] = 1;
+    	}
+    	dfs(1);		//깊이 우선 탐색 함수 실행
+    	bw.write(count-1 + "\n");	//감염된 컴퓨터 개수 BufferedWriter 저장
+    	bw.flush();			//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //------깊이 우선 탐색으로 감염된 컴퓨터 구하는 함수-------
+    public static void dfs(int cur) {
+    	check[cur] = true;		//탐색 완료
+    	count++;		// 감염된 컴퓨터 개수 증가
+    	for(int i=1;i<=N;i++) {
+    		if(!check[i] && computer[cur][i]==1) {	//탐색하지 않았고 인접하면
+    			dfs(i);
+    		}
+    	}
+    }
+}
