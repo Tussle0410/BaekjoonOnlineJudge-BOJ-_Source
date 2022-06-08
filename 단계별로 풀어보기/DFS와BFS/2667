@@ -1,0 +1,64 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int[][] map;	//지도 내 집의 유무 저장 배열
+	public static int[] dx = {-1, 1, 0, 0};	//상,하,좌,우 x값 변경 배열
+	public static int[] dy = {0, 0, -1, 1};	//상,하,좌,우 y값 변경 배열
+	public static List<Integer> result = new ArrayList<Integer>();	//단지 내 집의 개수 저장
+	public static boolean[][] check;	// 지도 내 좌표 탐색했는지 확인 배열
+	public static int N;
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----------입력값 저장 및 배열 초기화-------
+    	N = Integer.parseInt(br.readLine());
+    	int index = 0;
+    	map = new int[N][N];
+    	check = new boolean[N][N];
+    	for(int i=0;i<N;i++) {
+    		String temp = br.readLine();
+    		for(int j=0;j<N;j++) {
+    			map[i][j] = Character.getNumericValue(temp.charAt(j));
+    		}
+    	}
+        //-----지도 각 좌표를 기준으로 DFS탐색 함수 실행------
+    	for(int i=0;i<N;i++) {
+    		for(int j=0;j<N;j++) {
+    			if(!check[i][j]) {
+      				check[i][j] = true;	//해당 좌표 탐색 완료
+    				if(map[i][j]==1) {	//지도 내 단지 발견
+    					result.add(0);
+    					dfs(i,j,index);	//함수 실행
+    					index++;
+    				}
+    			}
+    		}
+    	}
+    	Collections.sort(result);	//단지 내 집의 수 오름차순 정렬
+    	bw.write(result.size() + "\n");	//단지 개수 BufferedWriter 저장
+    	for(int i=0;i<result.size();i++) {
+    		bw.write(result.get(i) + "\n");	//단지별 집의 개수 BufferedWriter 저장
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    	
+    }
+    //--------DFS를 통한 단지 내 집의 개수 탐색-----
+    public static void dfs(int x, int y,int index) {
+    	result.set(index, result.get(index)+1);		//단지 내 집의 개수 추가
+    	for(int i=0;i<4;i++) {
+    		int tempX = x + dx[i];		//상,하,좌,우 X값 변경
+    		int tempY = y + dy[i];		//상,하,좌,우 Y값 변경
+    		if(tempX>=0 && tempX<N && tempY>=0 && tempY<N && !check[tempX][tempY]) {
+    			check[tempX][tempY] = true;
+    			if(map[tempX][tempY]==1) {
+                	//지도 내에 있으며 상,하,좌,우에 인접한 집이 있을경우
+    				dfs(tempX,tempY,index);		//깊이 탐색
+    			}
+    		}
+    	}
+    }
+}
