@@ -1,0 +1,87 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//-------좌표 저장할 생성자--------
+	public static class coordinate{	
+		int x,y;
+		public coordinate(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+		public int getX() {
+			return x;
+		}
+		public void setX(int x) {
+			this.x = x;
+		}
+		public int getY() {
+			return y;
+		}
+		public void setY(int y) {
+			this.y = y;
+		}
+	}
+	public static int N,M;
+	public static int[][] maze;		//미로 이동유무 저장 배열
+	public static boolean[][] check;	//미로 탐색 확인 배열
+	public static int[] dx = {-1, 1, 0, 0};		//상,하,좌,우 X값 변경
+	public static int[] dy = {0, 0, -1, 1};		//상,하,좌,우 Y값 변경
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //--------입력값 저장 및 배열 초기화----------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N = Integer.parseInt(st.nextToken());
+    	M = Integer.parseInt(st.nextToken());
+    	maze = new int[N][M];
+    	check = new boolean[N][M];
+    	for(int i=0;i<N;i++) {
+    		String temp = br.readLine();
+    		for(int j=0;j<M;j++) {
+    			maze[i][j] = Character.getNumericValue(temp.charAt(j));
+    		}
+    	}
+    	int result = bfs();		//bfs함수 실행 및 범위 탐색 횟수 저장
+    	bw.write(result + " ");		//탐색 횟수 BufferedWriter 저장
+    	bw.flush();			//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //-------BFS를 이용한 목적지 이동 거리 구하는 함수--------
+    public static int bfs() {
+    	int count = 0;		//이동 거리
+    	Queue<coordinate> queue = new LinkedList<coordinate>();	//탐색 기준 지점 저장 큐
+    	check[0][0] = true;	
+    	queue.add(new coordinate(0,0));		//(0,0) 지점 시작
+    	boolean arrive = false;		//목적지 도착여부
+    	while(!queue.isEmpty()) {
+    		count++;		//이동 거리 + 1
+    		int size = queue.size();
+    		for(int i=0;i<size;i++) {		//현재 범위 탐색 가능한 기준 모두 탐색
+        		coordinate temp = queue.poll();
+        		int x = temp.getX();
+        		int y = temp.getY();
+        		if(x == N-1 && y==M-1) {	//목적지 도착
+        			arrive = true;
+        			break;
+        		}
+                    //상,하,좌,우으로 범위 탐색
+        		for(int j=0;j<4;j++) {
+        			int tempX = x + dx[j];	//상,하,좌,우 X값 변경
+        			int tempY = y + dy[j];	//상,하,좌,우 Y값 변경
+        			if(tempX>=0 && tempX<N && tempY>=0 && tempY<M && maze[tempX][tempY]==1) {
+        				if(!check[tempX][tempY]) {
+        					check[tempX][tempY] = true;
+        					queue.add(new coordinate(tempX, tempY));
+        				}
+        			}
+        		}
+    		}
+    		if(arrive)		//목적지 도착시
+    			break;
+    	}
+    	return count;
+    }
+}
