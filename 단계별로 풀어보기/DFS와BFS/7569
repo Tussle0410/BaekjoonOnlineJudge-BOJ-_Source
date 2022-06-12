@@ -1,0 +1,118 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//좌표 생성자
+	public static class coordinate{
+		int x, y,z;
+		public coordinate(int x, int y, int z) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+		public int getX() {
+			return x;
+		}
+		public int getY() {
+			return y;
+		}
+		public int getZ() {
+			return z;
+		}
+	}
+	public static int N,M,H;
+	public static int[][][] box;	//창고 토마토 상태 저장하는 3차원 배열
+	public static boolean[][][] check;		//창고 지점 탐색하였는지 확인 배열
+	public static int[] dx = {-1, 1, 0, 0, 0, 0};	//상,하,좌,우,위,아래 x변경값
+	public static int[] dy = {0, 0, -1, 1, 0, 0};	//상,하,좌,우,위,아래 y변경값
+	public static int[] dz = {0, 0, 0, 0, 1, -1};	//상,하,좌,우,위,아래 z변경값
+    	//BFS에 사용될 큐
+	public static Queue<coordinate> queue = new LinkedList<coordinate>();
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----------입력값 저장 및 배열 초기화------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N = Integer.parseInt(st.nextToken());
+    	M = Integer.parseInt(st.nextToken());
+    	H = Integer.parseInt(st.nextToken());
+    	box = new int[M][N][H];
+    	check = new boolean[M][N][H];
+    	for(int i=0;i<H;i++) {
+    		for(int j=0;j<M;j++) {
+        		st = new StringTokenizer(br.readLine()," ");
+        		for(int s=0;s<N;s++) {
+        			int num = Integer.parseInt(st.nextToken());
+        			if(num ==-1) {
+                    		/*
+                    		입력값이 -1일 때 탐색하지 못하는 지점으로
+                    		check를 true로 변경해주었으며
+                    		마지막에 창고에 모든 토마토가 익었는지 확인하기 때문에
+                   		값을 1로 저장하도록 하였습니다.
+                    		*/
+        				check[j][s][i] = true;
+        				num = 1;
+        			}else if(num==1) {
+        				queue.add(new coordinate(j, s, i));
+        			}
+        			box[j][s][i] = num;
+        		}
+    		}
+    	}
+    	int count = bfs();		//BFS 탐색 실행
+    	if(isFull()) {		//모든 토마토가 익었을 때
+        	bw.write(count + "\n");		//최소 일짜 BufferedWriter 저장
+    	}else		//모두 익지 않았을 때
+    		bw.write("-1");		//-1을 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //---------BFS로 창고 탐색하는 함수------
+    public static int bfs() {
+    	int count = -1;
+        /*
+        count를 -1로 초기화한 이유는
+        창고의 처음 토마토는 하루가 지나서 익은 것이 아닌
+        처음부터 익어져 있기 때문에
+        첫 날의 탐색은 넘어가고 다음부터 +1을 하였습니다.
+        */
+    	while(!queue.isEmpty()) {
+    		int size = queue.size();
+    		for(int i=0;i<size;i++) {
+    			coordinate temp = queue.poll();
+    			int x = temp.getX();
+    			int y = temp.getY();
+    			int z = temp.getZ();
+    			check[x][y][z] = true;
+    			for(int j=0;j<6;j++) {
+    				int tempX = x + dx[j];	//상,하,좌,우,위,아래 X값 변경
+    				int tempY = y + dy[j];	//상,하,좌,우,위,아래 Y값 변경
+    				int tempZ = z + dz[j];	//상,하,좌,우,위,아래 Z값 변경
+    				if(tempX>=0 && tempX<M && tempY>=0 && tempY<N && tempZ>=0 && tempZ<H) {
+    					if(!check[tempX][tempY][tempZ] && box[tempX][tempY][tempZ]==0) {
+                        			//상,하,좌,우,위,아래에 익지않은 토마토 인접시
+    						box[tempX][tempY][tempZ] = 1;
+    						queue.add(new coordinate(tempX, tempY,tempZ));
+    					}
+    				}
+    			}
+    		}
+    		count++;
+    	}
+    	return count;
+    }
+    //--------창고에 토마토 모두 익었는지 확인하는 함수----------
+    public static boolean isFull() {
+    	for(int i=0;i<H;i++) {
+        	for(int j=0;j<M;j++) {
+        		for(int s=0;s<N;s++) {
+        			if(box[j][s][i]!=1)
+        				return false;
+        		}
+        	}
+    	}
+    	return true;
+    }
+}
