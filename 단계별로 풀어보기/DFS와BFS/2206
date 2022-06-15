@@ -1,0 +1,102 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//큐에 사용할 생성자
+	public static class coordinate{
+		int x,y,distance;	//x좌표, y좌표, 이동 거리
+		boolean crack;		//벽을 부순지 확인
+		public int getX() {
+			return x;
+		}
+		public int getY() {
+			return y;
+		}
+		public int getDistance() {
+			return distance;
+		}
+		public boolean getCrack() {
+			return crack;
+		}
+		public coordinate(int x, int y, int distance,boolean crack) {
+			this.x = x;
+			this.y = y;
+			this.crack = crack;
+			this.distance = distance;
+		}
+	}
+	public static int N,M;
+	public static int[][] map;		//맵에 대한 정보 저장 배열
+	public static int[] dx = {-1, 1, 0, 0};	//상,하,좌,우 x 변경값
+	public static int[] dy = {0, 0, -1, 1};	//상,하,좌,우 y 변경값
+	public static boolean[][][] check;		//벽 부순 유무에 따른 맵 탐색 확인 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //--------입력값 저장 및 배열 초기화--------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N = Integer.parseInt(st.nextToken());
+    	M = Integer.parseInt(st.nextToken());
+    	map = new int[N][M];
+    	check = new boolean[N][M][2];
+    	for(int i=0;i<N;i++) {
+    		String str = br.readLine();
+    		for(int j=0;j<M;j++) {
+    			map[i][j] = Character.getNumericValue(str.charAt(j));
+    		}
+    	}
+    	int result = bfs();		//함수 실행 및 최단 거리 얻기
+    	bw.write(result + "\n");	//최단 거리 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //----------BFS 탐색을 통한 최단 거리 구하는 함수------
+    public static int bfs() {
+    	Queue<coordinate> queue = new LinkedList<coordinate>();	//BFS에 사용될 큐
+    	queue.add(new coordinate(0, 0, 1, false));
+    	check[0][0][0] = true;
+    	while(!queue.isEmpty()) {
+    		int size = queue.size();
+    		for(int i=0;i<size;i++) {
+    			coordinate temp = queue.poll();
+    			int x = temp.getX();
+    			int y = temp.getY();
+    			int distance = temp.getDistance();
+    			boolean crack = temp.getCrack();
+    			if(x==N-1 && y == M-1) {		//목적지 도착시 distance 반환
+    				return distance;
+    			}
+    			for(int j=0;j<4;j++) {
+    				int tempX = x + dx[j];	//상,하,좌,우 x값 변경
+    				int tempY = y + dy[j];	//상,하,좌,우 y값 변경
+    				if(tempX>=0 && tempX<N && tempY>=0 && tempY<M) {
+    					if(map[tempX][tempY]==0) {//벽을 부수지 않고 이동가능한 곳
+    						if(!crack && !check[tempX][tempY][0]) {
+    							queue.add(new coordinate(tempX, tempY,
+                                			distance+1, false));
+                                		//벽 부수지 않아서 check[][][0] 변경
+    							check[tempX][tempY][0] = true;	
+                                		//벽을 부수었을 때 이동가능한 곳
+    						}else if(crack && !check[tempX][tempY][1]) {	
+    							queue.add(new coordinate(tempX, tempY, 
+                                			distance+1, true));
+                                		//벽을 부셔서 check[][][1] 변경
+    							check[tempX][tempY][1] = true;	
+    						}
+    					}else {
+    						if(!crack) {	//벽을 부수지 않고 벽을 만났을 때
+    							queue.add(new coordinate(tempX, tempY, 
+                                			distance+1, true));
+                                	//벽으로 이동하는 것으로 벽을 부수었기 때문에 check[][][1] 변경
+    							check[tempX][tempY][1] = true;
+    						}
+    					}
+    				}
+    			}
+    		}
+    	}
+    	return -1;		//목적지 도착 못했을 경우
+    }
+}
