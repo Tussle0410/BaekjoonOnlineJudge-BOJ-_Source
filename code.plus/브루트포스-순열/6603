@@ -1,0 +1,60 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int K;
+	public static int[] num = new int[49];	//로또에 들어갈 S집합의 수 배열
+	public static int[] cur = new int[7];	//현재 순열의 값
+	public static boolean[] check;		//로또 숫자 사용 확인 배열
+	public static StringBuilder sb = new StringBuilder();
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----------입력값 처리 및 배열 초기화---------
+    	StringTokenizer st;
+    	while(true) {
+    		String str = br.readLine();
+    		if(str.equals("0"))		//'0' 입력시 반복 종료
+    			break;
+    		st = new StringTokenizer(str," ");
+    		K = Integer.parseInt(st.nextToken());
+    		check = new boolean[K];
+    		for(int i=0;i<K;i++) {
+    			num[i] = Integer.parseInt(st.nextToken());
+    		}
+    		for(int i=0;i<K;i++) {	//로또 첫 숫자 탐색
+    			check[i] = true;
+    			cur[0] = num[i];
+    			lotto(1,i);		//함수 실행
+    			check[i] = false;
+    		}
+    		sb.append("\n");
+    	}
+    	bw.write(sb.toString());		//모든 순열 BufferedWriter 저장
+    	bw.flush();			//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //--------로또 모든 경우의 오름차순 순열 구하는 함수---------
+    public static void lotto(int length, int min) {
+    	if(length==6) {		//로또 완성시
+    		for(int i=0;i<6;i++) {
+    			sb.append(cur[i] + " ");
+    		}
+    		sb.append("\n");
+    		return;
+    	}
+        //-------로또 각 숫자 탐색--------
+    	for(int i=min;i<K;i++) {
+    		if(!check[i]) {
+    			check[i] = true;
+    			cur[length] = num[i];
+    			lotto(length+1,i);		//재귀 발동!
+    			check[i] = false;
+    		}
+    	}
+    	return;
+    }
+}
+
