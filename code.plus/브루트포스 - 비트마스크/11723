@@ -1,0 +1,41 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int M;	//명령어 개수
+	public static boolean[] aggregate = new boolean[21];	//1~20 숫자 존재 여부
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	StringTokenizer st;
+    	M = Integer.parseInt(br.readLine());
+    	for(int i=0;i<M;i++) {		//명령어 M개만큼 받기
+    		st = new StringTokenizer(br.readLine()," ");
+    		String command = st.nextToken();
+    		if(command.equals("all"))		//"all"입력시
+    			Arrays.fill(aggregate, true);
+    		else if(command.equals("empty")) 	//"empty"입력시
+				Arrays.fill(aggregate, false);
+    		else {
+        			int value = Integer.parseInt(st.nextToken());
+        			if(command.equals("add"))	//"add x"입력시
+        				aggregate[value] = true;
+        			else if(command.equals("remove"))	//"remove x"입력시
+        				aggregate[value] = false;
+        			else if(command.equals("check")) {	//"check"입력시
+        				if(aggregate[value])
+        					bw.write("1\n");
+        				else
+        					bw.write("0\n");
+        			}else		//"toggle"입력시
+        				aggregate[value] = !aggregate[value];
+        			}
+    		
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+}
+
