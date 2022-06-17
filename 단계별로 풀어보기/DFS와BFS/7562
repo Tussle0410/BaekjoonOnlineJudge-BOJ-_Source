@@ -1,0 +1,80 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//------좌표 및 거리를 저장하는 생성자-------
+	public static class coordinate{
+		int x,y,distance;
+		public coordinate(int x, int y, int distance) {
+			this.x = x;
+			this.y = y;
+			this.distance = distance;
+		}
+
+		public int getX() {
+			return x;
+		}
+
+		public int getY() {
+			return y;
+		}
+
+		public int getDistance() {
+			return distance;
+		}
+
+	}
+	public static int[] dx = {-1, -2, -2, -1, 1, 2, 2, 1 };	//나이트 이동 X 변경값
+	public static int[] dy = {-2, -1, 1, 2, -2, -1, 1, 2 };	//나이트 이동 Y 변경값
+	public static boolean[][] board;	//체스판
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //---------입력값 저장 및 배열 초기화---------
+    	StringTokenizer st;
+    	int N = Integer.parseInt(br.readLine());
+    	for(int i=0;i<N;i++) {
+    		int I = Integer.parseInt(br.readLine());
+    		board = new boolean[I][I];
+    		
+    		st = new StringTokenizer(br.readLine()," ");
+    		int startX = Integer.parseInt(st.nextToken());
+    		int startY = Integer.parseInt(st.nextToken());
+    		
+    		st = new StringTokenizer(br.readLine()," ");
+    		int endX = Integer.parseInt(st.nextToken());
+    		int endY = Integer.parseInt(st.nextToken());
+    		
+    		int result = bfs(startX, startY, endX, endY, I);
+    		bw.write(result + "\n");		// 최소 이동 횟수 BufferedWriter 저장
+    	}
+    	bw.flush();		//결과 저장
+    	bw.close();
+    	br.close();
+    }
+    //------BFS로 나이트의 이동 탐색하여 최소 이동 횟수 구하는 함수-----
+    public static int bfs(int startX, int startY, int endX, int endY, int boardSize) {
+    	Queue<coordinate> queue = new LinkedList<coordinate>();
+    	queue.add(new coordinate(startX, startY, 0));	//출발 위치 큐에 저장
+    	while(!queue.isEmpty()) {
+    		coordinate temp = queue.poll();
+    		int x = temp.getX();
+    		int y = temp.getY();
+    		int distance = temp.getDistance();
+    		if(x==endX && y==endY)	//목적지 도착
+    			return distance;
+    		for(int i=0;i<8;i++) {
+    			int tempX = x + dx[i];
+    			int tempY = y + dy[i];
+    			if(tempX>=0 && tempX<boardSize && tempY>=0 && tempY<boardSize) {
+    				if(!board[tempX][tempY]) {	//해당 지역 탐색되지 않았을 때
+    					board[tempX][tempY] = true;
+    					queue.add(new coordinate(tempX, tempY, distance+1));
+    				}
+    			}
+    		}
+    	}
+    	return 0;
+    }
+}
