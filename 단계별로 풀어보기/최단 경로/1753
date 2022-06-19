@@ -1,0 +1,93 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//정점과 비용을 저장하는 생성자
+	public static class node{
+		int point, cost;
+		public node(int point, int cost) {
+			this.point = point;
+			this.cost = cost;
+		}
+		public int getPoint() {
+			return point;
+		}
+		public int getCost() {
+			return cost;
+		}
+		
+	}
+	public static int V,E, start;
+	public static int[] distance;		//최소 거리 저장 배열
+	public static ArrayList<ArrayList<node>> graph = new ArrayList<>();	//그래프 값
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-------입력값 저장, 배열 초기화, 리스트 초기화---------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	V = Integer.parseInt(st.nextToken());
+    	E = Integer.parseInt(st.nextToken());
+    	start = Integer.parseInt(br.readLine());
+    	distance = new int[V+1];
+    	for(int i=0;i<V+1;i++) {
+    		graph.add(new ArrayList<>());
+    	}
+    	for(int i=0;i<E;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int u = Integer.parseInt(st.nextToken());
+    		int v = Integer.parseInt(st.nextToken());
+    		int w = Integer.parseInt(st.nextToken());
+    		graph.get(u).add(new node(v,w));
+    	}
+    	for(int i=1;i<=V;i++) 
+    		distance[i] = Integer.MAX_VALUE;
+    	distance[start] = 0;
+    	shortestPath();		//BFS를 통한 최단 경로(다익스트라) 함수 실행
+    	for(int i = 1;i<=V;i++) {
+    		if(distance[i] == Integer.MAX_VALUE)	//도달하지 못하는 정점일 때
+    			bw.write("INF\n");
+    		else
+    			bw.write(distance[i] + "\n");	//도달한 정점의 최소 거리
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //-------BFS를 통해 최단 경로(다익스트라)을 구하는 함수---------
+    public static void shortestPath() {
+    	/*
+        우선순위 큐를 사용해서 현재 정점들에서 거리가 가장 적은 정점을
+        바로 poll()을 할 수 있도록 거리가 작은 순으로 Queue에 저장되도록
+        Comparator를 설정해주었습니다.
+        */
+    	PriorityQueue<node> queue = new PriorityQueue<node>(new Comparator<node>() {
+			@Override
+			public int compare(node o1, node o2) {
+				return o1.cost-o2.cost;
+			}
+		});
+    	queue.add(new node(start, 0));	//출발 정점 큐에 저장
+    	while(!queue.isEmpty()) {
+    		node temp = queue.poll();
+            /*
+            정점에 도착했을 때 최소 거리보다 크면
+            해당 정점에 간선 어디를 가도 최소 거리가 되지 않기 때문에
+            해당 탐색을 그대로 넘어갔습니다.
+            */
+    		if(distance[temp.point] < temp.cost)
+    			continue;
+            	//최소 거리보다 작을 때
+    		for(int i=0;i<graph.get(temp.point).size();i++) {
+    			node next = graph.get(temp.point).get(i);
+    			if(distance[next.point] > distance[temp.point] + next.cost) {
+    				distance[next.point] = distance[temp.point] + next.cost;
+    				queue.add(new node(next.point,distance[next.point]));
+    			}
+    		}
+    	}
+    	return;
+    }
+    
+}
+
