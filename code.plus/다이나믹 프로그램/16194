@@ -1,0 +1,47 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int N;		//카드 구매 개수
+	public static int[][] DP;		//메모이제이션
+	public static int[] cardCost;		//카드팩 비용 저장 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //---------입력값 저장 및 배열 초기화---------
+    	N = Integer.parseInt(br.readLine());
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	cardCost = new int[N+1];
+    	for(int i=1;i<=N;i++) {
+    		cardCost[i] = Integer.parseInt(st.nextToken());
+    	}
+    	DP = new int[N+1][N+1];
+        /*
+        (1, 1) ~ (1, 4)는 규칙을 적용하면 row나 col이 0이 되어
+        최소값을 저장할 때 0이 저장될 수 있습니다.
+        먼저 값을 구해서 저장한 뒤 함수를 실행하도록 하였습니다.
+        */
+    	for(int i=1;i<=N;i++) {
+    		DP[1][i] = cardCost[1] * i;
+    	}
+    	buyCard();		//함수 실행
+    	bw.write(DP[N][N] + "\n");		//DP[N][N] BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //------규칙을 통해 DP를 구성하는 함수--------
+    public static void buyCard() {
+    	for(int i=1;i<=N;i++) {
+    		for(int j=2;j<=N;j++) {
+    			if(j<=i) {		//row <= col 일 때
+    				DP[j][i] = Math.min(DP[j-1][i], cardCost[j] + DP[j][i-j]);
+    			}else {		//row > col일 때
+    				DP[j][i] = DP[j-1][i];
+    			}
+    		}
+    	}
+    	return; 	
+    }
+}
