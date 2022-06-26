@@ -1,0 +1,141 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//-------큐에 목적지와 가중치 생성자--------
+	public static class node{
+		int point, cost;
+		public node(int point, int cost) {
+			this.point = point;
+			this.cost = cost;
+		}
+
+		public int getPoint() {
+			return point;
+		}
+
+		public int getCost() {
+			return cost;
+		}
+	}
+	public static int T;
+	public static int[] goal,distance;		//목적지 후보, 최단 거리 저장 배열
+	public static ArrayList<Integer> result;	//목적지 확정 저장 배열
+	public static ArrayList<ArrayList<node>> graph = new ArrayList<>();	//그래프 값
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-----입력값 저장 및 그래프 초기화------
+    	StringTokenizer st;
+    	T = Integer.parseInt(br.readLine());
+    	for(int i=0;i<T;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int n = Integer.parseInt(st.nextToken());	//정점 개수
+    		int m = Integer.parseInt(st.nextToken());	//간선 개수
+    		int t = Integer.parseInt(st.nextToken());	//목적지 후보 개수
+    		
+    		for(int j=0;j<=n;j++) 		//그래프 초기화
+    			graph.add(new ArrayList<>());
+    		
+    		st = new StringTokenizer(br.readLine()," ");
+    		int s = Integer.parseInt(st.nextToken());	//시작 정점
+    		int g = Integer.parseInt(st.nextToken());	//지나는 정점 g
+    		int h = Integer.parseInt(st.nextToken());	//지나는 정점 h
+    		
+    		int crossingCost = 0;	// g와 h의 교차로 값 저장 변수
+    		for(int j=0;j<m;j++) {
+            	//그래프 값 저장
+    			st = new StringTokenizer(br.readLine()," ");
+    			int a = Integer.parseInt(st.nextToken());
+    			int b = Integer.parseInt(st.nextToken());
+    			int d = Integer.parseInt(st.nextToken());
+    			if((a==g || a==h) && (b==g || b==h))
+    				crossingCost = d;	//g와 h의 교차로 값 저장
+    			
+    			graph.get(a).add(new node(b,d));
+    			graph.get(b).add(new node(a,d));
+    		}
+    		//목적지 후보 배열 초기화
+    		goal = new int[t];
+    		for(int j=0;j<t;j++) 
+    			goal[j] = Integer.parseInt(br.readLine());
+    		
+    		distance = new int[n+1];
+    		result = new ArrayList<>();
+    		for(int j=0;j<t;j++) {
+    			int end = goal[j];		//목적지 후보 가져오기
+    			int res1 = unconfirmedGoal(s, end);	// 1 -> 목적지 후보 최단 경로
+    			
+                	//1 -> g -> h -> N 최단 경로
+    			int res2 = unconfirmedGoal(s, g) + crossingCost;
+    			res2 += unconfirmedGoal(h, end);
+    			
+    			if(res1 == res2) {
+    				result.add(end);
+    				continue;
+    			}
+    			
+                	//1 -> h -> g -> N 최단 경로
+    			int res3 = unconfirmedGoal(s, h) + crossingCost;
+    			res3 += unconfirmedGoal(g, end);
+    			
+    			if(res1 == res3)
+    				result.add(end);
+    		}
+    		
+    		Collections.sort(result);	//목적지 오름차순 정렬
+    		
+    		for(int j=0;j<result.size();j++) 
+    			bw.write(result.get(j) + " ");	//목적지 BufferedWriter 저장
+    		
+    		bw.newLine();
+    		result.clear();
+    		graph.clear();
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //다익스트라를 이용한 최단 경로 구하는 함수
+    public static int unconfirmedGoal(int start, int end) {
+    	PriorityQueue<node> queue = new PriorityQueue<node>(new Comparator<node>() {
+			@Override
+           		 /*
+        		우선순위 큐를 사용해서 현재 정점들에서 거리가 가장 적은 정점을
+        		바로 poll()을 할 수 있도록 거리가 작은 순으로 Queue에 저장되도록
+        		Comparator를 설정해주었습니다.
+        		*/
+			public int compare(node o1, node o2) {
+				return o1.cost - o2.cost;
+			}
+		});
+        //최단 거리 저장 배열 초기화
+	Arrays.fill(distance, Integer.MAX_VALUE);
+	distance[start] = 0;
+    	queue.add(new node(start, 0));
+    	while(!queue.isEmpty()) {
+    		node temp = queue.poll();
+    		int point = temp.getPoint();
+    		int cost = temp.getCost();
+    		
+            
+                /*
+            	정점에 도착했을 때 최소 거리보다 크면
+            	해당 정점에 간선 어디를 가도 최소 거리가 되지 않기 때문에
+            	해당 탐색을 그대로 넘어갔습니다.
+            	*/
+    		if(distance[point] < cost)
+    			continue;
+    		
+    		for(node value : graph.get(point)) {
+    			if(distance[value.getPoint()] > cost + value.getCost()) {
+                		//더 작은 경로 찾았을 때
+    				distance[value.getPoint()] = cost + value.getCost();
+    				queue.add(new node(value.getPoint(),distance[value.getPoint()]));
+    			}
+    		}
+    	}
+    	return distance[end];	
+    }
+}
