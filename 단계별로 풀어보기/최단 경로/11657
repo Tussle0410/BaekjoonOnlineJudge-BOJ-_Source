@@ -1,0 +1,79 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//큐에 사용할 생성자
+	public static class city{
+		int point, cost;
+		public city(int point, int cost) {
+			this.point = point;
+			this.cost = cost;
+		}
+		public int getPoint() {
+			return point;
+		}
+
+		public int getCost() {
+			return cost;
+		}
+	}
+	public static int N,M;	//정점의 수, 간선의 수
+	public static ArrayList<ArrayList<city>> graph = new ArrayList<>();	//그래프 값
+	public static long[] distance;	//최단 경로 저장 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----입력값 저장 및 그래프 초기화---------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N = Integer.parseInt(st.nextToken());
+    	M = Integer.parseInt(st.nextToken());
+    	distance = new long[N+1];
+    	
+    	for(int i=0;i<N+1;i++)
+    		graph.add(new ArrayList<>());
+    	
+    	for(int i=0;i<M;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int A = Integer.parseInt(st.nextToken());
+    		int B = Integer.parseInt(st.nextToken());
+    		int C = Integer.parseInt(st.nextToken());
+    		graph.get(A).add(new city(B,C));
+    	}
+    	if(shortestPath(1))		//음수 싸이클 존재 시
+    		bw.write("-1\n");
+    	else {		//음수 싸이클 존재하지 않을 때
+    		for(int i=2;i<=N;i++) {
+    			if(distance[i]==Integer.MAX_VALUE) 	//해당 정점 도착 못할 시
+    				bw.write("-1\n");
+    			else		//해당 정점 도착 시
+    		    	bw.write(distance[i] + "\n");
+    		}
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //벨만 - 포드 알고리즘을 반복문으로 구현한 함수
+    //반환 값 True이면 음수 싸이클 존재, False이면 음수 싸이클 없음
+    public static boolean shortestPath(int start) {
+    	//최단 경로 초기화
+    	Arrays.fill(distance, Integer.MAX_VALUE);
+    	distance[start] = 0;
+    	for(int i=0;i<N;i++) {	//음수 사이클 확인하기 위해 N번 반복
+        	for(int j=1;j<=N;j++) {
+        		for(city value : graph.get(j)) {
+        			if(distance[j] == Integer.MAX_VALUE)	//해당 정점 아직 도착 안햇을 때
+        				break;
+        			if(distance[value.getPoint()] > distance[j] + value.getCost()) {
+        				distance[value.getPoint()] = distance[j] + value.getCost();
+        				if(i==N-1)		//N-1번일 때 최단 경로가 변경되었을 때
+        					return true;		//음수 싸이클 존재 반환
+        			}
+        		}
+        	}
+    	}
+    	return false;		//음수 싸이클 없음 반환
+    }
+}
+
