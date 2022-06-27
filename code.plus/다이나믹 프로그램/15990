@@ -1,0 +1,35 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int T,DIV = 1000000009;	//나머지 구할 때 나누어야 할 값
+	public static long[][] DP = new long[100001][3];	//메모이제이션
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	T = Integer.parseInt(br.readLine());
+    	init();		//초기화 함수 실행
+    	
+    	for(int i=4;i<100001;i++) {	4~100000까지 경우의 수 구 하기
+    		DP[i][0] = (DP[i-1][1] + DP[i-1][2])%DIV;
+    		DP[i][1] = (DP[i-2][0] + DP[i-2][2])%DIV;
+    		DP[i][2] = (DP[i-3][0] + DP[i-3][1])%DIV;
+    	}
+    	for(int i=0;i<T;i++) {	//입력값에 해당하는 DP값 찾아서 더하기
+    		int n = Integer.parseInt(br.readLine());
+    		long result = (DP[n][0] + DP[n][1] + DP[n][2])%DIV;
+    		bw.write(result + "\n");	//경우의 수 BufferedWriter 저장
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    	
+    }
+    //DP초기화 함수
+    public static void init() {
+    	//DP[1][], DP[2][], DP[3][] 초기화
+    	DP[1][0] = DP[2][1] = DP[3][0] = DP[3][1] = DP[3][2] = 1;
+    	return;
+    }
+}
