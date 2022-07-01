@@ -1,0 +1,62 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int n,m;	//정점 수, 간선 수
+	public static long[][] distance;	//최단 거리 저장 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //------입력값 저장 및 배열 초기화--------
+    	StringTokenizer st;
+    	n = Integer.parseInt(br.readLine());
+    	m = Integer.parseInt(br.readLine());
+    	distance = new long[n+1][n+1];
+    	for(int i=1;i<=n;i++) {
+    		for(int j=1;j<=n;j++) {
+    			if(i==j)
+    				distance[i][j] = 0;
+    			else
+    				distance[i][j] = Integer.MAX_VALUE;
+    		}
+    	}
+        //그래프 값 최단거리 배열에 적용
+    	for(int i=0;i<m;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int a = Integer.parseInt(st.nextToken());
+    		int b = Integer.parseInt(st.nextToken());
+    		int c = Integer.parseInt(st.nextToken());
+    		
+            //비용만 다른 간선이 존재하기 때문에 Math.min을 통해 최소값을 구함
+    		distance[a][b] = Math.min(distance[a][b], c);
+    	}
+    	
+    	shortestPath();		//플로이드-워셜 알고리즘 실행
+    	
+        //최단 거리 배열에 대한 내용 BufferedWriter 저장
+    	for(int i=1;i<=n;i++) {
+    		for(int j=1;j<=n;j++) {
+    			if(distance[i][j]==Integer.MAX_VALUE)
+    				bw.write("0 " );
+    			else
+    				bw.write(distance[i][j] + " ");
+    		}
+    		bw.newLine();
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //반복문으로 플로이드-워셜 알고리즘 구현한 함수
+    public static void shortestPath() {
+    	for(int i=1;i<=n;i++) {		//거쳐가는 정점
+    		for(int j=1;j<=n;j++) {		//출발 정점
+    			for(int s=1;s<=n;s++) {		//도착 정점
+    				distance[j][s] = Math.min(distance[j][s], distance[j][i] + distance[i][s]);
+    			}
+    		}
+    	}
+    	return;
+    }
+}
