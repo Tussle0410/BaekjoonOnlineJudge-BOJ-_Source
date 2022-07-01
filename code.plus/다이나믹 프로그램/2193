@@ -1,0 +1,31 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static long[] DP = new long[91];		//메모이제이션 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----입력값 저장 및 배열 초기화----
+    	int N = Integer.parseInt(br.readLine());
+    	init();		//DP 초기화
+    	bw.write(pinaryNumber(N) + "\n");		//함수 결과 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //이친수 경우의 수 구하는 함수
+    public static long pinaryNumber(int n) {
+    	if(n==0)		//n이 0일 때
+    		return DP[0];
+    	if(DP[n]!=0)	//이미 연산하여 메모이제이션에 값이 존재할 때
+    		return DP[n];
+    	DP[n] = pinaryNumber(n-1) + pinaryNumber(n-2);	//규칙 적용
+    	return DP[n];		//값 반환
+    }
+    public static void init() {
+    	DP[0] = 0;		//DP[0]의 경우의 개수는 없다.
+    	DP[1] = 1;		//DP[1]의 경우의 개수는 {1}로 1개이다.
+    }
+}
