@@ -1,0 +1,51 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int N,result = 0;
+	public static int[] num,DP;		//입력값 저장 배열, 메모이제이션 배열
+	public static StringBuilder sb = new StringBuilder();	//수열 저장
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //-----------입력값 처리 및 배열 초기화---------
+    	N = Integer.parseInt(br.readLine());
+    	num = new int[N+1];
+    	DP = new int[N+1];
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	for(int i=1;i<=N;i++) 
+    		num[i] = Integer.parseInt(st.nextToken());
+    	
+    	sequence();		//함수 실행
+    	bw.write(result + "\n");		//최대 길이 BufferedWriter 저장
+    	Stack<Integer> stack = new Stack<Integer>();	//수열 값 얻기 위한 스택
+    	for(int i=N;i>0;i--) {
+    		if(DP[i] == result) {	//최대 길이부터 스택에 입력값 저장
+    			stack.add(num[i]);
+    			result--;
+    		}
+    		if(result==0)
+    			break;
+    	}
+    	int size = stack.size();
+    	for(int i=0;i<size;i++) {
+    		bw.write(stack.pop() + " ");	//수열 BufferdWriter 저장
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //-------DP 구성 및 수열 최대 길이 구하는 함수------
+    public static void sequence() {
+    	for(int i=1;i<=N;i++) {
+    		for(int j=i;j>=0;j--) {
+    			if(num[i]> num[j]) {
+    				DP[i] = Math.max(DP[i], DP[j]+1);
+    				result = Math.max(result, DP[i]);
+    			}
+    		}
+    	}
+    	return;
+    }
+}
