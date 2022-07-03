@@ -1,0 +1,52 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	public static int V,E,INF = Integer.MAX_VALUE/2;
+	public static int[][] distance;	//최단 거리 저장 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //--------입력값 저장 및 배열 초기화------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	V = Integer.parseInt(st.nextToken());
+    	E = Integer.parseInt(st.nextToken());
+    	distance = new int[V+1][V+1];
+    	for(int i=1;i<=V;i++) 	//최단 거리 값 모두 INF로 초기화
+        	Arrays.fill(distance[i], INF);
+
+    	for(int i=0;i<E;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int a = Integer.parseInt(st.nextToken());
+    		int b = Integer.parseInt(st.nextToken());
+    		int c = Integer.parseInt(st.nextToken());
+    		distance[a][b] = c;	//입력값 관련 최단거리 설정
+    	}
+    	shortestPath();	//플로이드 워셜 알고리즘 수행
+    	
+    	int result = INF;	//싸이클 존재하는지 확인하기 위해 INF로 초기화
+    	for(int i=1;i<=V;i++) 	//싸이클 값중 가장 작은 값 가져오기
+    		result = Math.min(result, distance[i][i]);
+    	
+    	if(result==INF)	//가장 작은 값이 INF이면 싸이클 존재하지 않는다.
+    		bw.write("-1\n");
+    	else
+    		bw.write(result + "\n");	//가장 작은 싸이클 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    	
+    }
+    //플로이드 워셜 알고리즘 수행하는 함수
+    public static void shortestPath() {
+    	for(int i=1;i<=V;i++) {
+    		for(int j=1;j<=V;j++) {
+    			for(int s=1;s<=V;s++) {
+    				if(distance[j][s] > distance[j][i] + distance[i][s])
+    					distance[j][s] = distance[j][i] + distance[i][s];
+    			}
+    		}
+    	}
+    }
+}
