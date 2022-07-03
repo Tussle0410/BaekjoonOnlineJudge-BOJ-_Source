@@ -1,0 +1,28 @@
+import java.io.*;
+public class Main{
+	public static int[] DP;		//메모이제이션 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	int N = Integer.parseInt(br.readLine());		//입력값 저장
+    	DP = new int[N+1];
+    	int result = sum(N);		//함수 실행 및 함수 결과 저장
+    	bw.write(result + "\n");		//결과 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    	
+    }
+    //-------DP[]구성하는 함수------
+    public static int sum(int n) {
+    	for(int i=1;i<=n;i++) {		//1~n까지 반복
+    		for(int j=1;j*j<=i;j++) {		//i의 값에 제곱수만큼 반복
+    			if(DP[i] > DP[i-j*j] + 1 || DP[i] == 0 )	//제곱수 개수 작은 값 찾았을 때
+    				DP[i] = DP[i-j*j] + 1;
+    		}
+    	}
+    	return DP[n];		//결과 반환
+    }
+}
