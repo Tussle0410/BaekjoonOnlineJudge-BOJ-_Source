@@ -1,0 +1,36 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static long[] DP = new long[1000001];	//메모이제이션 배열
+	static int DIV = 1000000009;		//나머지 구하기 위해 나누는 값
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	int n = Integer.parseInt(br.readLine());
+    	init();	//DP[1], DP[2], DP[3] 초기화하는 함수 실행
+    	cal();	//규칙 적용하여 DP구성하는 함수 실행
+        //입력값에 따라 DP값 BufferedWriter 저장
+    	for(int i=0;i<n;i++) {
+    		int num = Integer.parseInt(br.readLine());
+    		bw.write(DP[num] + "\n");
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //DP[1],DP[2],DP[3] 초기화하는 함수
+    static void init() {
+    	DP[1] = 1;
+    	DP[2] = 2;
+    	DP[3] = 4;
+    	return;
+    }
+    //규칙을 적용하여 4~1000001의 DP값 구성하는 함수
+    static void cal() {
+    	for(int i=4;i<1000001;i++) 
+    		DP[i] = (DP[i-1] + DP[i-2] + DP[i-3])%DIV;	//규칙 적용
+    	return;
+    }
+}
