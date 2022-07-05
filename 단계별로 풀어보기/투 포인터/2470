@@ -1,0 +1,49 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] num;	//용액 특성합 저장 배열
+	static int startResult, endResult;	//0과 가까운 Start,End 값 저장 변수
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----------입력값 저장 및 배열 초기화---------
+    	int N =Integer.parseInt(br.readLine());
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	num = new int[N];
+    	for(int i=0;i<N;i++)
+    		num[i] = Integer.parseInt(st.nextToken());
+    	Arrays.sort(num);		//특성합 오름차순 정렬
+    	cal(N);		//0에 가까운 Start,End 구하는 함수
+    	bw.write(num[startResult] + " " + num[endResult] + "\n");
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //----------0에 가까운 Start, End 구하는 투 포인터 함수---------
+    static void cal(int n) {
+    	int start = 0;		//Start 포인터
+    	int end = n-1;		//End 포인터
+    	int result = Integer.MAX_VALUE;		//현재 0에 가까운 값
+    	while(start<end) {
+    		int temp = num[start] + num[end];
+    		if(temp == 0) {		//규칙 2.
+    			startResult = start;
+    			endResult = end;
+    			return;
+    		}
+    		if(result > Math.abs(temp)) {	//현재 0에 가까운 값보다 작은 가까운 값일 때
+    			result = Math.abs(temp);
+    			startResult = start;
+    			endResult = end;
+    		}
+
+    		if(temp > 0)	//규칙1.
+    			end--;
+    		else		//규칙2.
+    			start++;
+    	}
+    	return;
+    }
+}
