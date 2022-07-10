@@ -1,0 +1,44 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int A;
+	static int[] sequence, DP;	//수열 저장 배열, 메모이제이션 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //---------입력값 저장 및 배열 초기화--------
+    	A = Integer.parseInt(br.readLine());
+    	sequence = new int[A];
+    	DP =  new int[A];
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	for(int i=0;i<A;i++)
+    		sequence[i] = Integer.parseInt(st.nextToken());
+    	
+    	DP[0] = sequence[0];	//DP 초기화
+    	int result = cal();		//DP 구성 후 최대값 주는 함수 실행
+    	bw.write(result + "\n");	//최대값 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //규칙을 통해 DP을 구성 후 최대값 출력하는 함수
+    static int cal() {
+    	int max = DP[0];
+    	for(int i=1;i<A;i++) {
+    		int cur = Integer.MIN_VALUE;
+    		for(int j=i-1;j>=0;j--) {
+    			if(sequence[i] > sequence[j])	//더 큰 DP값 존재시
+    				cur = Math.max(cur, DP[j]);
+    		}
+    		if(cur==Integer.MIN_VALUE)	//해당 이하의 DP값 존재 안할 때
+    			DP[i] = sequence[i];
+    		else
+    			DP[i] = cur + sequence[i];
+    		max = Math.max(max, DP[i]);
+    	}
+    	return max;		//최대값 반환
+    }
+}
+
