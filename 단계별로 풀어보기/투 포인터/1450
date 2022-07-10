@@ -1,0 +1,63 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int[] weight;	//입력된 물건의 무게 저장 배열
+	static int N,S;
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //------입력값 저장 및 배열 초기화--------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N = Integer.parseInt(st.nextToken());
+    	S = Integer.parseInt(st.nextToken());
+    	weight = new int[N];
+    	st = new StringTokenizer(br.readLine()," ");
+    	for(int i=0;i<N;i++) 
+    		weight[i] = Integer.parseInt(st.nextToken());
+    	
+    	ArrayList<Integer> left = new ArrayList<Integer>();	//0~N/2 경우의 수 저장하는 리스트
+    	ArrayList<Integer> right = new ArrayList<Integer>();//N/2+1~N 경우의 수 저장하는 리스트
+    	cal(0,N/2,0,left);	//DFS를 통한 left 구하기 함수 실행
+    	cal(N/2,N,0,right);	//DFS를 통한 right 구하기 함수 실행
+    	
+    	Collections.sort(right);	//right 오름차순 정렬
+    	int count = 0;		//left와 right 모든 조합의 수 저장 변수
+    	for(int i=0;i<left.size();i++) {
+        	//UpperBound를 이용하여 left값 + right값 <= C인 개수 구해서 count에 더하기
+    		count += upperBound(right, left.get(i));
+    	}
+    	bw.write(count + "\n");		//결과 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    	
+    }
+    //이분탐색 UpperBound를 사용하여 최대 무게 이하인 경우의 수 범위 구하는 함수
+    static int upperBound(ArrayList<Integer> list, int num) {
+    	int start = 0;
+    	int end = list.size();
+    	while(start<end) {
+    		int median = (start + end)/2;
+    		if(list.get(median) + num <= S)
+    			start = median+1;
+    		else
+    			end = median;
+    	}
+    	return start;
+    }
+    //DFS를 통하여 범위의 입력값 무게들의 나올 수 있는 경우의 수를 구하는 함수
+    static void cal(int length, int end, int sum, ArrayList<Integer> list) {
+    	if(sum > S)		//최대 무게 초과시
+    		return;
+    	
+    	if(length==end) {	//물건 넣는 경우의 수 완성시
+    		list.add(sum);
+    		return;
+    	}
+    	cal(length+1, end, sum + weight[length], list);	//현재 물건 넣었을 때
+    	cal(length+1, end, sum, list);		//현재 물건 넣지 않았을 때
+    	return;	
+    }
+}
