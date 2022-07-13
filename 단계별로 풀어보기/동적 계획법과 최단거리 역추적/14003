@@ -1,0 +1,59 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int N;
+	static int[] index,sequence;	//해당 인덱스 최대 길이 저장 배열, 입력 수열값 저장 배열
+	static ArrayList<Integer> list = new ArrayList<Integer>();	//메모이제이션 리스트
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //----배열 초기화------
+    	N = Integer.parseInt(br.readLine());
+    	sequence = new int[N+1];
+    	index = new int[N+1];
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	list.add(-1000000001);		//수열의 값이 가장 작은 값보다 작은 값을 추가
+    	for(int i=1;i<=N;i++) {
+        	//입력값 수열 저장
+    		int num = Integer.parseInt(st.nextToken());
+    		sequence[i] = num;
+            	//리스트 마지막 값보다 값이 클 경우
+    		if(list.get(list.size()-1)<num) {
+    			list.add(num);		//리스트에 추가
+    			index[i] = list.size()-1; 
+    		}else {		//리스트 마지막 값보다 작을 경우
+            		//UnderBound 이분탐색 진행
+    			int start = 1;
+    			int end = list.size();
+    			while(start<end) {
+    				int median = (start + end)/2;
+                    		//중간값 입력값보다 작을 경우
+    				if(list.get(median) < num)
+    					start = median + 1;
+    				else	//중간값 입력값보다 크거나 같을 경우
+    					end = median;
+    			}
+    			list.set(end, num);		//list 변경
+    			index[i] = end;
+    		} 		
+    	}
+    	int length = list.size()-1;		//수열의 최대 길이 저장
+    	bw.write(length + "\n");		//최대 길이 BufferedWriter 저장
+    	Stack<Integer> stack = new Stack<Integer>();
+    	//Stack과 index를 통해 수열의 값 BufferedWriter 저장
+    	for(int i=N;i>0;i--) {
+    		if(index[i] == length) {
+    			stack.add(sequence[i]);	
+    			length--;
+    		}
+    	}
+    	while(!stack.isEmpty())
+    		bw.write(stack.pop() + " ");
+    	
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+}
