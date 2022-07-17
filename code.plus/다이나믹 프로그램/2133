@@ -1,0 +1,35 @@
+import java.io.*;
+public class Main{
+	static int[] DP;	//메모이제이션 배열
+	static int n;		//입력값 변수
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //---------입력값 저장 및 배열 초기화--------
+    	n = Integer.parseInt(br.readLine());
+    	DP = new int[31];
+    	DP[0] = 1;
+    	DP[2] = 3;
+    	if(n%2==1)		//규칙1. 홀수일 때
+    		bw.write("0\n");
+    	else {		//규칙2. 짝수일 때
+        	cal();		//DP 구성함수 실행
+        	bw.write(DP[n] + "\n");		//DP[n] 값 BufferedWriter 저장
+    	}
+    	bw.flush();			//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //------짝수일 때 식을 이용하여 DP를 구성하는 함수-------
+    static void cal() {
+    	for(int i=2;i<=n;i+=2) {
+    		DP[i] = DP[i-2] * 3;	//DP[i-2] × DP[2]
+    		for(int j=i-4;j>=0;j-=2) {
+    			DP[i] += DP[j] * 2;	//DP[i-4] × 2 + .... + DP[0] × 2
+    		}
+    	}
+    	return;
+    }
+}
