@@ -1,0 +1,54 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static char[] str1, str2;	//입력되는 문자열 저장하는 문자 배열
+	static int[][] DP;		//메모이제이션 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //---------입력값 저장 및 배열 초기화-----------
+    	str1 = br.readLine().toCharArray();
+    	str2 = br.readLine().toCharArray();
+    	DP = new int[str2.length+1][str1.length+1];
+    	int length = cal();		//DP 구성 및 최대 길이 받는 함수 실행
+    	Stack<Character> lcsValue = LCS(length);	//최대 길이 수열의 문자열 받는 함수 실행
+    	bw.write(length + "\n");		//최대 길이 BufferedWriter 저장
+    	while(!lcsValue.isEmpty()) 		//Stack에 저장된 값 BufferedWriter 저장
+    		bw.write(lcsValue.pop());
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+
+    }
+    //--------규칙과 반복문을 통해 DP를 구성하고 최대 길이를 반환하는 함수--------
+    static int cal() {
+    	for(int i=1;i<=str2.length;i++) {
+    		for(int j=1;j<=str1.length;j++) {
+    			if(str2[i-1] == str1[j-1])		//규칙1.
+    				DP[i][j] = DP[i-1][j-1] + 1;
+    			else		//규칙2.
+    				DP[i][j] = Math.max(DP[i][j-1], DP[i-1][j]);
+    		}
+    	}
+    	return DP[str2.length][str1.length];	//최대 길이 반환
+    }
+    //------최대 길이의 수열의 문자열을 Stack을 통해 구성 및 반환하는 함수-------
+    static Stack<Character> LCS(int length) {
+    	Stack<Character> stack = new Stack<Character>();
+    	for(int i=str2.length;i>0;i--){
+    		for(int j=str1.length;j>0;j--) {
+            	//Stack 구성
+    			if((str2[i-1] == str1[j-1]) && (DP[i][j]==length)) {
+    				stack.add(str1[j-1]);
+    				length--;
+    				break;
+    			}		
+    		}
+    		if(length==0)
+    			break;
+    	}
+    	return stack;		//결과 Stack 반환
+    }
+}
