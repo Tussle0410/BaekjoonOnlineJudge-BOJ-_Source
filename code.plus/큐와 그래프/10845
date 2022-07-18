@@ -1,0 +1,41 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int N;		//명령어 개수 저장 변수
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	Queue<Integer> queue = new LinkedList<Integer>();	//사용할 Queue
+    	StringTokenizer st;
+    	N = Integer.parseInt(br.readLine());
+    	int bottomValue = 0;	//가장 뒤에 있는 값 초기화
+    	for(int i=0;i<N;i++) {
+    		String command = br.readLine();		//명령어 읽기
+    		if(command.equals("pop")) {			//pop
+    			if(queue.isEmpty())
+    				bw.write("-1\n");
+    			else
+    				bw.write(queue.poll() + "\n");
+    		}else if(command.equals("size"))	//size
+    			bw.write(queue.size() + "\n");
+    		else if(command.equals("empty"))	//empty
+    			bw.write((queue.isEmpty()?1:0) + "\n");
+    		else if(command.equals("front")) {	//front
+    			bw.write((queue.isEmpty()?-1:queue.peek()) + "\n");
+    		}else if(command.equals("back")) {	//back
+    			bw.write((queue.isEmpty()?-1:bottomValue) + "\n");
+    		}else {		//push
+    			st = new StringTokenizer(command," ");
+    			String temp = st.nextToken();
+    			int num = Integer.parseInt(st.nextToken());
+    			bottomValue = num;		//가장 뒷 값 변경
+    			queue.add(num);
+    		}		
+    	}
+    	bw.flush();		//저장된 명령어 결과 출력
+    	bw.close();
+    	br.close();
+    }
+}
