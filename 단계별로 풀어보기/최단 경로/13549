@@ -1,0 +1,83 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//큐에 사용할 현재 지점, 시간을 저장하는 생성자
+	static class move{
+		int point, time;
+
+		public move(int point, int time) {
+			this.point = point;
+			this.time = time;
+		}
+		public int getPoint() {
+			return point;
+		}
+
+		public int getTime() {
+			return time;
+		}
+	}
+	static int N,K;
+	static boolean[] check;	//해당 위치 탐색하였는지 확인하는 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //------입력값 저장 및 배열 초기화--------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N = Integer.parseInt(st.nextToken());
+    	K = Integer.parseInt(st.nextToken());
+    	int size = Math.max(N, K);
+    	if(size == N)	//수빈이의 위치가 동생의 위치보다 클 경우
+    		bw.write(N-K + "\n");	//수빈이의 위치 - 동생의 위치 BufferedWriter 저장
+    	else {		//수빈이의 위치가 동생의 위치보다 작을 경우
+        	check = new boolean[size*2+1];
+        	int result = bfs(N,K);		//BFS 탐색 및 최소 시간 반환하는 함수 실행
+        	bw.write(result + "\n");	//최소 길이 BufferedWriter 저장
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //BFS 형태의 다익스트라 알고리즘으로 최소 시간 구하는 함수
+    static int bfs(int start, int end) {
+         /*
+        우선순위 큐를 사용해서 현재 정점들에서 거리가 가장 적은 정점을
+        바로 poll()을 할 수 있도록 시간이 작은 순으로 Queue에 저장되도록
+        Comparator를 설정해주었습니다.
+        */
+    	PriorityQueue<move> queue = new PriorityQueue<move>(new Comparator<move>() {	
+			@Override
+			public int compare(move o1, move o2) {
+				return o1.time - o2.time;
+			}
+		});
+    	queue.add(new move(start,0));	//수빈이의 위치 큐에 저장
+    	check[start] = true;		//수빈이의 위치 탐색 완료
+    	int result = Integer.MAX_VALUE;	//최소 시간 값 초기화
+    	while(!queue.isEmpty()) {
+    		move temp = queue.poll();
+    		int point = temp.getPoint();
+    		int time = temp.getTime();
+    		if(point==end) {	//동생 위치 도착할 때 시간 비교하여 최소 시간 구하기
+    			result = Math.min(time, result);
+    			continue;
+    		}
+    		else
+    			check[point] = true;
+    		if(point*2 <= end*2 && !check[point*2]) {	//*2
+    			queue.add(new move(point*2, time));
+    		}  
+        	if(point < end && !check[point+1]) {	// +1
+        		queue.add(new move(point+1, time +1));
+        	}
+        	if(point > 0 && !check[point-1]) {		//-1
+         		queue.add(new move(point-1, time + 1));
+        	}   
+   	
+    	}
+    	return result;		//최소 시간 반환
+    }
+}
+
