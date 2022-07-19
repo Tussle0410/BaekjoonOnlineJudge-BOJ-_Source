@@ -1,0 +1,35 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static int N,M;
+	static int[] num,DP;	//입력된 숫자 저장 배열, 누적합 저장 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        //------입력값 저장 및 배열 초기화---------
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N = Integer.parseInt(st.nextToken());
+    	M = Integer.parseInt(st.nextToken());
+    	num = new int[N+1];
+    	DP = new int[N+1];
+    	st = new StringTokenizer(br.readLine()," ");
+    	for(int i=1;i<=N;i++) {
+    		num[i] = Integer.parseInt(st.nextToken());
+    		DP[i] = DP[i-1] + num[i];		//누적합 DP값 저장
+    	}
+
+    	for(int s=0;s<M;s++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int i = Integer.parseInt(st.nextToken());
+    		int j = Integer.parseInt(st.nextToken());
+    		bw.write(DP[j] - DP[i-1] + "\n");	//범위값 규칙 적용하여 BufferdWriter 저장
+    	}
+    	bw.flush();			//결과 출력
+    	bw.close();
+    	br.close();
+    	
+    }
+    
+}
