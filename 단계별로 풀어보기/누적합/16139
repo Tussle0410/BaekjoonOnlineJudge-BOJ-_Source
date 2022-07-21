@@ -1,0 +1,47 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static String S;		//문자열 저장 변수
+	static int q;		//질문 개수 저장 변수
+	static int[][] DP = new int[200002][26];	//누적합 저장 배열
+	public static void main(String[] arg) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		S = br.readLine();
+		q = Integer.parseInt(br.readLine());
+        	//-----각 알파벳 문자열에 대한 누적합 구하기------
+		for(int i=0;i<=25;i++) {
+			for(int j=1;j<=S.length();j++) {
+				if(S.charAt(j-1) + 0 == 'a' + i) {
+					DP[j][i] = DP[j-1][i] + 1;	//문자열에 문자 해당 알파벳일 때
+				}else
+					DP[j][i] = DP[j-1][i];	//문자열에 문자 해당 알파벳 아닐 때
+			}
+		}
+		StringTokenizer st;
+       	 	//질문 값 저장 및 함수 실행하여 결과 BufferedWriter 저장
+		for(int i=0;i<q;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			int alphabet = st.nextToken().charAt(0) - 97;
+			int start = Integer.parseInt(st.nextToken());
+			int end = Integer.parseInt(st.nextToken());
+			bw.write(cal(alphabet,start,end) + "\n");
+		}
+		
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//규칙을 적용하여 알파벳 개수 구하는 함수
+	static int cal(int alphabet, int start, int end) {
+		int result;
+		if(start == 0)
+			result = DP[end+1][alphabet];	//l == 0일 때
+		else		//l > 0일 때
+			result = DP[end+1][alphabet] - DP[start][alphabet];
+		
+		return result;
+	}
+}
