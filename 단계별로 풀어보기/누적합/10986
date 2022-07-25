@@ -1,0 +1,35 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	static long[] DP,remains;	//누적합 저장 배열, 나머지 개수 저장 배열
+	static int N, M;
+	public static void main(String[] arg) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+        	//--------입력값 저장 및 배열 초기화-----------
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		DP = new long[N+1];
+		remains = new long[M];
+		st = new StringTokenizer(br.readLine()," ");
+		for(int i=1;i<=N;i++) {
+			int num = Integer.parseInt(st.nextToken());
+			DP[i] = DP[i-1] + num;	//누적합 구하기
+			long temp = DP[i] % M;	//나머지 구하기
+			remains[(int)temp]++;		//나머지 개수 +1 하기
+		}
+		long result = remains[0];		//규칙1. 개수 결과에 더하기
+        	//규칙2 개수 결과에 더하기
+		for(int i=0;i<M;i++) {
+			long temp = remains[i];
+			result += temp * (temp-1) / 2;
+		}
+		bw.write(result + "\n");		//결과 BufferedWriter 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+}
