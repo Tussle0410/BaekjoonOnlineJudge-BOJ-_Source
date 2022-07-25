@@ -1,0 +1,73 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+	//BFS에 사용할 생성자
+	static class move{
+		int point,count;		//위치, 소요 시간
+		String process;		//이동 과정
+		
+		public String getProcess() {
+			return process;
+		}
+
+		public int getPoint() {
+			return point;
+		}
+
+		public int getCount() {
+			return count;
+		}
+
+		public move(int point, int count,String process) {
+			this.point = point;
+			this.count = count;
+			this.process = process;
+		}		
+	}
+	static int N,K;
+	static boolean visited[];	//해당 위치 방문 확인 배열
+	public static void main(String[] arg) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		N = Integer.parseInt(st.nextToken());
+		K = Integer.parseInt(st.nextToken());
+		br.close();
+		if(K<=N) {		//K<=N일 때
+			System.out.println(N-K);
+			for(int i=N;i>=K;i--)
+				System.out.print(i + " ");
+		}else {		//K > N일 때
+			visited = new boolean[K*2 +1];
+			bfs();		//BFS 탐색 수행하는 함수 실행
+		}
+	}
+    	//BFS탐색을 통해 동생 위치에 가장 빨리 도착하는 시간과 과정 출력하는 함수
+	static void bfs() {
+		Queue<move> queue = new LinkedList<move>();	//BFS에 사용할 큐
+		visited[N] = true;		//수빈이의 위치 방문 완료
+		queue.add(new move(N,0,String.valueOf(N)));	
+		while(!queue.isEmpty()) {
+			move temp = queue.poll();
+			int point = temp.getPoint();
+			int count = temp.count;
+			String process = temp.getProcess();
+			if(point == K) {		//동생의 위치 도착했을 때
+				System.out.print(count + "\n" + process);	//결과 출력
+				System.exit(0);		//시스템 종료
+			}
+			if(point>0 && !visited[point-1]) {		//+1로 이동할 때
+				queue.add(new move(point-1, count+1, process + " " + String.valueOf(point-1)));
+				visited[point-1] = true;
+			}
+			if(point<K && !visited[point+1]) {	//-1로 이동할 때
+				queue.add(new move(point+1, count+1, process + " " + String.valueOf(point+1)));
+				visited[point+1] = true;
+			}
+			if(point<K && !visited[point*2]) {	//*2로 이동할 때
+				queue.add(new move(point*2, count+1, process + " " + String.valueOf(point*2)));
+				visited[point*2] = true;
+			}
+		}
+	}
+}
