@@ -1,0 +1,84 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+	static int n,m,INF = 10000001;
+	static int[][] arr,next;		//최단 경로, 이전 경로 저장하는 배열
+    public static void main(String[] args) throws IOException {
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	Stack<Integer> stack = new Stack<Integer>();
+    	StringTokenizer st;
+    	n = Integer.parseInt(br.readLine());
+    	m = Integer.parseInt(br.readLine());
+    	arr = new int[n+1][n+1];
+    	next = new int[n+1][n+1];
+        //최단 경로 저장할 배열 초기화
+    	for(int i=1;i<=n;i++) {
+    		for(int j=1;j<=n;j++) {
+    			if(i!=j)
+    				arr[i][j] = INF;
+    		}
+    	}
+        //입력받은 버스 경로 값, 이전 경로값 배열에 저장
+    	for(int i=0;i<m;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int a = Integer.parseInt(st.nextToken());
+    		int b = Integer.parseInt(st.nextToken());
+    		int c = Integer.parseInt(st.nextToken());
+    		arr[a][b] = Math.min(arr[a][b], c);
+    		next[a][b] = a;
+    	}
+    	cal();		//최단 비용과 경로 구하는 함수 실행
+        //최단 비용 값들 BufferedWriter 저장
+    	for(int i=1;i<=n;i++) {
+    		for(int j=1;j<=n;j++) {
+    			if(arr[i][j] ==INF)
+    				bw.write("0 ");
+    			else	
+    				bw.write(arr[i][j] + " ");
+    		}
+    		bw.newLine();
+    	}
+    	//방문 도시 개수와 경로 BufferedWriter 저장
+    	for(int i=1;i<=n;i++) {
+    		for(int j=1;j<=n;j++) {
+    			if(next[i][j]==0)		//해당 도시 도착하지 못할 경우
+    				bw.write("0\n");
+    			else {		//해당 도시 도착할 때
+    				int e = j;
+    				stack.add(e);
+    				while(next[i][e] != i) {
+    					stack.add(next[i][e]);
+    					e = next[i][e];
+    				}
+    				bw.write(stack.size() + 1 + " ");
+    				bw.write(i + " ");
+    				while(!stack.isEmpty()) 
+    					bw.write(stack.pop() + " ");
+    				bw.newLine();
+    			}
+    		}
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //for문을 이용한 플로이드 알고리즘을 구현한 함수
+    static void cal() {
+    	for(int i=1;i<=n;i++) {
+    		for(int j=1;j<=n;j++) {
+    			for(int k=1;k<=n;k++) {
+    				if(arr[j][k] > arr[j][i] + arr[i][k]) {
+    					arr[j][k] = arr[j][i] + arr[i][k];	//최단 비용
+    					next[j][k] = next[i][k];		// 이전 도시
+    				}
+    			}
+    		}
+    	}
+    	return;
+    }
+}
+
