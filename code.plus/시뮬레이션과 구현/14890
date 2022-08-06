@@ -1,0 +1,87 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+	static int N,L;
+	static int[][] map;		//지도값 저장 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //입력값 저장 및 배열 초기화
+    	N = Integer.parseInt(st.nextToken());
+    	L = Integer.parseInt(st.nextToken());
+    	map = new int[N][N];
+    	for(int i=0;i<N;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		for(int j=0;j<N;j++) {
+    			map[i][j] = Integer.parseInt(st.nextToken());
+    		}
+    	}
+    	int result = cal();		//지나갈 수 있는 길 개수 구하는 함수 실행 및 결과 저장
+    	bw.write(result + "\n");		//개수 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //각 행과 열에 대한 지나갈 수 있는 길 확인하도록 호출하는 함수
+    static int cal() {
+    	int count = 0;
+    	for(int i=0;i<N;i++) {
+    		if(wayCheck(i, 0, map[i][0], 1, true))
+    				count++;
+    		if(wayCheck(0, i, map[0][i], 1, false))
+    				count++;
+    	}
+    	return count;
+    }
+    //해당 길이 지나갈 수 있는지 확인하는 함수
+    static boolean wayCheck(int row, int col, int cur, int check,boolean rowColCheck) {   	
+    	if(rowColCheck)	//행 형태의 길이면
+    		col++;
+    	else		//열 형태의 길이면
+    		row++;
+    	
+    	if(row==N || col == N) {	//지나갈 수 있는 길이면
+    		return true;
+    	}
+    	
+    	if(cur == map[row][col]) {		//같은 높이일 때
+    		return wayCheck(row, col, cur, check+1,rowColCheck);
+    	
+    	}else if(cur == map[row][col]-1 && check>=L) {	//높은 높이일 때
+    		return wayCheck(row, col, map[row][col], 1,rowColCheck);
+    	
+    	}else if(cur == map[row][col]+1) {		//낮은 높이일 때
+    		cur = map[row][col];
+            //내려가려는 길이 L개 연속되는지 확인
+    		if(rowColCheck) {		//행 기준
+    			if(col+L-1<N) {
+    				boolean c = true;
+    				for(int i=col;i<col+L;i++) {
+    					if(cur!=map[row][i]) {
+    						c = false;
+    						break;
+    					}
+    				}
+    				if(c)		//연속 될 시 경사로를 놓고 내려간다.
+    					return wayCheck(row, col+L-1,map[row][col], 0, rowColCheck);
+    			}
+    		}else {		//열 기준
+    			if(row+L-1<N) {	//내려가려는 길이 L개 연속되는지 확인
+    				boolean c = true;
+    				for(int i=row;i<row+L;i++) {
+    					if(cur!=map[i][col]) {
+    						c = false;
+    						break;
+    					}
+    				}
+    				if(c)		//연속 될 시 경사로를 놓고 내려간다.
+    					return wayCheck(row+L-1, col,map[row][col], 0, rowColCheck);
+    			}
+    		}
+    	}
+    	return false;		//지나갈 수 없는 길일 때
+    }
+}
