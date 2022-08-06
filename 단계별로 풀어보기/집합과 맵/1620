@@ -1,0 +1,35 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+	static int N,M;
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N =Integer.parseInt(st.nextToken());
+    	M =Integer.parseInt(st.nextToken());
+    	HashMap<String,Integer> nameKeyMap = new HashMap<>();	//포켓몬 이름 기준
+    	HashMap<Integer,String> numKeyMap = new HashMap<>();	//도감 번호 기준
+    	for(int i=1;i<=N;i++) {		//HashMap 초기화
+    		String pokemonName = br.readLine();
+    		nameKeyMap.put(pokemonName, i);
+    		numKeyMap.put(i, pokemonName);
+    	}
+    	for(int i=0;i<M;i++) {
+    		String findPokemon = br.readLine();
+    		char AsciiNum = findPokemon.charAt(0);
+    		if(AsciiNum >= 65 && AsciiNum <= 90) {		//A-Z 시작으로 포켓몬 이름일 때
+    			if(nameKeyMap.containsKey(findPokemon))
+    				bw.write(nameKeyMap.get(findPokemon) + "\n");
+    		}else {		//도감 번호일 때
+    			int num = Integer.parseInt(findPokemon);
+    			bw.write(numKeyMap.get(num) + "\n");
+    		}
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+}
