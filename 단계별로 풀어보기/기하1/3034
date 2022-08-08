@@ -1,0 +1,30 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+	static int N,W,H;
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //입력값 저장
+    	N = Integer.parseInt(st.nextToken());
+    	W = Integer.parseInt(st.nextToken());
+    	H = Integer.parseInt(st.nextToken());
+        //피타고라스 법칙을 이용한 대각선 길이 구하기
+    	int maxlength = (int)Math.sqrt(Math.pow(W, 2) + Math.pow(H, 2));
+    	for(int i=0;i<N;i++) {		//N개 성냥과 대각선 길이 비교하기
+    		st = new StringTokenizer(br.readLine()," ");
+    		int matcheLength = Integer.parseInt(st.nextToken());
+    		if(matcheLength <= maxlength)	//성냥의 길이가 작거나 같은 경우
+    			bw.write("DA\n");
+    		else
+    			bw.write("NE\n");		//성냥의 길이가 클 경우
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    	
+    }
+}
