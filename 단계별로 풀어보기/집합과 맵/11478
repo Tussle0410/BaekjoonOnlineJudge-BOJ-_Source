@@ -1,0 +1,24 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	String str = br.readLine();
+    	HashSet<String> S = new HashSet<>();		//S값 저장할 HashSet
+        //입력된 문자열에 대한 모든 경우 탐색
+    	for(int i=0;i<str.length();i++) {
+    		for(int j=i+1;j<=str.length();j++) {
+    			String temp = str.substring(i, j);		//문자열 나누기
+    			if(!S.contains(temp))		//처음 보는 연속된 일부분일 때
+    				S.add(temp);		//HashSet에 추가
+    		}
+    	}
+    	bw.write(S.size() + "\n");		//HashSet 크기 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+}
