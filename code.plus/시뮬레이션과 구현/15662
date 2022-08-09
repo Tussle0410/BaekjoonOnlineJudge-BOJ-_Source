@@ -1,0 +1,89 @@
+import java.util.*;
+import java.io.*;
+public class Main{
+	static int T,K;
+	static int[][] gear;		//톱니바퀴 정보 저장하는 배열
+	static int[][] point;		//각 톱니바퀴 3시,9시 인덱스 저장하는 배열
+    public static void main(String[] args) throws IOException{
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	StringTokenizer st;
+    	T =Integer.parseInt(br.readLine());
+    	gear = new int[T][8];
+    	point = new int[T][2];
+        //각 톱니바퀴 3시,9시 가리키는 인덱스 저장
+    	for(int i=0;i<T;i++) {
+    		point[i][0] = 2;		//gear[i][2]는 처음 3시를 가리킴
+    		point[i][1] = 6;		//gear[i][6]은 처음 3시를 가리킴
+    	}
+        //톱니바퀴값 저장
+    	for(int i=0;i<T;i++) {
+    		String str = br.readLine();
+    		for(int j=0;j<8;j++) {
+    			gear[i][j] = Character.getNumericValue(str.charAt(j));
+    		}
+    	}
+    	
+    	K =Integer.parseInt(br.readLine());
+        //K번 선택된 톱니바퀴 회전
+    	for(int i=0;i<K;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int gearNum = Integer.parseInt(st.nextToken());
+    		int direction = Integer.parseInt(st.nextToken());
+    		cal(gearNum-1,direction);		//회전하는 함수 호출하는 함수
+    	}
+    	int result = 0;		//결과
+    	for(int i=0;i<T;i++) {		//각 톱니바퀴 12시 방향 S인지 확인
+    		int temp = (point[i][1]+2)%8;		//12시 방향 인덱스 구하기
+    		if(gear[i][temp]==1)
+    			result++;
+    	}
+    	bw.write(result + "\n");		//S의 개수 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //회전하는 함수 호출하는 함수
+    static void cal(int gearNum, int direction) {
+    	if(gearNum==0) {		//1번째 톱니바퀴일 때
+    		rightRotation(gearNum,direction);
+    	}else if(gearNum==T-1){		//T번째 톱니바퀴일 때
+    		leftRotation(gearNum,direction);
+    	}else {		//그 이외
+    		rightRotation(gearNum, direction);
+    		leftRotation(gearNum, direction);
+    	}
+    	gearChange(gearNum, direction);	//선택된 톱니바퀴 회전
+    	return;
+    }
+    //선택된 톱니바퀴에 오른쪽 톱니바퀴가 회전하는지 확인 및 회전 시키는 함수
+    static void rightRotation(int gearNum, int direction) {
+    	if(gearNum<T-1 && gear[gearNum][point[gearNum][0]] != gear[gearNum+1][point[gearNum+1][1]]) { 
+    		//연쇄적으로 회전하는지 확인(재귀)
+            rightRotation(gearNum+1, direction * -1);
+    		gearChange(gearNum+1,direction * -1);	//반대 방향으로 회전
+    	}
+    }
+    //선택된 톱니바퀴에 왼쪽 톱니바퀴가 회전하는지 확인 및 회전 시키는 함수
+    static void leftRotation(int gearNum, int direction) {
+    	if(gearNum>0 && gear[gearNum][point[gearNum][1]] != gear[gearNum-1][point[gearNum-1][0]]) {
+     		//연쇄적으로 회전하는지 확인(재귀)
+            leftRotation(gearNum-1, direction*-1);
+    		gearChange(gearNum-1,direction*-1);		//반대 방향으로 회전
+    	}
+    }
+    //각 회전 방향에 따른 point[][]에 3시와 9시 가리키는 인덱스 변경함수
+    static void gearChange(int gearNum, int direction) {
+    	if(direction==-1) {
+    		point[gearNum][0] = (point[gearNum][0] + 1) % 8;
+    		point[gearNum][1] = (point[gearNum][1] + 1) % 8;
+    	}else {
+    		point[gearNum][0] = point[gearNum][0]-1<0?7:point[gearNum][0] - 1;
+    		point[gearNum][1] = point[gearNum][1]-1<0?7:point[gearNum][1] - 1;
+    	}
+    	return;
+    }
+}
+
