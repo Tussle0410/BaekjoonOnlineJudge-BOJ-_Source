@@ -1,0 +1,39 @@
+import java.util.*;
+import java.io.*;
+public class Main {
+	static int T;
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st;
+		T = Integer.parseInt(br.readLine());
+		for(int i=0;i<T;i++) {
+			int result = 0;
+            		//도착점, 출발점 저장
+			st = new StringTokenizer(br.readLine()," ");
+			int x1 = Integer.parseInt(st.nextToken());
+			int y1 = Integer.parseInt(st.nextToken());
+			int x2 = Integer.parseInt(st.nextToken());
+			int y2 = Integer.parseInt(st.nextToken());
+			int n = Integer.parseInt(br.readLine());
+			for(int j=0;j<n;j++) {
+                    		//행성계 정보 저장
+				st = new StringTokenizer(br.readLine()," ");
+				int cx = Integer.parseInt(st.nextToken());
+				int cy = Integer.parseInt(st.nextToken());
+				int r = Integer.parseInt(st.nextToken());
+                		//행성계 중점에서 도착점과 출발점 거리 계산
+				int startDistance = (int)Math.sqrt(Math.pow(x1-cx, 2) + Math.pow(y1-cy, 2));
+				int endDistance = (int)Math.sqrt(Math.pow(x2-cx, 2) + Math.pow(y2-cy, 2));
+				if(startDistance<r ^ endDistance<r)	//둘 중 하나만 행성계 안에 존재시
+					result++;	//진입/이탈 발생
+			}
+			bw.write(result + "\n");		//해당 테스트케이스 결과 BufferedWriter 저장
+		}
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+}
