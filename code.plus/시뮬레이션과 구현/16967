@@ -1,0 +1,47 @@
+import java.io.*;
+import java.util.*;
+public class Main {
+	static int H,W,X,Y;	
+	static int[][] B;		//B배열
+	public static void main(String[] args)throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+            	//배열에 대한 정보 저장
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		H = Integer.parseInt(st.nextToken());
+		W = Integer.parseInt(st.nextToken());
+		X = Integer.parseInt(st.nextToken());
+		Y = Integer.parseInt(st.nextToken());
+		int row_B = H + X;	//B배열 row 크기
+		int col_B = W + Y;	//A배열 col 크기
+		B = new int[row_B+1][col_B+1];
+		for(int i=1;i<=row_B;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			for(int j=1;j<=col_B;j++) {
+				B[i][j] = Integer.parseInt(st.nextToken());
+			}
+		}
+		cal(row_B,col_B);		//B배열에서 A배열로 변경하는 함수 실행
+        	//A배열 BufferedWriter 저장
+		for(int i=1;i<=H;i++) {
+			for(int j=1;j<=W;j++) {
+				bw.write(B[i][j] + " ");
+			}
+			bw.newLine();
+		}
+		bw.flush();	//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//B배열에서 A배열의 형태로 변경하는 함수
+	static void cal(int row_B, int col_B) {
+		for(int i=1+X;i<=row_B;i++) {
+			for(int j=1+Y;j<=col_B;j++) {
+				B[i][j] = B[i][j] - B[i-X][j-Y];
+			}
+		}
+		return;
+	}
+}
