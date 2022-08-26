@@ -1,0 +1,74 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+	static class tree{
+		int next, length;
+		public int getNext() {
+			return next;
+		}
+
+		public int getLength() {
+			return length;
+		}
+
+		public tree(int next, int length) {
+			this.next = next;
+			this.length = length;
+		}
+
+	}
+	static int N,index=0,max = Integer.MIN_VALUE;
+	static ArrayList<ArrayList<tree>> tree = new ArrayList<>();
+    public static void main(String[] args) throws IOException {
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    	StringTokenizer st;
+    	N = Integer.parseInt(br.readLine());
+    	for(int i=0;i<=N;i++)
+    		tree.add(new ArrayList<>());
+    	for(int i=1;i<N;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int previous = Integer.parseInt(st.nextToken());
+    		int next = Integer.parseInt(st.nextToken());
+    		int length = Integer.parseInt(st.nextToken());
+    		tree.get(previous).add(new tree(next,length));
+    		tree.get(next).add(new tree(previous,length));
+    	}
+    	bfs(1);
+    	bfs(index);
+    	bw.write(max + "\n");
+    	bw.flush();
+    	bw.close();
+    	br.close();
+    	
+    }
+    static void bfs(int start) {
+    	Queue<Integer> queue = new LinkedList<Integer>();
+    	queue.add(start);
+    	boolean[] visited = new boolean[N+1];
+    	int[] length = new int[N+1];
+    	visited[start] = true;
+    	while(!queue.isEmpty()) {
+    		int cur = queue.poll();
+    		for(tree value : tree.get(cur)) {
+    			if(!visited[value.getNext()] && length[cur] + value.length > length[value.next]) {
+    				visited[value.getNext()] = true;
+    				length[value.next] = length[cur] + value.length;
+    				queue.add(value.next);
+    			}
+    		}
+    	}
+    	maxGet(length);
+    	return;
+    }
+    static void maxGet(int[] length) {
+    	for(int i=1;i<=N;i++) {
+    		if(length[i] > max) {
+    			max = length[i];
+    			index = i;
+    		}
+    	}
+    	return;
+    }
+}
