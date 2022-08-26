@@ -1,0 +1,107 @@
+import java.io.*;
+import java.util.*;
+public class Main {
+	//트리 관련 클래스
+	static class tree{
+		int left, right;
+
+		public tree(int left, int right) {
+			super();
+			this.left = left;
+			this.right = right;
+		}
+	}
+	static int N;
+	static tree[] tree;		//트리 관련 정보
+	static StringBuilder sb = new StringBuilder();
+    public static void main(String[] args) throws IOException {
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	StringTokenizer st;
+    	N = Integer.parseInt(br.readLine());
+    	tree = new tree[N];
+        //트리에 대한 정보 저장
+    	for(int i=0;i<N;i++) {
+    		st = new StringTokenizer(br.readLine()," ");
+    		int root = st.nextToken().charAt(0) - 65;
+    		int left = st.nextToken().charAt(0) - 65;
+    		int right = st.nextToken().charAt(0) - 65;
+    		tree[root] = new tree(left,right);
+    	}
+    	preOrder(0);		//전위 순회 실행
+    	sb.append("\n");
+    	inOrder(0);		//중위 순회 실행
+    	sb.append("\n");
+    	postOrder(0);		//후위 순회 실행
+    	bw.write(sb.toString() + "\n");	//순회 결과 BufferedWriter 저장
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //전위 순회 함수
+    static void preOrder(int cur) {
+    	char alphbet = (char) ('A' + cur);
+		sb.append(alphbet);		//현재 노드 출력
+    	if(leafNodeCheck(cur))	//자식 노드 없을 때
+    		return;
+    	if(!(tree[cur].left==-19) && tree[cur].right==-19)	//왼쪽 자식노드만 존재
+        	preOrder(tree[cur].left);	//왼쪽 노드 이동
+    	else if(tree[cur].left==-19 && !(tree[cur].right==-19))	//오른쪽 자식노드만 존재
+    		preOrder(tree[cur].right);	//오른쪽 노드 이동
+    	else {		//왼쪽, 오른쪽 자식 노드 존재
+    		preOrder(tree[cur].left);	//왼쪽 노드 이동
+    		preOrder(tree[cur].right);	//오른쪽 노드 이동
+    	}
+    	return;
+    }
+    //중위 순회 함수
+    static void inOrder(int cur) {
+    	char alphbet = (char) ('A' + cur);
+    	if(leafNodeCheck(cur)) {	//자식노드 존재 X
+    		sb.append(alphbet);	//현재 노드 출력
+    		return;
+    	}
+    	if(!(tree[cur].left==-19) && tree[cur].right==-19) {	//왼쪽 자식 노드만 존재
+        	inOrder(tree[cur].left);	//왼쪽 자식 노드 이동
+        	sb.append(alphbet);		//현재 노드 출력
+    	}else if(tree[cur].left==-19 && !(tree[cur].right==-19)) {	//으른쪽 자식 노드만 존재
+    		sb.append(alphbet);	//현재 노드 출력
+    		inOrder(tree[cur].right);		//오른쪽 자식 노드 출력
+    	}else {		//왼쪽, 오른쪽 자식 노드만 존재
+    		inOrder(tree[cur].left);	//왼쪽 자식 노드 출력
+    		sb.append(alphbet);		//현재 노드 출력
+    		inOrder(tree[cur].right);	//오른쪽 자식 노드 출력
+    	}
+    	return;
+    }
+    //후위 순회 함수
+    static void postOrder(int cur) {
+    	char alphbet = (char) ('A' + cur);
+    	if(leafNodeCheck(cur)) {	//자식 노드 존재 X
+    		sb.append(alphbet);	//현재 노드 출력
+    		return;
+    	}
+    	if(!(tree[cur].left==-19) && tree[cur].right==-19) {	//왼쪽 자식 노드만 존재
+        	postOrder(tree[cur].left);		//왼쪽 자식 노드 이동
+        	sb.append(alphbet);		//현재 노드 출력
+    	}else if(tree[cur].left==-19 && !(tree[cur].right==-19)) {	//오른쪽 자식 노드만 존재
+    		postOrder(tree[cur].right);	//오른쪽 자식 노드 이동
+    		sb.append(alphbet);		//현재 노드 출력
+    	}else {
+    		postOrder(tree[cur].left);	//왼쪽 자식 노드 이동
+    		postOrder(tree[cur].right);	//오른쪽 자식 노드 이동
+    		sb.append(alphbet);		//현재 노드 출력
+    	}
+    	return;
+    }
+    //자식 노드 2개가 모두 존재하는지 확인하는 함수
+	static boolean leafNodeCheck(int cur) {
+    	if(tree[cur].left==-19 && tree[cur].right==-19)
+    		return true;
+    	
+    	return false;
+    }
+}
+
