@@ -1,0 +1,91 @@
+import java.io.*;
+import java.util.*;
+public class Main {
+	static int N,M,result = 11;
+	static char[][] board;		//게임판 저장 배열
+	static int[] dx = {0,0,-1,1};	//상하좌우 x값 변경값
+	static int[] dy = {-1,1,0,0};	//상하좌우 y값 변경값
+	static int[][] coin = new int[2][2];
+    public static void main(String[] args) throws IOException {
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+    	N = Integer.parseInt(st.nextToken());
+    	M = Integer.parseInt(st.nextToken());
+    	int index = 0;
+    	board = new char[N][M];
+        //게임판의 대한 정보를 저장
+    	for(int i=0;i<N;i++) {
+    		String str = br.readLine();
+    		for(int j=0;j<M;j++) {
+    			board[i][j] = str.charAt(j);
+    			if(str.charAt(j)=='o') {
+    				coin[index][0] = j;
+    				coin[index++][1] = i;
+    			}	
+    		}
+    	}
+    	game(coin[0][0],coin[0][1],coin[1][0],coin[1][1],1);	//게임 시작
+    	if(result==11)		//버튼 누른 횟수가 10회보다 더 많을 때
+    		bw.write("-1\n");
+    	else		//10회 이하일 때 누른 최소 횟수 BufferedWriter 저장
+    		bw.write(result + "\n");
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //게임 진행하는 함수
+    static void game(int x1, int y1, int x2, int y2, int count) {
+    	if(count>10) 
+    		return;
+    	for(int i=0;i<4;i++) {	
+        	//2개의 코인 상하좌우 순으로 이동
+    		int coin1_x = x1 + dx[i];
+    		int coin1_y = y1 + dy[i];
+    		int coin2_x = x2 + dx[i];
+    		int coin2_y = y2 + dy[i];
+            	//2개의 코인이 떨어질 때
+    		if((boardIn(coin1_y, true) ^ boardIn(coin1_x, false)) &&
+    				(boardIn(coin2_y, true) ^ boardIn(coin2_x, false))) {
+    			continue;
+            	//1개의 코인이 떨어질 때
+    		}else if((boardIn(coin1_y, true) ^ boardIn(coin1_x, false)) ^
+    				(boardIn(coin2_y, true) ^ boardIn(coin2_x, false))) {
+    			result = Math.min(result, count);
+    			return;
+    		}
+            	//2개의 코인 이동시 벽에 걸리지 않을 때
+    		if(boardMove(coin1_x,coin1_y) && boardMove(coin2_x, coin2_y))
+    			game(coin1_x,coin1_y,coin2_x,coin2_y,count+1);
+           		//1번째 코인이 벽에 걸릴때
+    		else if(boardMove(coin1_x,coin1_y) && !boardMove(coin2_x, coin2_y))
+    			game(coin1_x,coin1_y,x2,y2,count+1);
+            	//2번째 코인이 벽에 걸릴 때
+    		else if(!boardMove(coin1_x,coin1_y) && boardMove(coin2_x, coin2_y))
+    			game(x1,y1,coin2_x,coin2_y,count+1);
+    	}
+    	return;
+    }
+    //이동시 보드 안에 존재하는지 확인하는 함수
+    static boolean boardIn(int value, boolean check) {
+    	if(value>=0) {
+    		if(check) {
+    			if(value<N)
+    				return false;
+    		}else {
+    			if(value<M)
+    				return false;
+    		}
+    	}
+    	return true;
+    }
+    //보드 이동한 지점이 벽인 경우 확인하는 함수
+    static boolean boardMove(int x, int y) {
+    	if(board[y][x]!='#') 
+    		return true;
+    	
+    	return false;
+    }
+}
