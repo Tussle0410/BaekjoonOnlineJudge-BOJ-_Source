@@ -1,0 +1,40 @@
+import java.io.*;
+import java.util.*;
+public class Main {
+	static ArrayList<Integer> marble = new ArrayList<>();	//구슬 무게 저장 리스트
+	static int N,result = -1;
+    public static void main(String[] args) throws IOException {
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	N = Integer.parseInt(br.readLine());
+    	StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //입력되는 구슬 무게 저장
+    	for(int i=0;i<N;i++)
+    		marble.add(Integer.parseInt(st.nextToken()));
+    	cal(0);		//최대 에너지 구하는 함수 실행
+    	bw.write(result + "\n");		//최대 에너지 BufferedWriter 저장
+    	bw.flush();		//결과출력
+    	bw.close();
+    	br.close();
+    }
+    //최대 에너지 구하는 재귀 함수
+    static void cal(int cur) {
+    	int size = marble.size();
+    	if(size==2) {		//구슬이 2개 남았을 때
+    		result = Math.max(result, cur);
+    		return;
+    	}
+        //첫 번째, 마지막 구슬 제외 구슬 선택하기
+    	for(int i=1;i<size-1;i++) {
+    		int temp = marble.get(i);
+    		int w = marble.get(i-1) * marble.get(i+1);
+    		marble.remove(i);
+    		cal(cur + w);
+    		marble.add(i,temp);
+    	}
+    	return;
+    }
+}
+
