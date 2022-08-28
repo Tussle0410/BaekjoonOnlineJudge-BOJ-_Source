@@ -1,0 +1,50 @@
+import java.io.*;
+import java.util.*;
+public class Main {
+	static int N;
+	static int[] inOrder, postOrder;
+    //전위 순회 결과 저장 리스트
+	static ArrayList<Integer> preOrder = new ArrayList<Integer>();
+    public static void main(String[] args) throws IOException {
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	StringTokenizer st;
+    	N = Integer.parseInt(br.readLine());
+    	inOrder = new int[N];
+    	postOrder = new int[N];
+        //중위 순회 값 저장
+    	st = new StringTokenizer(br.readLine()," ");
+    	for(int i=0;i<N;i++) 
+    		inOrder[i] = Integer.parseInt(st.nextToken());
+    	//후위 순회 값 저장
+    	st = new StringTokenizer(br.readLine()," ");
+    	for(int i=0;i<N;i++)
+    		postOrder[i] = Integer.parseInt(st.nextToken());
+    	getPreOrder(0,N-1,0,N-1);	//전위 순회 구하는 함수 실행
+    	for(int i=0;i<preOrder.size();i++) 		//전위 순회 값 BufferedWriter 저장
+    		bw.write(preOrder.get(i) + " ");
+    	
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+    }
+    //중위, 후위 순회값을 가지고 전위 순회 값 구하는 함수
+    static void getPreOrder(int inS,int inE,int poS, int poE) {
+    	if(inS<=inE && poS<=poE) {
+        	int root = postOrder[poE];	//루트 노드 값
+        	int pivot = 0;
+        	preOrder.add(root);		//루트 값 전위 순회 값에 추가
+        	for(int i=inS;i<=inE;i++) {
+        		if(inOrder[i] == root) {
+        			pivot = i;
+        			break;
+        		}
+        	}
+        	getPreOrder(inS, pivot-1, poS, poS + pivot - inS - 1);	//왼쪽 자식 노드
+        	getPreOrder(pivot+1, inE,poS + pivot - inS , poE-1);	//오른쪽 자식 노드
+    	}
+
+    }
+}
