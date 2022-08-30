@@ -1,0 +1,142 @@
+import java.io.*;
+import java.util.*;
+public class Main {
+	static StringBuilder sb;
+	static boolean complete;	//스도쿠 완료되었는지 확인하는 변수
+	static int[] dx = {1,0};	//→,↓ x값 변경 
+	static int[] dy = {0,1};	//→,↓ y값 변경
+	static int[][] sudoku;	//스도쿠 값 저장
+	static boolean[][] colCheck,rowCheck, blockCheck,dominoes;
+    public static void main(String[] args) throws IOException {
+    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+    	StringTokenizer st;
+    	int count = 1;
+    	while(true) {
+    		int n = Integer.parseInt(br.readLine());
+    		if(n == 0)
+    			break;
+    		sudoku = new int[9][9];
+    		colCheck = new boolean[9][10];
+    		rowCheck = new boolean[9][10];
+    		blockCheck = new boolean[9][10];
+    		dominoes = new boolean[10][10];
+    		complete = false;
+    		sb = new StringBuilder();
+            //스도쿠에 대한 정보 저장
+    		for(int i=0;i<n;i++) {
+    			st = new StringTokenizer(br.readLine()," ");
+    			int U = Integer.parseInt(st.nextToken());
+    			String LU = st.nextToken(); 
+    			int V = Integer.parseInt(st.nextToken());
+    			String LV = st.nextToken();
+    			setSudoku(U,LU);
+    			setSudoku(V,LV);
+    			dominoesInput(U, V);
+    		}
+    		st = new StringTokenizer(br.readLine()," ");
+    		for(int i=1;i<=9;i++) {	//1~9 스도쿠판에 저장
+    			setSudoku(i, st.nextToken());
+    		}
+    		sudokuStart(0);		//스도쿠 시작
+            //결과 BufferedWriter 저장
+    		bw.write("Puzzle " + count + "\n");
+    		bw.write(sb.toString());
+    		count++;
+    	}
+    	bw.flush();		//결과 출력
+    	bw.close();
+    	br.close();
+
+    }
+    //스도쿠 판 채우는 함수
+    static void sudokuStart(int index) {
+    	if(index==81) {		//모든 스도쿠 판 채웠을 때
+    		if(!complete) {
+        		for(int i=0;i<9;i++) {
+        			for(int j=0;j<9;j++)
+        				sb.append(sudoku[i][j]);
+        			sb.append("\n");
+        		}
+        		complete = true;
+    		}
+    		return;
+    	}
+    	int x = index%9;	//x값
+    	int y = index/9;	//y값
+    	if(sudoku[y][x]!=0)		//해당 위치 스도쿠판 채워졌을 때
+    		sudokuStart(index+1);
+    	else {		//빈 곳일 때
+    		int nx, ny;
+    		for(int i=0;i<2;i++) {
+    			nx = x + dx[i];		//도미노 x값 변경
+    			ny = y + dy[i];		//도미노 y값 변경
+    			if(nx<0 || nx>8 || ny<0 || ny>8)	//스도쿠 판 범위 넘어갔을 때
+    				continue;
+    			if(sudoku[ny][nx]!=0)		//해당 도미노 위치에 값이 존재할 때
+    				continue;
+                //스도쿠판에 도미노 입력하기
+    			for(int j=1;j<=9;j++) {
+    				for(int s=1;s<=9;s++) {
+                    	//사용했던 도미노일 경우
+    					if(j==s || dominoes[j][s] || dominoes[s][j])
+    						continue;
+    					if(check(x,y,j) && check(nx,ny,s)) {
+    						sudokuInput(x, y, j);
+    						sudokuInput(nx, ny, s);
+    						dominoesInput(j, s);
+    						if(!complete)		//스도쿠 완성하지 않았을 때
+    							sudokuStart(index+1);
+    						sudokuRollback(x, y, j);
+    						sudokuRollback(nx, ny, s);
+    						dominoesRollback(j, s);
+    					}
+    				}
+    			}
+    		}
+    	}
+    }
+    //스도쿠판 입력되는 값이 스도쿠 규칙에 맞는지 확인하는 함수
+    static boolean check(int x, int y, int value) {
+    	int blockIndex = getBlockIndex(x, y);
+    	if(rowCheck[y][value] || colCheck[x][value] || blockCheck[blockIndex][value])
+    		return false;
+    	return true;
+    }
+    //입력값에 따른 스도쿠판 설정 함수
+    static void setSudoku(int value, String location) {
+		int x = Character.getNumericValue(location.charAt(1))-1;
+		int y = location.charAt(0) - 65;
+		sudokuInput(x,y,value);
+    }
+    //스도쿠판에 값 입력 함수
+    static void sudokuInput(int x, int y, int value) {
+    	sudoku[y][x] = value;
+    	rowCheck[y][value] = true;
+    	colCheck[x][value] = true;
+    	blockCheck[getBlockIndex(x, y)][value] = true;
+    }
+    //스도쿠판 입력된 것 롤백 함수
+    static void sudokuRollback(int x, int y, int value) {
+    	sudoku[y][x] = 0;
+    	rowCheck[y][value] = false;
+    	colCheck[x][value] = false;
+    	blockCheck[getBlockIndex(x, y)][value] = false;
+    }
+    //도미노 사용 저장 함수
+    static void dominoesInput(int value1, int value2) {
+    	dominoes[value1][value2] = true;
+    	dominoes[value2][value1] = true;
+    }
+    //도미노 사용 롤백 함수
+    static void dominoesRollback(int value1,int value2) {
+    	dominoes[value1][value2] = false;
+    	dominoes[value2][value1] = false;
+    }
+    //몇 번째 block인지 구하는 함수
+    static int getBlockIndex(int x, int y) {
+    	return (y/3) * 3 + (x/3);
+    }
+}
