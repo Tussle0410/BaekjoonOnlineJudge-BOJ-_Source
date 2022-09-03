@@ -1,0 +1,133 @@
+import java.io.*;
+import java.util.*;
+public class Main {
+	static int N,M, holeX, holeY,result = Integer.MAX_VALUE;
+	static int[][][][] visited;	//각 빨간 구슬과 파란 구슬의 위치일 때 방문 확인
+	static char[][] board;		//게임 보드 저장 배열
+	static int[] dx = {0, 0, -1, 1};	//상,하,좌,우 x 변경값
+	static int[] dy = {-1, 1, 0, 0};	//상,하,좌,우 y 변경값
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		int redX=0, redY=0, blueX=0, blueY=0;	//구슬의 값 초기화
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		visited = new int[N][M][N][M];
+		board = new char[N][M];
+        	//입력되는 게임 보드의 값 저장
+		for(int i=0;i<N;i++) {
+			String str = br.readLine();
+			for(int j=0;j<M;j++) {
+				board[i][j] = str.charAt(j);
+				if(board[i][j]=='R') {
+					redX = j;
+					redY = i;
+				}else if(board[i][j] == 'B') {
+					blueX = j;
+					blueY = i;
+				}else if(board[i][j] == 'O') {
+					holeX = j;
+					holeY = i;
+				}
+			}
+		}
+		visited[redY][redX][blueY][blueX] = -10;
+		game(redX, redY, blueX, blueY, -10);	//게임 시작
+		if(result == Integer.MAX_VALUE || result == 1)	//기울인 횟수 10회 초과할 때
+			bw.write("-1");
+		else		//기울인 횟수 10회 이하일 때
+			bw.write((result + 10) + "\n");
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//게임 진행하는 재귀 함수
+	static void game(int redX, int redY, int blueX, int blueY, int count) {
+		if(count>0) 		//10회 초과할 때
+			return;
+		//상, 하, 좌, 우 기울이기
+		for(int i=0;i<4;i++) {
+			int redTempX = redX;
+			int redTempY = redY;
+			int blueTempX = blueX;
+			int blueTempY = blueY;
+			boolean redClear = false;
+			boolean blueClear = false;
+            		//빨간색 구슬 이동
+			while(true) {
+				redTempX += dx[i];
+				redTempY += dy[i];
+				if(board[redTempY][redTempX]=='O') {	//빨간색 구슬 구멍 빠질 때
+					redClear = true;
+					break;
+				}else if(board[redTempY][redTempX] == '#') {	//빨간색 구슬 벽을 만날 때
+					redTempX -= dx[i];
+					redTempY -= dy[i];
+					break;
+				}
+			}
+            		//파란색 구슬 이동
+			while(true) {
+				blueTempX += dx[i];
+				blueTempY += dy[i];
+				if(board[blueTempY][blueTempX] == 'O') {	//파란색 구슬 구멍 빠질 때
+					blueClear = true;
+					break;
+				}else if(board[blueTempY][blueTempX]=='#') {	//파란색 구슬 벽을 만날 때
+					blueTempX -= dx[i];
+					blueTempY -= dy[i];
+					break;
+				}
+			}
+            		//구슬들이 행이나 열이 같을 때 기울이면 같은 위치에 도착
+			if(redTempX==blueTempX && redTempY==blueTempY) {
+				if(i==0) {	//상
+					if(redY<blueY) {	//빨간색이 위에 있을 때
+						blueTempX -= dx[i];
+						blueTempY -= dy[i];
+					}else {		//빨간색이 아래 있을 때
+						redTempX -= dx[i];
+						redTempY -= dy[i];
+					}
+				}else if(i==1) {	//하
+					if(redY<blueY) {	//빨간색이 위에 있을 때
+						redTempX -= dx[i];
+						redTempY -= dy[i];
+					}else {		//빨간색이 아래에 있을 때
+						blueTempX -= dx[i];
+						blueTempY -= dy[i];
+					}
+				}else if(i==2) {	//좌
+					if(redX<blueX) {	//빨간색이 앞에 있을 때
+						blueTempX -= dx[i];
+						blueTempY -= dy[i];
+					}else {		//빨간색이 뒤에 있을 때
+						redTempX -= dx[i];
+						redTempY -= dy[i];
+					}
+				}else if(i==3) {		//우
+					if(redX<blueX) {	//빨간색이 앞에 있을 때
+						redTempX -= dx[i];
+						redTempY -= dy[i];
+					}else {		//빨간색이 뒤에 있을 때
+						blueTempX -= dx[i];
+						blueTempY -= dy[i];
+					}
+				}
+			}
+            		//빨간 구슬만 구멍에 떨어질 때
+			if(redClear && !blueClear) {
+				result = Math.min(result,count+1);
+				return;
+			}else if(!redClear && !blueClear) {	//빨간, 파란 구슬이 구멍에 떨어지지 않을 때
+				if(visited[redTempY][redTempX][blueTempY][blueTempX] > count) {
+					visited[redTempY][redTempX][blueTempY][blueTempX] = count;
+					game(redTempX, redTempY, blueTempX, blueTempY, count+1);
+				}
+			}
+		}
+	}
+}
