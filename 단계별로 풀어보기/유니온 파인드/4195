@@ -1,0 +1,66 @@
+import java.util.*;
+import java.io.*;
+public class Main {
+	static int T,result,index;
+	static int[] parent,level;	//루트 노드, 루트 노드를 기준으로 개수 배열
+	static HashMap<String, Integer> map;	//친구 정보 저장 HashMap
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st;
+		T = Integer.parseInt(br.readLine());
+        	//각 테스트 케이스 진행
+		for(int i=0;i<T;i++) {
+			int F = Integer.parseInt(br.readLine());
+			index = 0;
+			map = new HashMap<>();
+			parent = new int[F*2];
+			level = new int[F*2];
+            		//루트 노드 관련 초기화
+			for(int j=0;j<F*2;j++) {
+				parent[j] = j;
+				level[j] = 1;
+			}
+            		//친구 관계 정보 입력 받았을 때
+			for(int j=0;j<F;j++) {
+				st = new StringTokenizer(br.readLine()," ");
+				result = 1;
+				String friend1 = st.nextToken();
+				String friend2 = st.nextToken();
+                		//친구 배열 저장
+				mapInput(friend1);	
+				mapInput(friend2);	
+                		//네트워크에 연결된 친구수 BufferedWriter 저장
+				bw.write(union(map.get(friend1),map.get(friend2)) + "\n");
+			}
+		}
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//루트 노드 구하는 함수
+	static int find(int n) {
+		if(n==parent[n])
+			return n;
+		return parent[n] = find(parent[n]);
+	}
+    	//친구들 네트워크에 연결 및 네트워크 친구 수 구하는 함수
+	static int union(int a, int b) {
+		int x = find(a);
+		int y = find(b);
+		if(x!=y) {
+			parent[y]=x;
+			level[x] += level[y];
+			level[y] = 1;
+		}
+		return level[x];
+	}
+    	//친구 정보 HashMap에 저장하는 함수
+	static void mapInput(String friend) {
+		if(!map.containsKey(friend)) 
+			map.put(friend, index++);
+	}
+}
+
