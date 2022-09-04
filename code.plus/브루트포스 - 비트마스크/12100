@@ -1,0 +1,165 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+	static int N,result=Integer.MIN_VALUE;
+	static int[] dx = {0, 0, -1, 1};	//상,하,좌,우 x값 변경값
+	static int[] dy = {-1, 1, 0, 0};	//상,하,좌,우 y값 변경값
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st;
+		N = Integer.parseInt(br.readLine());
+		int[][] board = new int[N][N];
+        	//입력되는 보드 값 저장
+		for(int i=0;i<N;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			for(int j=0;j<N;j++) {
+				board[i][j] = Integer.parseInt(st.nextToken());
+			}
+		}
+		gameStart(0, board);	//최대 5번 이동하는 모든 경우 구하는 함수 실행
+		bw.write(result + "\n");	// 보드 최대값 BufferedWriter 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//보드 상,하,좌,우 최대 5번 이동시켜 최대값 구하는 재귀 함수
+	static void gameStart(int count, int[][] board) {
+		if(count==5) {		//5번 이동했을 때
+			boardCheck(board);	//보드 안에 최대값 비교
+			return;
+		}
+        	//'상' 이동시
+		int[][] temp = new int[N][N];
+		boolean[][] sum = new boolean[N][N];
+		for(int i=0;i<N;i++) {
+			for(int j=0;j<N;j++) {
+				int x = j;
+				int y = i;
+				boolean check = false;
+				while(y>0) {
+					x += dx[0];
+					y += dy[0];
+					if(temp[y][x]==0)	//만나는 값 0일 때
+						continue;
+					if(temp[y][x] == board[i][j] && !sum[y][x]) {	//만나는 값 같은 값일 때
+						temp[y][x] = board[i][j] * 2;
+						check = true;
+						sum[y][x] = true;
+						break;
+					}else {	//만나는 값 0이 아닌 다른 값일 때
+						x -= dx[0];
+						y -= dy[0];
+						break;
+					}
+				}
+				if(!check)
+					temp[y][x] = board[i][j];
+			}
+		}
+		gameStart(count+1, temp);
+        	//'하' 이동시
+		temp = new int[N][N];
+		sum = new boolean[N][N];
+		for(int i=N-1;i>=0;i--) {
+			for(int j=0;j<N;j++) {
+				int x = j;
+				int y = i;
+				boolean check = false;
+				while(y<N-1) {
+					x += dx[1];
+					y += dy[1];
+					if(temp[y][x]==0)	//만나는 값 0일 때
+						continue;
+					if(temp[y][x] == board[i][j] && !sum[y][x]) {	//만나는 값 같은 값일 때
+						temp[y][x] = board[i][j] * 2;
+						check = true;
+						sum[y][x] = true;
+						break;
+					}else {	//만나는 값 0이 아닌 다른 값일 때
+						x -= dx[1];
+						y -= dy[1];
+						break;
+					}
+				}
+				if(!check)
+					temp[y][x] = board[i][j];
+			}
+		}
+		gameStart(count+1, temp);
+        	//'좌' 이동시
+		temp = new int[N][N];
+		sum = new boolean[N][N];
+		for(int i=0;i<N;i++) {
+			for(int j=0;j<N;j++) {
+				int x = j;
+				int y = i;
+				boolean check = false;
+				while(x>0) {
+					x += dx[2];
+					y += dy[2];
+					if(temp[y][x] == 0)	//만나는 값 0일 때
+						continue;
+					if(temp[y][x] == board[i][j] && !sum[y][x]) {	//만나는 값 같은 값일 때
+						temp[y][x] = board[i][j] * 2;
+						sum[y][x] = true;
+						check = true;
+						break;
+					}else {	//만나는 값 0이 아닌 다른 값일 때
+						x -= dx[2];
+						y -= dy[2];
+						break;
+					}
+				}
+				if(!check)
+					temp[y][x] = board[i][j];
+			}
+		}
+		gameStart(count+1, temp);
+        	//'우' 이동시
+		temp = new int[N][N];
+		sum = new boolean[N][N];
+		for(int i=0;i<N;i++) {
+			for(int j=N-1;j>=0;j--) {
+				int x = j;
+				int y = i;
+				boolean check = false;
+				while(x<N-1) {
+					x += dx[3];
+					y += dy[3];
+					if(temp[y][x] == 0)	//만나는 값 0일 때
+						continue;
+					if(temp[y][x] == board[i][j] && !sum[y][x]) {	//만나는 값 같은 값일 때
+						temp[y][x] = board[i][j] * 2;
+						sum[y][x] = true;
+						check = true;
+						break;
+					}else {	//만나는 값 0이 아닌 다른 값일 때
+						x -= dx[3];
+						y -= dy[3];
+						break;
+					}
+
+				}
+				if(!check)
+					temp[y][x] = board[i][j];
+			}
+		}
+		gameStart(count+1, temp);
+	}
+    	//현재 보드에 최대값 구하는 함수
+	static void boardCheck(int[][] board) {
+		for(int i=0;i<N;i++) {
+			for(int j=0;j<N;j++) {
+				if(board[i][j]==0)
+					continue;
+				else
+					result = Math.max(result, board[i][j]);
+			}
+		}
+		return;
+	}
+}
