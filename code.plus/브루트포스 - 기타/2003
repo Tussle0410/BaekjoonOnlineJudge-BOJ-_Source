@@ -1,0 +1,49 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+	static int N,M;
+	static int[] A;	//수열 정보 저장 배열
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		A = new int[N];
+		st = new StringTokenizer(br.readLine()," ");
+        	//입력되는 수열의 값 저장
+		for(int i=0;i<N;i++)
+			A[i] = Integer.parseInt(st.nextToken());
+        	//두 개의 포인터 선언
+		int start = 0;
+		int end = 0;
+		int result = cal(start, end, M);	//두 포인터 알고리즘 시작
+		bw.write(result + "\n");		//목표 값 되는 횟수 BufferedWriter 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//두 포인터로 범위의 합이 목표 값이 되는 횟수 구하는 함수
+	public static int cal(int start, int end, int goal) {
+		int count = 0;		// 횟수
+		int value = A[start];	//시작 값
+		while(end<N) {		//두 포인터로 탐색 시작
+			if(value>goal) {	//범위 값이 클 경우
+				value-= A[start];	//범위 감소로 범위 값 감소
+				start++;
+			}else {		//범위 값이 작거나 같은 경우
+				if(value==goal)		//목표와 같을 때 횟수 + 1
+					count++;
+				end++;
+				if(end>N-1)
+					break;
+				value += A[end];	//범위 증가로 범위 값 증가
+			}
+		}
+		return count;	//횟수 반환
+	}
+}
+
