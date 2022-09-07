@@ -1,0 +1,82 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+	static int N,S;
+	static int[] num;	//입력되는 수열
+	static ArrayList<Integer> leftlist = new ArrayList<>();	//반으로 나뉜 왼쪽 수열
+	static ArrayList<Integer> rightlist = new ArrayList<>();	//반으로 나뉜 오른쪽 수열
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		N = Integer.parseInt(st.nextToken());
+		S = Integer.parseInt(st.nextToken());
+		num = new int[N];
+		st = new StringTokenizer(br.readLine()," ");
+        	//수열 저장
+		for(int i=0;i<N;i++) 
+			num[i] = Integer.parseInt(st.nextToken());
+		
+		cal(0,N/2,0,leftlist);	//반으로 나눈 왼쪽 수열의 부분 합 모든 경우 구하기
+		cal(N/2,N,0,rightlist);	//반으로 나눈 오른쪽 수열의 부분 합 모든 경우 구하기
+		
+        	//오름차순 정렬
+		Collections.sort(leftlist);	
+		Collections.sort(rightlist);
+		long result = compare();	//두 수열의 합이 S가 되는 경우 구하기
+		
+        	//S=0일 때 (0,0)인 아무 값도 선택되지 않는 경우가 결과에 포함되어 결과-1을 진행합니다.
+		if(S==0)
+			result -= 1;
+		
+		bw.write(result + "\n");	//횟수를 BufferedWriter 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//두 수열의 값의 합이 S가 되는 개수를 구하는 함수
+	static long compare() {
+		long count = 0;		//S가 되는 개수
+        	//두 포인터 설정
+		int leftIdx = 0;	//왼쪽 수열 index
+		int rightIdx = rightlist.size()-1;	//오른쪽 수열 index
+		while(true) {
+			if(leftIdx==leftlist.size() || rightIdx < 0)	//범위 벗어날 경우
+				break;
+			int left = leftlist.get(leftIdx);	//현재 왼쪽 수열 합의 값
+			int right = rightlist.get(rightIdx);	//현재 오른쪽 수열 합의 값
+			int temp = left + right;
+			if(temp==S) {		//합이 S인 경우
+				long leftCount = 0;
+                		//각 수열에 동일한 값이 존재하는 경우
+				while(leftIdx<leftlist.size() && leftlist.get(leftIdx)==left) {
+					leftCount++;
+					leftIdx++;
+				}
+				long rightCount = 0;
+				while(rightIdx>=0 && rightlist.get(rightIdx)==right) {
+					rightCount++;
+					rightIdx--;
+				}
+				count += (leftCount * rightCount);	//모든 횟수 추가
+			}
+			if(temp>S) 	//합이 S보다 큰 경우
+				rightIdx--;
+			if(temp<S)	//합이 S보다 작은 경우
+				leftIdx++;
+		}
+		return count;
+	}
+    	//나뉜 수열에 대하여 부분 원소들의 모든 합을 구하는 함수
+	static void cal(int start, int end, int sum, ArrayList<Integer> list) {
+		if(start==end) {
+			list.add(sum);
+			return;
+		}
+		cal(start+1, end, sum, list);
+		cal(start+1, end, sum+num[start],list);
+	}
+}
