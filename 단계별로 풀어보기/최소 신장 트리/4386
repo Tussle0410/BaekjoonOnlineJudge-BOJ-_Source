@@ -1,0 +1,93 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+		//별의 위치 정보 생성자
+	static class point{
+		double x, y;
+		public point(double x, double y) {
+			super();
+			this.x = x;
+			this.y = y;
+		}
+	}
+    	//선분에 대한 정보 생성자
+	static class line{
+		int star1, star2;
+		double width;
+		public line(int star1, int star2, double width) {
+			super();
+			this.star1 = star1;
+			this.star2 = star2;
+			this.width = width;
+		}
+	}
+	static int n;
+	static double result = 0;
+	static int[] root;	//루트 노드
+	static point[] star;	//별의 위치
+	static ArrayList<line> list = new ArrayList<>();	//선분 저장 리스트
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st;
+		n = Integer.parseInt(br.readLine());
+		star = new point[n];
+		root = new int[n];
+        	//별의 위치 저장
+		for(int i=0;i<n;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			star[i] = new point(Float.parseFloat(st.nextToken()),Float.parseFloat(st.nextToken()));
+		}
+        	//선분 정보 저장
+		for(int i=0;i<n;i++) {
+			for(int j=i+1;j<n;j++) 
+				list.add(new line(i,j,widthCal(star[i],star[j])));		
+		}
+        	//선분 길이(가중치) 기준 오름차순 정렬
+		Collections.sort(list,new Comparator<line>() {
+			@Override
+			public int compare(line o1, line o2) {
+				return (int)(o1.width-o2.width);
+			}
+		});
+        	//루트 노드 초기화
+		for(int i=0;i<n;i++)
+			root[i] = i;
+			//선분에 대한 최소 신장 트리 가중치 합 구하기
+		for(int i=0;i<list.size();i++) {
+			if(!union(list.get(i).star1, list.get(i).star2))
+				result += list.get(i).width;
+		}
+		bw.write(result + "\n");	//가중치 합 BufferedWriter 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+		
+	}
+    	//루트 노드 찾는 함수
+	static int find(int n) {
+		if(n==root[n])
+			return n;
+		return root[n] = find(root[n]);
+	}
+    	//루트 노드 비교 및 변경 함수
+	static boolean union(int a, int b) {
+		int x = find(a);
+		int y = find(b);
+		if(x!=y) {
+			if(x<y)
+				root[y] = x;
+			else
+				root[x] = y;
+			return false;
+		}
+		return true;
+	}
+    	//2개의 별의 거리 구하는 함수
+	static double widthCal(point star1, point star2) {
+		return Math.sqrt(Math.pow(star1.x-star2.x, 2) + Math.pow(star1.y-star2.y, 2));
+	}
+}
