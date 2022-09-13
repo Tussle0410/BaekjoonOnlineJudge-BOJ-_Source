@@ -1,0 +1,111 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+
+public class Main{
+	//우주신들의 위치 생성자
+	static class Gods{
+		int x, y;
+		public Gods(int x, int y) {
+			super();
+			this.x = x;
+			this.y = y;
+		}
+		
+	}
+    	//우주신 통로 관련 생성자
+	static class line{
+		int g1, g2;
+		double width;
+		public line(int g1, int g2, double width) {
+			super();
+			this.g1 = g1;
+			this.g2 = g2;
+			this.width = width;
+		}
+		
+	}
+	static int N,M;
+	static ArrayList<Gods> god = new ArrayList<>();	//우주신들의 좌표 저장
+	static ArrayList<line> con = new ArrayList<>();	//통로 저장
+	static int[] root;	//Root Node 배열
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		root = new int[N+1];
+        	//Root Node 초기화
+		for(int i=0;i<=N;i++)
+			root[i] = i;
+            	//우주신들의 위치 저장
+		for(int i=0;i<N;i++) {
+			st =new StringTokenizer(br.readLine()," ");
+			int x = Integer.parseInt(st.nextToken());
+			int y = Integer.parseInt(st.nextToken());
+			god.add(new Gods(x,y));
+		}
+        	//이미 연결된 통로 Union-Find 진행
+		for(int i=0;i<M;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			int x = Integer.parseInt(st.nextToken());
+			int y = Integer.parseInt(st.nextToken());
+			union(x,y);
+		}
+        	//모든 경우의 통로 구하기
+		for(int i=0;i<N;i++) {
+			for(int j=i+1;j<N;j++) 
+				con.add(new line(i+1,j+1,widthCal(god.get(i),god.get(j))));
+		}
+        	//통로 길이(가중치) 기준 오름차순 정렬
+		Collections.sort(con,new Comparator<line>() {
+			@Override
+			public int compare(line c1, line c2) {
+				if(c1.width >= c2.width)
+					return 1;
+				else 
+					return -1;
+			}
+		});
+		double result = 0;
+        	//각 통로 Union-Find로 최소 신장 트리 및 가중치 합 구하기
+		for(int i=0;i<con.size();i++) {
+			int g1 = con.get(i).g1;
+			int g2 = con.get(i).g2;
+			if(!union(g1,g2))
+				result += con.get(i).width;
+		}
+        	//소수점 2자리까지 나오도록 형식 변환하기
+		DecimalFormat df = new DecimalFormat(".00");
+		bw.write(df.format(result) + "\n");	//가중치의 합 BufferedWriter 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//루트 노드 찾는 함수
+	static int find(int n) {
+		if(root[n] == n)
+			return n;
+		return root[n] = find(root[n]);
+	}
+    	//두 우주신의 루트 노드 비교하여 사용할 수 있는지 구하는 함수
+	static boolean union(int a, int b) {
+		int x = find(a);
+		int y = find(b);
+		if(x!=y) {
+			if(x<y)
+				root[y] = x;
+			else
+				root[x] = y;
+			return false;
+		}
+		return true;
+	}
+    	//우주신끼리의 거리 구하는 함수
+	static double widthCal(Gods g1, Gods g2) {
+		return Math.sqrt(Math.pow(g1.x-g2.x, 2) + Math.pow(g1.y-g2.y, 2));
+	}
+}
