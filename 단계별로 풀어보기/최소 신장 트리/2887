@@ -1,0 +1,131 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+	//행성의 좌표 생성자
+	static class coordinate{
+		int n, x, y, z;
+		public coordinate(int n, int x, int y, int z) {
+			super();
+			this.n = n;
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+	}
+    	//통로 생성자
+	static class tunnel{
+		int p1, p2, width;
+		public tunnel(int p1, int p2, int width) {
+			super();
+			this.p1 = p1;
+			this.p2 = p2;
+			this.width = width;
+		}
+	}
+	static int N;
+	static coordinate[] planet;	//행성의 좌표 저장 배열
+	static ArrayList<tunnel> line = new ArrayList<>();	//행성간 통로 저장 리스트
+	static int[] root;		//루트 노드 저장 배열
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st;
+		N = Integer.parseInt(br.readLine());
+		planet = new coordinate[N];
+		root = new int[N];
+        	//루트 노드 초기화
+		for(int i=0;i<N;i++)
+			root[i] = i;
+            	//행성 좌표 저장
+		for(int i=0;i<N;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			int x = Integer.parseInt(st.nextToken());
+			int y = Integer.parseInt(st.nextToken());
+			int z = Integer.parseInt(st.nextToken());
+			planet[i] = new coordinate(i, x, y, z);
+		}
+        	//X축 기준 최소 신장 트리에 사용되는 통로 구하기
+		sortX();	//X축 오름차순 정렬
+		for(int i=0;i<N-1;i++) 
+			line.add(new tunnel(planet[i].n, planet[i+1].n, Math.abs(planet[i].x-planet[i+1].x)));	
+			//Y축 기준 최소 신장 트리에 사용되는 통로 구하기
+		sortY();	//Y축 오름차순 정렬
+		for(int i=0;i<N-1;i++) 
+			line.add(new tunnel(planet[i].n, planet[i+1].n, Math.abs(planet[i].y-planet[i+1].y)));
+			//Z축 기준 최소 신장 트리에 사용되는 통로 구하기
+		sortZ();	//Z축 오름차순 정렬
+		for(int i=0;i<N-1;i++)
+			line.add(new tunnel(planet[i].n, planet[i+1].n, Math.abs(planet[i].z-planet[i+1].z)));	
+		
+		sortTunnel();	//모든 통로 오름차순 정렬
+		long result = 0;
+        	//최소 신장 트리의 가중치 구하기
+		for(int i=0;i<line.size();i++) {
+			if(!union(line.get(i).p1, line.get(i).p2)) {
+				result += line.get(i).width;
+			}
+		}
+		bw.write(result + "\n");		//가중치 결과 BufferedWriter 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//루트 노드 찾는 함수
+	static int find(int n) {
+		if(n==root[n])
+			return n;
+		return root[n] = find(root[n]);
+	}
+    	//루트 노드 같은지 확인 및 변경하는 함수
+	static boolean union(int a, int b) {
+		int x = find(a);
+		int y = find(b);
+		if(x!=y) {
+			if(x>y)
+				root[x] = y;
+			else
+				root[y] = x;
+			return false;
+		}
+		return true;
+	}
+    	//행성 좌표 X축 기준 정렬 함수
+	static void sortX() {
+		Arrays.sort(planet, new Comparator<coordinate>(){
+			@Override
+			public int compare(coordinate o1, coordinate o2) {
+				return o1.x - o2.x;
+			}
+		});
+	}
+    	//행성 좌표 Y축 기준 정렬 함수
+	static void sortY() {
+		Arrays.sort(planet, new Comparator<coordinate>(){
+			@Override
+			public int compare(coordinate o1, coordinate o2) {
+				return o1.y - o2.y;
+			}
+		});
+	}
+    	//행성 좌표 Z축 기준 정렬 함수
+	static void sortZ() {
+		Arrays.sort(planet, new Comparator<coordinate>(){
+			@Override
+			public int compare(coordinate o1, coordinate o2) {
+				return o1.z - o2.z;
+			}
+		});
+	}
+    	//터널 길이 기준 정렬 함수
+	static void sortTunnel() {
+		Collections.sort(line,new Comparator<tunnel>() {
+			@Override
+			public int compare(tunnel o1, tunnel o2) {
+				return o1.width - o2.width;
+			}
+		});
+	}
+}
