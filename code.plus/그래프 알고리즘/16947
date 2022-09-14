@@ -1,0 +1,91 @@
+ 
+
+import java.io.*;
+import java.util.*;
+
+public class Main{
+	//간선 관련 생성자
+	static class line{
+		int station, count;
+		public line(int station, int count) {
+			super();
+			this.station = station;
+			this.count = count;
+		}
+	}
+	static int N, start, end;
+	static boolean[] cycle,visited;		//순환선 및 방문 확인 배열
+	static ArrayList<ArrayList<Integer>> graph = new ArrayList<>();	//역 관련 정보 저장
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st;
+		N = Integer.parseInt(br.readLine());
+		cycle = new boolean[N+1];
+		for(int i=0;i<=N;i++)
+			graph.add(new ArrayList<>());
+			//역 관련 정보 저장
+		for(int i=0;i<N;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			graph.get(a).add(b);
+			graph.get(b).add(a);
+		}
+		visited = new boolean[N+1];
+		dfs(1, 0);		//순환선 내 역을 찾는 DFS함수 실행
+        	//각 역에서 순환선 내 역과의 최소 거리 구하기
+		for(int i=1;i<=N;i++) {
+			if(cycle[i])		//순환선 내 역일 때
+				bw.write("0 ");
+			else		//순환선 내 역이 아닐 때
+				bw.write(bfs(i) + " ");
+		}
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//순환선에 포함되는 역을 찾는 DFS 함수
+	static void dfs(int cur, int previous) {
+		visited[cur] = true;
+		for(int next : graph.get(cur)) {
+        		//방문했던 역 다시 방문해서 사이클 만들어졌을 때
+			if(visited[next] && next != previous) {
+				start = next;
+				cycle[cur] = true;
+				break;
+			}
+			
+			if(!visited[next]) {
+				dfs(next,cur);
+                		//사이클 완성 시 사이클 내 역들 순환선에 포함
+				if(cycle[next] && next!=start) {
+					cycle[cur] = true;
+					break;
+				}
+			}
+		}
+	}
+    	//각 역에서 순환선 내 가장 가까운 역과의 거리 구하는 BFS 함수
+	static int bfs(int start) {
+		Queue<line> queue = new LinkedList<>();
+		visited = new boolean[N+1];
+		visited[start] = true;
+		queue.add(new line(start, 0));
+		while(!queue.isEmpty()) {
+			line cur = queue.poll();
+			if(cycle[cur.station])
+				return cur.count;
+			for(int next : graph.get(cur.station)) {
+				if(!visited[next]) {
+					visited[next] = true;
+					queue.add(new line(next, cur.count+1));
+				}
+			}
+		}
+		return -1;
+	}
+}
+
