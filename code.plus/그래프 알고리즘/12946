@@ -1,0 +1,78 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+	static int N,result = 0;
+	static char[][] board;		//육각 보드 정보 배열
+	static int[] dx = {0, 1, -1, 1, -1, 0};		//육각보드 주변 탐색을 위한 X값 변경값
+	static int[] dy = {-1, -1, 0, 0, 1, 1};		//육각보드 주변 탐색을 위한 y값 변경값
+	static int[][] tempBoard;		//육각 보드에 무슨 색이 칠해졌는데 저장하는 배열
+	static boolean[][] visited;		//육각 보드 칸 방문 저장 배열
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		N = Integer.parseInt(br.readLine());
+		board = new char[N][N];
+		tempBoard = new int[N][N];
+		visited = new boolean[N][N];
+        	//보드 정보 저장
+		for(int i=0;i<N;i++) {
+			String str = br.readLine();
+			for(int j=0;j<N;j++) {
+				board[i][j] = str.charAt(j);
+			}
+		}
+		search();		//DFS 탐색 시작을 위한 함수 실행
+		bw.write(result + "\n");		//색칠한 색 종류 BufferedWriter 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//보드 'X'칸 DFS탐색 및 색 종류 3개일 때 DFS 탐색 종료
+	static void search() {
+		for(int i=0;i<N;i++) {
+			for(int j=0;j<N;j++) {
+				if(board[i][j] == 'X' && !visited[i][j])	//'X'칸 DFS 탐색 시작
+					dfs(j,i);
+				if(result==3)	//색 종류 3개, DFS 탐색 종료
+					return;
+			}
+		}
+	}
+    	//DFS 탐색으로 색을 칠하는 함수
+	static void dfs(int x, int y) {
+		if(result == 3)		//색칠한 색의 종류가 3개일 때 종료
+			return;
+		boolean[] color = new boolean[4];	//색 관련 배열
+		visited[y][x] = true;	//해당 칸 방문 확인
+		for(int i=0;i<6;i++) {
+			int tempX = x + dx[i];		//X값 변경
+			int tempY = y + dy[i];		//Y값 변경
+            	//해당 칸 근처 색칠에 사용된 색 확인
+			if(tempX>=0 && tempY>=0 && tempX<N && tempY<N) {
+				if(board[tempY][tempX] == 'X' && tempBoard[tempY][tempX]!=0) 
+					color[tempBoard[tempY][tempX]] = true;
+			}
+		}
+        	//주변 사용된 색 제외한 현재 칸 색칠하기
+		for(int i=1;i<color.length;i++) {
+			if(!color[i]) {
+				result = Math.max(result, i);
+				tempBoard[y][x] = i;
+				break;
+			}
+		}
+        	//DFS로 인접한 'X'칸으로 이동
+		for(int i=0;i<6;i++) {
+			int tempX = x + dx[i];
+			int tempY = y + dy[i];
+			if(tempX>=0 && tempY>=0 && tempX<N && tempY<N) {
+				if(board[tempY][tempX] == 'X' && !visited[tempY][tempX]) 
+					dfs(tempX,tempY);
+			}
+		}
+	}
+}
+
