@@ -1,0 +1,75 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+	static int N;
+	static ArrayList<ArrayList<Integer>> graph = new ArrayList<>();	//그래프 저장 리스트
+	static Queue<Integer> result = new LinkedList<Integer>();	//순서 저장 큐
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		StringTokenizer st;
+		N = Integer.parseInt(br.readLine());
+		for(int i=0;i<=N;i++)
+			graph.add(new ArrayList<>());
+            	//그래프 저장
+		for(int i=0;i<N-1;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			graph.get(a).add(b);
+			graph.get(b).add(a);
+		}
+		st = new StringTokenizer(br.readLine()," ");
+		int size = st.countTokens();
+        	//입력되는 순서 저장
+		for(int i=0;i<size;i++) 
+			result.add(Integer.parseInt(st.nextToken()));
+		
+		int first = result.poll();	//시작 정점 가져오기
+		if(first!=1)	//시작 정점 1이 아니면 BFS 탐색 불가능
+			bw.write("0");
+		else {
+			if(bfs(1))	//입력된 순서 BFS 탐색 시작
+				bw.write("1");	//탐색 성공시
+			else
+				bw.write("0");	//탐색 실패시
+		}
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//입력된 순서에 따라 BFS 탐색하는 함수
+	static boolean bfs(int start) {
+		Queue<Integer> queue = new LinkedList<>();
+		HashSet<Integer> temp = new HashSet<>();	//지역 정점 저장 HashSet
+		boolean[] visited = new boolean[N+1];	//정점 방문 여부
+		visited[start] = true;
+		queue.add(start);
+		while(!queue.isEmpty()) {
+			int cur = queue.poll();
+                   	//인접 정점 저장
+			for(int next : graph.get(cur)) {
+				if(!visited[next]) {
+					temp.add(next);
+					visited[next] = true;
+				}
+			}
+			int size = temp.size();
+            		//HashSet에 입력되는 순서에 맞게 존재하는지 확인 및 순서에 맞게 BFS탐색 진행
+			if(!result.isEmpty()) {
+				for(int i=0;i<size;i++) {
+					int num = result.poll();
+					if(temp.contains(num))
+						queue.add(num);
+					else		//HashSet에 존재하지 않을 때
+						return false;
+				}
+			}
+			temp.clear();
+		}
+		return true;
+	}
+}
