@@ -1,0 +1,112 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+	static int n;
+	static int[] weight;	//가중치 저장 배열
+	static int[][] DP;		//메모이제이션 배열
+	static ArrayList<ArrayList<Integer>> graph = new ArrayList<>();	//그래프 저장 리스트
+	static ArrayList<ArrayList<Integer>> tree = new ArrayList<>();	//트리 저장 리스트
+    	//최대 독립집합의 포함된 정점을 오름차순으로 출력하기 위한 우선순위 큐
+	static PriorityQueue<Integer> queue = new PriorityQueue<>();
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        	//입력값 처리하는 BufferedReader
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        	//결과값 출력하는 BufferedWriter
+		n = Integer.parseInt(br.readLine());
+		weight = new int[n+1];
+		DP = new int[n+1][2];
+		for(int i=0;i<=n;i++) {
+			graph.add(new ArrayList<>());
+			tree.add(new ArrayList<>());
+		}
+
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        	//가중치 저장
+		for(int i=1;i<=n;i++)
+			weight[i] = Integer.parseInt(st.nextToken());
+		
+        	//입력되는 그래프 저장
+		for(int i=0;i<n-1;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			graph.get(a).add(b);
+			graph.get(b).add(a);
+		}
+		buildTree(1, 0);	//루트 정점 1로 하는 트리 만들기
+		
+		int result = 0;
+		int rootInclude = search(1, 1);	//루트 정점 1이 포함될 때 최대 독립집합
+		int rootNonInclude = search(1, 0);	//루트 정점 1이 포함되지 않을 때 최대 독립집합
+		if(rootInclude > rootNonInclude) {	//루트 정점 1이 포함된 독립집합이 클 때
+			result += rootInclude;
+			trace(1, 1);		//해당 독립집합에 포함된 정점 탐색
+		}else {		//루트 정점 1이 포함되지 않은 독립집합이 클 때
+			result += rootNonInclude;
+			trace(1, 0);		//해당 독립집합에 포함된 정점 탐색
+		}
+		bw.write(result + "\n");		//가중치 BufferedWriter 저장
+		while(!queue.isEmpty())		//정점들 BufferedWriter 저장
+			bw.write(queue.poll() + " ");
+		
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();
+	}
+    	//메모이제이션, 우선순위 큐를 이용해 독립집합에 포함된 정점 탐색하는 재귀함수
+	static void trace(int cur, int check) {
+		if(check==1) {		//현재 정점 포함
+			queue.add(cur);
+            		//인접한 정점 미포함
+			for(Integer next : tree.get(cur)) {
+				trace(next,0);
+			}
+		}else {		//현재 정점 미포함
+        		//인접한 정점에서 가중치가 더 큰 포함되거나 포함되지 않을 때 선택
+			for(Integer next : tree.get(cur)) {
+				if(DP[next][1] > DP[next][0]) {
+					trace(next, 1);
+				}else
+					trace(next, 0);
+			}
+		}
+	}
+    	//DFS와 메모이제이션으로 최대 독립집합 구하는 함수
+	static int search(int cur, int check) {
+		int result = 0;
+        	//이미 탐색해본 정점일 때
+		if(DP[cur][check]!=0) {
+			return DP[cur][check];
+		}
+
+		//현재 정점 포함시
+		if(check == 1) {
+			result += weight[cur];
+            		//인접한 정점 미포함
+			for(Integer next : tree.get(cur))
+				result += search(next, 0);
+		}else {		//현재 정점 미 포함시
+			for(Integer next : tree.get(cur)) {
+				int include = search(next, 1);	//인접한 정점 포함할 때
+				int nonInclude = search(next , 0);	//인접한 정점 미포함할 때
+                		//가중치가 더 큰 것을 선택
+				if(include > nonInclude) {
+					result += include;
+				}else
+					result += nonInclude;
+			}
+		}
+		return DP[cur][check] = result;
+	}
+    	//그래프에 대한 내용으로 트리 만드는 함수
+	static void buildTree(int cur, int root) {
+		for(Integer next : graph.get(cur)) {
+			if(next != root) {
+				tree.get(cur).add(next);
+				buildTree(next, cur);
+			}
+		}
+	}
+}
