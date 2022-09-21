@@ -1,0 +1,101 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//지도 현재 위치 관련 생성자
+    static class position{
+        int x, y;
+        public position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int N,M,result = Integer.MIN_VALUE;
+    static int[][] laboratory;	//지도 정보 저장 배열
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 X값 변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 Y값 변경값
+    static ArrayList<position> virus = new ArrayList<>();	//바이러스 위치 저장 리스트
+    static public void  main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        laboratory = new int[N][M];
+        //지도 정보 및 바이러스 위치 저장
+        for(int i=0;i<N;i++) {
+            st = new StringTokenizer(br.readLine(), " ");
+            for (int j = 0; j < M; j++){
+                laboratory[i][j] = Integer.parseInt(st.nextToken());
+                if(laboratory[i][j]==2)
+                    virus.add(new position(j,i));
+            }
+        }
+        search(0,0,0);	//벽을 3개 설치하는 모든 경우에서 BFS 탐색 진행하는 함수 실행
+        bw.write(result + "\n");	//빈 칸의 최대값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //지도에 벽을 3개 설치하는 모든 경우를 구해서 BFS탐색으로 최대 빈 칸의 수를 구하는 함수
+    static void search(int x, int y, int count){
+        if(count==3){		//벽을 3개 설치했을 때
+            result = Math.max(result, bfs());
+            return;
+        }
+        if(y>=N)
+            return;
+
+        if(x<M-1){
+            if(laboratory[y][x]==0){
+                laboratory[y][x] = 1;
+                search(x+1, y, count+1);
+                laboratory[y][x] = 0;
+            }
+            search(x+1, y, count);
+        }else{
+            if(laboratory[y][x] == 0){
+                laboratory[y][x] = 1;
+                search(0,y+1, count+1);
+                laboratory[y][x] = 0;
+            }
+            search(0,y+1, count);
+        }
+    }
+    //현재 지도에서 바이러스가 퍼지는 것을 진행하는 BFS 함수
+    static int bfs(){
+        Queue<position> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[N][M];
+        for(position temp : virus)		//바이러스 위치 큐에 저장
+            queue.add(temp);
+        while(!queue.isEmpty()){
+            position cur = queue.poll();
+            int x = cur.x;
+            int y = cur.y;
+            for(int i=0;i<4;i++){
+                int tempX = x + dx[i];
+                int tempY = y + dy[i];
+                if(tempX>=0 && tempY>=0 && tempX<M && tempY<N){
+                    if(laboratory[tempY][tempX]==0 && !visited[tempY][tempX]){
+                        visited[tempY][tempX] = true;
+                        queue.add(new position(tempX,tempY));
+                    }
+                }
+            }
+        }
+        return cleanCheck(visited);
+    }
+    //현재 지도에 빈 칸에 개수를 확인하는 함수
+    static int cleanCheck(boolean[][] visited){
+        int count = 0;
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++) {
+                if(laboratory[i][j]==0 && !visited[i][j])
+                    count++;
+            }
+        }
+        return count;
+    }
+}
