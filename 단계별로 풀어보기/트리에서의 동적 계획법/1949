@@ -1,0 +1,77 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    static int N;
+    static int[] width;	//주민 가중치 배열
+    static int[][] DP;	//메오이제이션 배열
+    static ArrayList<ArrayList<Integer>> graph = new ArrayList<>();	//그래프 리스트
+    static ArrayList<ArrayList<Integer>> tree = new ArrayList<>();	//트리 리스트
+    static public void  main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        width = new int[N+1];
+        DP = new int[N+1][2];
+        for(int i=0;i<=N;i++){
+            graph.add(new ArrayList<>());
+            tree.add(new ArrayList<>());
+        }
+
+        st = new StringTokenizer(br.readLine()," ");
+        //주민 수 저장
+        for(int i=1;i<=N;i++)
+            width[i] = Integer.parseInt(st.nextToken());
+		//그래프 저장
+        for(int i=0;i<N-1;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            graph.get(a).add(b);
+            graph.get(b).add(a);
+        }
+        buildTree(1, 0);	//루트 정점 1로 트리 만들기
+        int rootInclude = search(1, 1);	//루트 정점 우수 마을일 때
+        int nonRootInclude = search(1, 0);	//루트 정점 우수 마을 아닐 때
+        if(rootInclude>nonRootInclude)	//더 큰 우수 마을의 주민 수 구하기
+            bw.write(rootInclude + "\n");
+        else
+            bw.write(nonRootInclude + "\n");
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //DFS탐색으로 우수마을의 모든 경우에 최대 주민 수 구하는 함수
+    static int search(int cur, int check){
+        if(DP[cur][check]!=0)
+            return DP[cur][check];
+        int result = 0;
+        if(check==1){
+            result += width[cur];
+            for(Integer next : tree.get(cur))
+                result += search(next, 0);
+        }else{
+            for(Integer next : tree.get(cur)){
+                int include = search(next, 1);
+                int nonInclude = search(next,0);
+                if(include>nonInclude)
+                    result += include;
+                else
+                    result += nonInclude;
+            }
+        }
+        return DP[cur][check] = result;
+    }
+    //그래프 형태를 트리 형태로 바꾸는 함수
+    static void buildTree(int cur, int parent){
+        for(Integer next : graph.get(cur)){
+            if(next != parent){
+                tree.get(cur).add(next);
+                buildTree(next, cur);
+            }
+        }
+    }
+}
