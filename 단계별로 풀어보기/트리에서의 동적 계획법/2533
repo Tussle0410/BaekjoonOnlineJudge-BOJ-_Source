@@ -1,0 +1,71 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    static int N;
+    static ArrayList<ArrayList<Integer>> graph = new ArrayList<>();	//그래프 저장 리스트
+    static ArrayList<ArrayList<Integer>> tree = new ArrayList<>();	//트리 저장 리스트
+    static int[][] DP;		//메모이제이션 배열
+    static public void  main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        DP = new int[N+1][2];
+        for(int i=0;i<=N;i++){
+            graph.add(new ArrayList<>());
+            tree.add(new ArrayList<>());
+        }
+        //입력되는 그래프 값 저장
+        for(int i=0;i<N-1;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+        buildTree(1, 0);		//루트 정점 1 기준으로 트리 만들기
+        int rootInclude = search(1, 1);	//루트 정점 1이 얼리 어답터일 때
+        int rootNonInclude = search(1, 0);	//루트 정점1이 얼리 어답터가 아닐 때
+        if(rootInclude<rootNonInclude)	//루트 정점 얼리 어답터 유무로 비교
+            bw.write(rootInclude + "\n");
+        else
+            bw.write(rootNonInclude + "\n");
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //DFS탐색으로 모든 친구가 새로운 아이디어를 받아들이는 경우를 구하는 함수
+    static int search(int cur, int check) {
+        if (DP[cur][check] != 0)		//이미 연산해본 경우
+            return DP[cur][check];
+        int result = 0;
+        if (check == 1) {		//현재 정점이 얼리 어답터일 경우
+            result +=1 ;
+            for (Integer next : tree.get(cur)) {
+                int include = search(next, 0);	//인접한 친구가 얼리 어답터가 아닐 때
+                int nonInclude = search(next, 1);	//인접한 친구가 얼리 어답터일 때
+                if(include<nonInclude)
+                    result += include;
+                else
+                    result += nonInclude;
+            }
+        } else {		//현재 정점이 얼리 어답터가 아닌 경우
+            for(Integer next : tree.get(cur)){
+                result += search(next, 1);		//인접한 친구가 얼리 어답터일 때
+            }
+        }
+        return DP[cur][check] = result;
+    }
+    //그래프 형태를 트리 형태로 바꾸는 함수
+    static void buildTree(int cur, int parent){
+        for(Integer next : graph.get(cur)){
+            if(next!=parent){
+                tree.get(cur).add(next);
+                buildTree(next, cur);
+            }
+        }
+    }
+}
