@@ -1,0 +1,54 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//좌표 관련 클래스
+    static class position{
+        long x,y;
+        public position(long x, long y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int N;
+    static ArrayList<position> list = new ArrayList<>();	//좌표 저장 리스트
+    static public void  main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        //좌표 값 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            long a = Long.parseLong(st.nextToken());
+            long b = Long.parseLong(st.nextToken());
+            list.add(new position(a,b));
+        }
+        list.add(list.get(0));	//첫 좌표 마지막에 다시 저장!(중요)
+        double result = cal();	//신발끈 공식으로 다각형 넓이 구하기
+        //소수 둘째 자리에서 반올림한 값 BufferedWriter 저장
+        bw.write(String.format("%.1f", result));
+        bw.flush();	//결과 출력
+        bw.close();
+        br.close();
+    }
+    //신발끈 공식 적용하는 함수
+    static double cal(){
+        long sumA = 0;	//x1*y2 형식의 합
+        long sumB = 0;	//x2*y1 형식의 합
+        for(int i=0;i<list.size()-1;i++){
+            long x1 = list.get(i).x;
+            long y1 = list.get(i).y;
+
+            long x2 = list.get(i+1).x;
+            long y2 = list.get(i+1).y;
+
+            sumA += x1 * y2;
+            sumB += x2 * y1;
+        }
+        return Math.abs(sumA-sumB) / 2.0;	//신발끈 공식 적용 후 반환
+    }
+}
+
