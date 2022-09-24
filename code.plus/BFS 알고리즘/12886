@@ -1,0 +1,90 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//그룹별 무게 저장 관련 클래스
+    static class stone{
+        int A,B,C;
+        public stone(int a, int b, int c) {
+            A = a;
+            B = b;
+            C = c;
+        }
+    }
+    static boolean[][] visited;		//방문 확인 배열
+    static public void  main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        int stone1 = Integer.parseInt(st.nextToken());
+        int stone2 = Integer.parseInt(st.nextToken());
+        int stone3 = Integer.parseInt(st.nextToken());
+        //전체 그룹 무게 합 구하기
+        int size = stone1 + stone2 + stone3;
+        if(size%3!=0)	//무게 합이 3으로 나누어 떨어지지 않으면 같은 무게로 나눌 수 없다.
+            bw.write("0");
+        else{
+            visited = new boolean[size+1][size+1];
+            //BFS 탐색 시작
+            if(bfs(stone1, stone2, stone3))
+                bw.write("1");	//같은 무게의 그룹으로 만들 수 있을 때
+            else
+                bw.write("0");	//같은 무게의 그룹으로 만들 수 없을 때
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //BFS탐색 진행
+    static boolean bfs(int a, int b, int c){
+        Queue<stone> queue = new LinkedList<>();
+        visited[a][b] = true;	//[A][B] 방문
+        visited[b][c] = true;	//[B][C] 방문
+        visited[a][c] = true;	//[A][C] 방문
+        queue.add(new stone(a,b,c));
+        while(!queue.isEmpty()){
+            stone cur = queue.poll();
+            int A = cur.A;
+            int B = cur.B;
+            int C = cur.C;
+            if(A==B &&  B==C)	//모두 같은 무게일 때
+                return true;
+            stoneMove(queue, A,B,C,1);	//A->B
+            stoneMove(queue, A,C,B,2);	//A->C
+            stoneMove(queue, B,C,A,3);	//B->C
+        }
+        return false;
+
+    }
+    //돌 이동하는 함수
+    static void stoneMove(Queue<stone> queue, int stone1, int stone2,int remainder, int check){
+        //무게가 더 작은 그룹으로 돌 이동하기 위해 그룹별 무게 비교
+        if(stone1>stone2){
+            stone1 -= stone2;
+            stone2 += stone2;
+        }else{
+            stone2 -= stone1;
+            stone1 += stone1;
+        }
+        if(check==1){	//A->B
+            if(!visited[stone1][stone2]){
+                visited[stone1][stone2] = true;
+                queue.add(new stone(stone1, stone2, remainder));
+            }
+        }else if(check==2){		//A->C
+            if(!visited[stone1][stone2]){
+                visited[stone1][stone2] = true;
+                queue.add(new stone(stone1, remainder, stone2));
+            }
+        }
+        else{		//B->C
+            if(!visited[stone1][stone2]){
+                visited[stone1][stone2] = true;
+                queue.add(new stone(remainder, stone1, stone2));
+            }
+        }
+        return;
+    }
+}
