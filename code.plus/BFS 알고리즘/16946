@@ -1,0 +1,101 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//지도에 대한 위치 관련 클래스
+    static class position{
+        int x, y;
+        public position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int N,M;
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 X값 변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 Y값 변경값
+    static int[][] map;		//지도 정보 저장 배열
+    static int[][] group;	//그룹 정보 저장 배열
+    static HashMap<Integer, Integer> groupValue = new HashMap<>();	//그룹 내 0의 개수 저장
+    static public void  main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        map = new int[N][M];
+        group = new int[N][M];
+        //지도 관련 정보 저장
+        for(int i=0;i<N;i++) {
+            String str = br.readLine();
+            for (int j = 0; j < M; j++)
+                map[i][j] = Character.getNumericValue(str.charAt(j));
+        }
+
+        int index = 1;	//첫 그룹 번호
+        //각 0인 지점에서 BFS 탐색을 시작으로 그룹 나누기
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++){
+                if(map[i][j] == 0 && group[i][j]==0){
+                    groupValue.put(index, bfs(i,j,index));
+                    index++;
+                }
+
+            }
+        }
+        //벽에 인접한 그룹의 수 더하기
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++){
+                if(map[i][j]!=0)
+                    wallValue(i,j);
+                bw.write(map[i][j]%10 + "");	//10으로 나눈 나머지를 BufferedWriter 저장
+            }
+            bw.write("\n");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //0인 지점을 기준으로 BFS탐색으로 그룹을 나누는 함수
+    static int bfs(int a, int b, int index){
+        Queue<position> queue = new LinkedList<>();
+        int result = 1;
+        group[a][b] = index;
+        queue.add(new position(b,a));
+        while(!queue.isEmpty()){
+            position cur = queue.poll();
+            int x = cur.x;
+            int y = cur.y;
+            for(int i=0;i<4;i++){
+                int tempX = x + dx[i];
+                int tempY = y + dy[i];
+                if(tempX>=0 && tempY>=0 && tempX<M &&tempY<N){
+                    if(map[tempY][tempX]==0 && group[tempY][tempX]==0){
+                        group[tempY][tempX] = index;
+                        result++;
+                        queue.add(new position(tempX,tempY));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    //벽에 인접한 그룹별 값들 더해주는 함수
+    static void wallValue(int y, int x){
+        HashSet<Integer> check = new HashSet<>();	//인접한 그룹 저장하는 HashSet
+        for(int i=0;i<4;i++){
+            int tempX = x + dx[i];
+            int tempY = y + dy[i];
+            if(tempX>=0 && tempY>=0 && tempX<M && tempY<N){
+                if(group[tempY][tempX]!=0)
+                    check.add(group[tempY][tempX]);
+            }
+
+        }
+        for(Integer group : check){		//인접한 그룹의 값 더하기
+            map[y][x] += groupValue.get(group);
+        }
+        return;
+    }
+}
