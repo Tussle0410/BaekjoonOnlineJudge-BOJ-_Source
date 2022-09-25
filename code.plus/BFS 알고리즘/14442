@@ -1,0 +1,79 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//BFS탐색시 사용하는 클래스
+    static class position{
+        int x, y, count, wallBreak;
+        public position(int x, int y, int count, int wallBreak) {
+            this.x = x;
+            this.y = y;
+            this.count = count;
+            this.wallBreak = wallBreak;
+        }
+
+    }
+    static int N,M,K;
+    static int[][] map;		//지도 정보 저장 배열
+    static boolean[][][] visited;	//부순 횟수 기준 방문 확인 배열
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 X값 변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 Y값 변경값
+    static public void  main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        visited = new boolean[N][M][K+1];
+        map = new int[N][M];
+        //지도 관련 정보 저장
+        for(int i=0;i<N;i++){
+            String str = br.readLine();
+            for(int j=0;j<M;j++)
+                map[i][j] = Character.getNumericValue(str.charAt(j));
+        }
+        int result = bfs();		//시작지점에서 BFS 탐색 시작
+
+        bw.write(result + "\n");	//최단 거리 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //시작지점에서 K번 이하 벽을 부수며 도착지점에 가는 최단 거리 구하는 BFS 함수
+    static int bfs() {
+        Queue<position> queue = new LinkedList<>();
+        visited[0][0][0] = true;		//시작 지점 방문 확인, (0,0)
+        queue.add(new position(0, 0, 1, 0));	//시작 지점 값 Queue 저장
+        while (!queue.isEmpty()) {
+            position cur = queue.poll();
+            int x = cur.x;
+            int y = cur.y;
+            int count = cur.count;
+            int wallBreak = cur.wallBreak;
+            if (x == M - 1 && y == N - 1)	//도착 지점 방문(N-1, M-1)
+                return count;
+
+            for (int i = 0; i < 4; i++) {
+                int tempX = x + dx[i];
+                int tempY = y + dy[i];
+                if (tempX >= 0 && tempY >= 0 && tempY < N && tempX < M) {
+                        if (map[tempY][tempX] == 1) {	//인접한 벽일 때
+                            if(wallBreak < K && !visited[tempY][tempX][wallBreak+1]){
+                                queue.add(new position(tempX, tempY, count + 1, wallBreak + 1));
+                                visited[tempY][tempX][wallBreak + 1] = true;
+                            }
+                        } else{		//이동할 수 있는 인접한 칸일 때
+                            if(!visited[tempY][tempX][wallBreak]){
+                                queue.add(new position(tempX, tempY, count + 1, wallBreak));
+                                visited[tempY][tempX][wallBreak] = true;
+                            }
+                        }
+                    }
+                }
+            }
+        return -1;	//도착 지점 방문 실패시.
+    }
+}
