@@ -1,0 +1,90 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//다익스트라 BFS탐색에 우선순위 큐에 사용될 클래스
+    static class position implements Comparable<position>{
+        int x,y,count,wallBreak;
+        boolean time;
+        public position(int x, int y, int count, int wallBreak, boolean time) {
+            this.x = x;
+            this.y = y;
+            this.count = count;
+            this.wallBreak = wallBreak;
+            this.time = time;
+        }
+        //이동 거리 오름차순으로 정렬되도록 Comparable 설정
+        @Override
+        public int compareTo( position o) {
+            if(this.count > o.count)
+                return 1;
+            else
+                return -1;
+        }
+    }
+    static int N,M,K;
+    static int[][] map;		//지도 관련 정보 배열
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x값 변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y값 변경값
+    static public void  main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferdWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        map = new int[N][M];
+        //지도 관련 정보 저장
+        for(int i=0;i<N;i++){
+            String str = br.readLine();
+            for(int j=0;j<M;j++){
+                map[i][j] = Character.getNumericValue(str.charAt(j));
+            }
+        }
+        int result = bfs();		//다익스트라 BFS탐색으로 최단 거리 구하기
+        bw.write(result + "\n");	//최단 거리 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //다익스트라 BFS탐색으로 최단 거리 구하는 함수
+    static int bfs(){
+    	//우선순위 큐 초기화
+        PriorityQueue<position> queue = new PriorityQueue<>();
+        boolean visited[][][] = new boolean[N][M][K+1];
+        visited[0][0][0] = true;		//출발 지점 방문 확인
+        queue.add(new position(0,0,1,0,true));	//출발 지점 우선순위 큐에 저장
+        while(!queue.isEmpty()){
+            position cur = queue.poll();
+            int x = cur.x;
+            int y = cur.y;
+            int count = cur.count;
+            int wallBreak = cur.wallBreak;
+            boolean time = cur.time;
+            if(x==M-1 && y==N-1)		//도착 지점에 도달시 거리 반환
+                return count;
+            for(int i=0;i<4;i++){
+                int tempX = x + dx[i];
+                int tempY = y + dy[i];
+                if(tempX>=0 && tempY>=0 && tempX<M && tempY<N){
+                	//인접한 이동할 수 있는 칸을 만났을 때
+                    if(!visited[tempY][tempX][wallBreak] && map[tempY][tempX]==0){
+                        visited[tempY][tempX][wallBreak] = true;
+                        queue.add(new position(tempX,tempY,count+1, wallBreak,!time));
+                    }
+                    //인접한 벽을 만났을 때
+                    else if(wallBreak<K && !visited[tempY][tempX][wallBreak+1] && map[tempY][tempX]==1){
+                        if(time)	//낮일 때는 바로 이동, 거리 + 1
+                            queue.add(new position(tempX,tempY,count+1, wallBreak+1, false));
+                        else		//밤일 때는 한 번 기다렸다가 이동, 거리 + 2
+                            queue.add(new position(tempX,tempY,count+2, wallBreak+1, false));
+                        visited[tempY][tempX][wallBreak+1] = true;
+                    }
+                }
+            }
+        }
+        return -1;		//도착 지점 도달 못했을 때 -1 반환
+    }
+}
