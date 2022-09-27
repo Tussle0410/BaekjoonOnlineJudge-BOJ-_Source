@@ -1,0 +1,77 @@
+
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//현재 캐릭터의 위치를 저장하기 위한 클래스
+    static class position{
+        int x,y;
+        public position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static char[][] board = new char[8][8];		//체스판 저장 배열
+    static int[] dx = {-1, 0, 1, -1, 0, 1, -1, 0, 1};	//캐릭터 이동 X값 변경값
+    static int[] dy = {-1, -1, -1, 0, 0, 0, 1, 1, 1};	//캐릭터 이동 Y값 변경값
+    static public void  main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        
+        //체스판 입력 저장
+        for(int i=0;i<8;i++){
+            String str = br.readLine();
+            for(int j=0;j<8;j++){
+                board[i][j] = str.charAt(j);
+            }
+        }
+        int result = bfs();		//출발 지점에서 캐릭터 이동하는 BFS 함수 실행
+        bw.write(result + "\n");	//도달 여부 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //출발지점에서 캐릭터 BFS 탐색하는 함수
+    static int bfs(){
+        Queue<position> queue = new LinkedList<>();
+        queue.add(new position(0, 7));		//출발 지점 Queue 저장
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            //현재 체스판 상태에서 Queue에 저장된 캐릭터들을 BFS 탐색
+            for(int i=0;i<size;i++){
+                position cur = queue.poll();
+                int x = cur.x;
+                int y = cur.y;
+                if(board[y][x] == '#')		//현재 캐릭터가 벽이 되었을 경우
+                    continue;
+                if(y==0 && x == 7)	//목적지 도착시 도달 확인 1 반환
+                    return 1;
+                for(int j=0;j<9;j++){
+                    int tempX = x + dx[j];
+                    int tempY = y + dy[j];
+                    if(tempX>=0 && tempY>=0 && tempX<8 && tempY<8){
+                        if(board[tempY][tempX]=='.')
+                            queue.add(new position(tempX,tempY));
+                    }
+                }
+            }
+            wallDrop();		//체스판에 벽 한 칸씩 내리기
+        }
+        return 0;		//목적지 도달하지 못했을 경우 0 반환
+    }
+    //체스판에 벽을 1칸씩 내리는 함수
+    static void wallDrop(){
+    	//한 칸씩 내리기
+        for(int i=6;i>=0;i--){
+            for(int j=0;j<8;j++){
+                board[i+1][j] = board[i][j];
+            }
+        }
+        //첫번째 행은 모두 '.'으로 변경
+        for(int i=0;i<8;i++){
+            board[0][i] = '.';
+        }
+    }
+}
