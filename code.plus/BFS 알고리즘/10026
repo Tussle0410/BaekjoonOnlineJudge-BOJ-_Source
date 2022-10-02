@@ -1,0 +1,81 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//그림 좌표 관련 클래스
+    static class position{
+        int x,y;
+        public position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int N;
+    static char[][] art;	//그림 색깔 저장 배열
+    static boolean[][] visited;	//그림 방문 확인 배열
+    static int[] dx = {0,0,-1,1};	//상하좌우 X값 변경
+    static int[] dy = {-1,1,0,0};	//상하좌우 Y값 변경
+    static public void  main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        N = Integer.parseInt(br.readLine());
+        art = new char[N][N];
+        //그림에 대한 색 저장
+        for(int i=0;i<N;i++){
+            String str = br.readLine();
+            for(int j=0;j<N;j++)
+                art[i][j] = str.charAt(j);
+        }
+        bw.write(search() + " ");	//일반인 시점 구역 개수 BufferedWriter 저장
+        colorChange();		//R -> G 바꾸어서 적록색맹 시점으로 변경
+        bw.write(search() + "\n");	//적록색맹 시점 구역 개수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //그림의 각 위치를 기준으로 구역을 BFS함수를 호출하는 함수
+    static int search(){
+        visited = new boolean[N][N];
+        int count = 0;
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++){
+                if(!visited[i][j]){
+                    bfs(j,i,art[i][j]);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    //BFS탐색으로 해당 구역을 나눈다.
+    static void bfs(int x, int y, char color){
+        Queue<position> queue = new LinkedList<>();
+        visited[y][x] = true;
+        queue.add(new position(x,y));
+        while(!queue.isEmpty()){
+            position cur = queue.poll();
+            for(int i=0;i<4;i++){
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                if(tempX>=0 && tempY>=0 && tempX<N && tempY<N && !visited[tempY][tempX]){
+                    if(art[tempY][tempX] == color){
+                        visited[tempY][tempX] = true;
+                        queue.add(new position(tempX,tempY));
+                    }
+                }
+            }
+        }
+
+    }
+    //R -> G로 바꾸는 함수
+    static void colorChange() {
+        for (int i = 0; i < N; i++) {
+            for(int j=0;j<N;j++){
+                if(art[i][j] == 'R')
+                    art[i][j] = 'G';
+            }
+        }
+    }
+}
