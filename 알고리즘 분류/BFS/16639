@@ -1,0 +1,85 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//DP관련 클래스
+    static class dpValue{
+        int max,min;
+        public dpValue(int max, int min) {
+            this.max = max;
+            this.min = min;
+        }
+    }
+    static int N;
+    static ArrayList<Integer> num = new ArrayList<>();	//수식의 숫자 저장 리스트
+    static ArrayList<Character> operator = new ArrayList<>();	//수식의 연산자 저장 리스트
+    static dpValue[][] DP;		//각 구간의 최대값, 최소값 저장하는 메모이제이션
+    static public void  main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        N = Integer.parseInt(br.readLine());
+        int size = N/2+2;
+        DP = new dpValue[size][size];
+
+        String str = br.readLine();
+        for(int i=1;i<=N;i++){
+            if(i%2==1){		//수식 숫자 저장
+                int temp = Character.getNumericValue(str.charAt(i-1));
+                num.add(temp);
+                int index = i/2+1;
+                DP[index][index] = new dpValue(temp,temp);
+            } else		//수식 연산자 저장
+                operator.add(str.charAt(i-1));
+        }
+        //각 구간별 DP[][]값 구하기
+        for(int i=2;i<size;i++){
+            for(int j=i-1;j>0;j--){
+                cal(i,j);
+            }
+        }
+        bw.write(DP[1][size-1].max + "");	//수식 최대값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //DP[][] 최대값 최소값 구하는 함수
+    static void cal(int x, int y){
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+
+        for(int i=0;i<x-y;i++){
+            dpValue value1 = DP[y+i+1][x];
+            dpValue value2 = DP[y][y+i];
+            int operatorIndex = y+i-1;
+            if(operator.get(operatorIndex) == '+'){	//사용 연산자 '+'
+                max = Math.max(max,value1.max + value2.max);
+                min = Math.min(min,value1.min + value2.min);
+            }else if(operator.get(operatorIndex)=='-'){	//사용 연산자 '-'
+                max = Math.max(value2.max - value1.min, max);
+                min = Math.min(value2.min - value1.max,min);
+            }else{		//사용 연산자 '*'
+                int temp = value1.max * value2.max;
+                int tempMin = temp;
+                int tempMax = temp;
+
+                temp = value1.max * value2.min;
+                tempMax = Math.max(temp,tempMax);
+                tempMin = Math.min(temp,tempMin);
+
+                temp = value1.min * value2.max;
+                tempMax = Math.max(temp,tempMax);
+                tempMin = Math.min(temp,tempMin);
+
+                temp = value1.min * value2.min;
+                tempMax = Math.max(temp,tempMax);
+                tempMin = Math.min(temp,tempMin);
+
+                max = Math.max(max,tempMax);
+                min = Math.min(min,tempMin);
+            }
+        }
+        DP[y][x] = new dpValue(max,min);		//최대값, 최소값 저장
+    }
+}
