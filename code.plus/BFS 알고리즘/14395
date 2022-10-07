@@ -1,0 +1,70 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//BFS Queue에 사용되는 클래스
+    static class num{
+        int num;
+        String operator;
+        public num(int num, String operator) {
+            this.num = num;
+            this.operator = operator;
+        }
+    }
+    static int S,T;
+    static int max = 1000000000;	//나올 수 있는 최대값
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //입력값 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        S = Integer.parseInt(st.nextToken());
+        T = Integer.parseInt(st.nextToken());
+        if(S==T)		//s와 t가 같을 때
+            bw.write("0");
+        else		//s와 t가 같지 않을 때
+            bw.write(bfs() + "");
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //사칙연산을 진행하여 s가 t가 되는 최소 연산을 BFS탐색하는 함수
+    static String bfs(){
+        Queue<num> queue = new LinkedList<>();
+        boolean[] visited = new boolean[max+1];
+        boolean first  = false;
+        visited[S] = true;
+        queue.add(new num(S,""));
+        //탐색시 아스키 코드 순으로 *+-/으로 진행됩니다.
+        while(!queue.isEmpty()){
+            num cur = queue.poll();
+            int num = cur.num;
+            String operator = cur.operator;
+            if(num==T)		//목표 t에 달성
+                return operator;
+            //곱하기
+            long temp1 = (long)num * num;
+            if(temp1<=max && !visited[(int)temp1]){
+                visited[(int)temp1] = true;
+                queue.add(new num((int)temp1,operator+"*"));
+            }
+            //더하기
+            int temp2 = num+num;
+            if(temp2<=max && !visited[temp2]){
+                visited[temp2] = true;
+                queue.add(new num(temp2, operator+"+"));
+            }
+            //항상 값이 같은 빼기와 나누기는 첫 탐색에만 실행
+            if(!first){
+                first = true;
+                visited[0] = true;
+                visited[1] = true;
+                queue.add(new num(0, operator+"-"));	//나누기
+                queue.add(new num(1, operator+"/"));	//빼기
+            }
+        }
+
+        return "-1";	//t까지 도달 불가능시
+    }
+}
