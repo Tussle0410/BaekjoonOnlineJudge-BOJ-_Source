@@ -1,0 +1,63 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//BFS에 Queue에 사용될 클래스
+    static class position{
+        int floor, count;
+        public position(int floor, int count) {
+            this.floor = floor;
+            this.count = count;
+        }
+    }
+    static int F,S,G,U,D;
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //입력값 저장
+        F = Integer.parseInt(st.nextToken());
+        S = Integer.parseInt(st.nextToken());
+        G = Integer.parseInt(st.nextToken());
+        U = Integer.parseInt(st.nextToken());
+        D = Integer.parseInt(st.nextToken());
+        int result = bfs();		//BFS 탐색 시작
+        if(result == -1)	//G까지 도달 불가능시
+            bw.write("use the stairs");
+        else	//G까지 도달시
+            bw.write(result + "");	//최소 버튼 누른 횟수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //S -> G까지 엘리베이터 이동의 최소 버튼 횟수를 구하는 BFS 함수
+    static int bfs(){
+        Queue<position> queue = new LinkedList<>();
+        boolean[] visited = new boolean[F+1];
+        visited[S] = true;	//시작 층 방문 확인
+        queue.add(new position(S, 0));	//시작 층 Queue 저장
+        while(!queue.isEmpty()){
+            position cur = queue.poll();
+            int floor = cur.floor;
+            int count = cur.count;
+            if(floor == G)		//G에 도착시
+                return count;
+            //Up
+            int tempFloor = floor + U;
+            if(tempFloor <= F && !visited[tempFloor]){
+                visited[tempFloor] = true;
+                queue.add(new position(tempFloor,count+1));
+            }
+            //Down
+            tempFloor = floor - D;
+            if(tempFloor >= 1 && !visited[tempFloor]){{
+                visited[tempFloor] = true;
+                queue.add(new position(tempFloor, count+1));
+            }}
+        }
+        return -1;		//G에 도달 불가능시 -1 반환
+    }
+}
+
