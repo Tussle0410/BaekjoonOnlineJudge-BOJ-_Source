@@ -1,0 +1,147 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//islandIndex : 섬의 개수, allVisitedCount : 모든 섬을 방문했을 때 비트값
+    static int R,C, islandIndex = 1, allVisitedCount=0;
+    static char[][] map;
+    static int[][] DP = new int[1<<17][16];	//DP 초기화
+    static int[][] island, islandRoute;	//섬 번호 저장 배열, 섬 최단 경로 저장 배열
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x값 변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y값 변경값
+    //구역에 대한 정보 관련 클래스
+    static class position implements Comparable<position>{
+        int x, y, count;
+        public position(int x, int y, int count) {
+            this.x = x;
+            this.y = y;
+            this.count = count;
+        }
+        //수영 횟수 기준 오름차순 정렬
+        @Override
+        public int compareTo( position o) {
+            return this.count - o.count;
+        }
+    }
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        R = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
+        map = new char[R][C];
+        island = new int[R][C];
+        //구역 관련 정보 저장
+        for(int i=0;i<R;i++){
+            String str = br.readLine();
+            for(int j=0;j<C;j++)
+                map[i][j] = str.charAt(j);
+        }
+        setIsland();	//섬의 번호 BFS 탐색
+        setRoute();		//섬끼리 최단 경로 BFS탐색
+        setVisitedCount();	//모든 섬 방문시 비트값 설정
+        bw.write(swimmingStart(0, 0) + "");	//외판원 순회로 최소값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //외판원 순회로 모든 섬을 방문하는 최소 수영 횟수를 구하는 함수
+    static int swimmingStart(int visited, int idx){
+        if(DP[visited][idx] != 0)	//방문 했을 경우
+            return DP[visited][idx];
+        if(visited == allVisitedCount)	//모두 방문했을 때
+            return DP[visited][idx] = 0;
+        int min = Integer.MAX_VALUE;
+        for(int i=1;i<=islandIndex;i++){
+            if(idx == i || (visited & (1 << (i-1))) != 0)	//동일한 섬일 때
+                continue;
+            //작은 값으로 변경
+            min = Math.min(min, swimmingStart((visited | (1 << (i-1))),i) + islandRoute[idx][i]);
+        }
+        return DP[visited][idx] = min;
+    }
+    //모든 섬 방문 비트값 구하는 함수
+    static void setVisitedCount(){
+        for(int i=0;i<islandIndex;i++)
+            allVisitedCount = allVisitedCount | (1 << i);
+    }
+    //각 섬끼리의 최단 경로를 구하기 위해 BFS 함수 호출하는 함수
+    static void setRoute(){
+        islandRoute = new int[islandIndex+1][islandIndex+1];
+        islandIndex = 1;
+        for(int i=0;i<R;i++){
+            for(int j=0;j<C;j++){
+                if(island[i][j] == islandIndex){
+                    searchRoute(j,i,islandIndex);
+                    islandIndex++;
+                }
+            }
+        }
+        islandIndex--;
+    }
+    //섬들의 번호 설정하기 위해 BFS 함수 호출하는 함수
+    static void setIsland(){
+        for(int i=0;i<R;i++){
+            for(int j=0;j<C;j++){
+                if(island[i][j]==0 && map[i][j]=='X'){
+                    searchIsland(j,i);
+                    islandIndex++;
+                }
+            }
+        }
+        islandIndex--;
+    }
+    //다익스트라 BFS탐색으로 각 섬들의 최단 경로를 구하는 함수
+    static void searchRoute(int x, int y, int index){
+        PriorityQueue<position> pq = new PriorityQueue<>();
+        boolean[][] visited = new boolean[R][C];
+        visited[y][x] = true;
+        pq.add(new position(x,y,0));
+        while(!pq.isEmpty()){
+            position cur = pq.poll();
+            for(int i=0;i<4;i++){
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                if(inMapBound(tempX,tempY) && !visited[tempY][tempX]){
+                    visited[tempY][tempX] = true;
+                    if(map[tempY][tempX] == 'X'){	//인접한 섬일 때
+                        if(island[tempY][tempX]!=index && islandRoute[index][island[tempY][tempX]] == 0)
+                            islandRoute[index][island[tempY][tempX]] = cur.count;
+                        pq.add(new position(tempX,tempY, cur.count));
+                    }else if(map[tempY][tempX]=='S')	//인접한 얕은 물일 때
+                        pq.add(new position(tempX,tempY, cur.count+1));
+                }
+            }
+        }
+    }
+    //BFS탐색으로 각 섬들의 번호를 설정하는 함수
+    static void searchIsland(int x, int y){
+        Queue<position> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[R][C];
+        visited[y][x] = true;
+        island[y][x] = islandIndex;
+        queue.add(new position(x,y,islandIndex));
+        while(!queue.isEmpty()){
+            position cur = queue.poll();
+            for(int i=0;i<4;i++){
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                if(inMapBound(tempX,tempY) && !visited[tempY][tempX]){
+                    if(island[tempY][tempX] == 0 && map[tempY][tempX]=='X'){
+                        visited[tempY][tempX] = true;
+                        island[tempY][tempX] = cur.count;
+                        queue.add(new position(tempX,tempY, cur.count));
+                    }
+                }
+            }
+        }
+    }
+    //좌표가 구역안에 존재하는지 확인하는 함수
+    static boolean inMapBound(int x, int y){
+        if(x>=0 && y>=0 && x<C && y<R)	// 구역 안에 존재시
+            return true;
+        return false;
+    }
+}
