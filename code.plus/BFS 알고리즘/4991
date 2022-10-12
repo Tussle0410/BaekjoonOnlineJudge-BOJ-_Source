@@ -1,0 +1,120 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    //방에서 로봇 이동에 대한 클래스
+    static class position{
+        int x, y, count;
+        public position(int x, int y, int count) {
+            this.x = x;
+            this.y = y;
+            this.count = count;
+        }
+    }
+    static char[][] room;	//방에 대한 정보 저장 배열
+    static int startX,startY;	//로봇 청소기 시작 x,y 값
+    static int[][] dust, dustWidth;		//먼지 번호 및 먼지끼리 최단 경로 저장 배열
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x 변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y 변경값
+    static boolean[] dustVisited;		//먼지 방문 확인 함수
+    static int answer, dustIndex;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st;
+        //TC 진행!
+        while(true){
+            st = new StringTokenizer(br.readLine()," ");
+            int w = Integer.parseInt(st.nextToken());
+            int h = Integer.parseInt(st.nextToken());
+            if(w == 0 && h == 0)	//TC 종료
+                break;
+            dustIndex = 2;
+            room = new char[h][w];
+            dust = new int[h][w];
+            //입력값 저장 및 먼지 번호 매기기
+            for(int i=0;i<h;i++){
+                String str = br.readLine();
+                for(int j=0;j<w;j++) {
+                    room[i][j] = str.charAt(j);
+                    if(room[i][j] == 'o'){
+                        startX = j;
+                        startY = i;
+                        dust[i][j] = 1;	//시작 지점은 항상 번호 1
+                    }else if(room[i][j] == '*')	//먼지 번호 매기기
+                        dust[i][j] = dustIndex++;
+                }
+            }
+            dustWidth = new int[dustIndex][dustIndex];
+            dustVisited = new boolean[dustIndex];
+            //먼지끼리의 최단 경로 구하기
+            for(int i=0;i<h;i++){
+                for(int j=0;j<w;j++){
+                    if(dust[i][j] != 0){
+                        dustRoute(h, w, j, i, dust[i][j]);	//최단 경로 구하는 BFS함수 실행
+                    }
+                }
+            }
+            if(dustCheck()){		//모든 먼지를 도달할 경우
+                answer = Integer.MAX_VALUE;
+                cal(1, 1, 0);	//모든 경로를 탐색하여 최소값 구하는 함수 실행
+                bw.write(answer + "\n");
+            }else		//모든 먼지를 도달하지 못한 경우
+                bw.write("-1\n");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //모든 먼지를 청소하는지 확인하는 함수
+    static boolean dustCheck(){
+        for(int i=2;i<dustIndex;i++){
+            if(dustWidth[1][i]==0)
+                return false;
+        }
+        return true;
+    }
+    //모든 경로를 구해서 최소값을 구하는 재귀 함수
+    static void cal(int cur, int count, int value){
+        if(count==dustIndex-1)
+            answer = Math.min(answer,value);
+
+        for(int i=2;i<dustIndex;i++){
+            if(dustVisited[i])
+                continue;
+            dustVisited[i] = true;
+            cal(i, count+1, value + dustWidth[cur][i]);
+            dustVisited[i] = false;
+        }
+    }
+    //입력된 먼지 사이에 거리를 구하는 BFS 탐색하는 함수
+    static void dustRoute(int h, int w, int x, int y, int index){
+        Queue<position> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[h][w];
+        visited[y][x] = true;
+        queue.add(new position(x,y,0));
+        while(!queue.isEmpty()){
+            position cur = queue.poll();
+            for(int i=0;i<4;i++){
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                if(inRoom(tempX,tempY,h,w) && !visited[tempY][tempX]){
+                    visited[tempY][tempX] = true;
+                    if(room[tempY][tempX] != 'x'){	//벽에 막히지 않는 경우
+                        if(dust[tempY][tempX]!=0)	//다른 먼지 도달 시
+                            dustWidth[index][dust[tempY][tempX]] = cur.count+1;
+                        queue.add(new position(tempX,tempY, cur.count+1));
+                    }
+                }
+            }
+        }
+    }
+    //좌표가 방 안에 존재하는지 확인하는 함수
+    static boolean inRoom(int x, int y, int h, int w){
+        if(x>=0 && y>=0 && x<w && y<h)
+            return true;
+        return false;
+    }
+}
