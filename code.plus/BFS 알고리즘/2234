@@ -1,0 +1,109 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//성곽 위치 관련 클래스
+    static class position{
+        int x, y;
+        public position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int N,M;
+    static int[][] castle;		//성곽 정보 저장하는 배열
+    static int[][] roomId;		//방 번호 저장하는 배열
+    static int[] dx = {-1, 0, 1, 0};	//서북동남 X변경값
+    static int[] dy = {0, -1, 0, 1};	//서북동남 Y변경값
+    static ArrayList<Integer> roomSize = new ArrayList<>();	//방 크기 저장하는 리스트
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        M = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
+        castle = new int[N][M];
+        roomId = new int[N][M];
+        //성곽에 대한 정보 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for (int j=0;j<M;j++){
+                castle[i][j] = Integer.parseInt(st.nextToken());
+            }
+        }
+        int roomIndex = 1;	//방 초기 번호: 1
+        int maxSize = -1;	//방 최대 크기 초기화
+        //1. 1. BFS 탐색으로 성곽에 존재하는 방들의 넓이와 번호를 부여합니다.
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++){
+                if(roomId[i][j]==0){
+                    roomSize.add(bfs(j, i, roomIndex++));
+                    maxSize = Math.max(maxSize,roomSize.get(roomSize.size()-1));
+                }
+            }
+        }
+        bw.write(--roomIndex + "\n");	//방의 개수 BufferedWriter 저장
+        bw.write(maxSize + "\n");		//방의 최대 넓이 BufferedWriter 저장
+        int doorBreakSize = -1;
+        //2. 각 방에서 인접한 방에 넓이를 더한 최대값으로 벽을 1개 부술 때 최대 넓이를 구합니다.
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++){
+                doorBreakSize = Math.max(aroundSearch(j,i), doorBreakSize);
+            }
+        }
+        bw.write(doorBreakSize + "");	//벽 1개 부순 방의 최대 넓이 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //성곽을 BFS탐색으로 방 번호와 방의 넓이를 구하는 함수
+    static int bfs(int x, int y, int index){
+        Queue<position> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[N][M];
+        int count = 1;
+        roomId[y][x] = index;
+        visited[y][x] = true;
+        queue.add(new position(x,y));
+        while(!queue.isEmpty()){
+            position cur = queue.poll();
+            for(int i=0;i<4;i++){	//서북동남 이동하기
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                if(wallCheck(cur.x,cur.y,i) && !visited[tempY][tempX]){
+                    count++;
+                    roomId[tempY][tempX] = index;
+                    visited[tempY][tempX] = true;
+                    queue.add(new position(tempX,tempY));
+                }
+            }
+        }
+        return count;
+    }
+    //주변 인접한 방의 넓이를 더하는 함수
+    static int aroundSearch(int x, int y){
+        for(int i=0;i<4;i++){
+            int tempX = x + dx[i];
+            int tempY = y + dy[i];
+            if(inCastle(tempX,tempY)){
+                if(roomId[y][x] != roomId[tempY][tempX]){
+                    return roomSize.get(roomId[y][x]-1) + roomSize.get(roomId[tempY][tempX]-1);
+                }
+            }
+        }
+        return -1;
+    }
+    //좌표가 성곽에 존재하는지 확인하는 함수
+    static boolean inCastle(int x, int y){
+        if(y>=0 && x>=0 && x<M && y<N)
+            return true;
+        return false;
+    }
+    //AND(&)를 이용하여 해당 방향에 벽이 존재하는지 확인하는 함수
+    static boolean wallCheck(int x, int y, int index){
+        if((castle[y][x] & (1<<index))==0)
+            return true;
+        return false;
+    }
+}
