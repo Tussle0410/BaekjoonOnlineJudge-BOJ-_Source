@@ -1,0 +1,96 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//웜홀 정보 관련 클래스
+    static class position implements Comparable<position>{
+        int x, y, ci;
+        public position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+        //웜홀 연결 설정
+        public void connect(int index){
+            ci = index;
+        }
+        //x좌표 기준 오름차순 정렬
+        @Override
+        public int compareTo(position o) {
+            return this.x - o.x;
+        }
+    }
+    static int N, answer = 0;
+    static boolean[] visited;	//웜홀 방문 배열
+    static ArrayList<position> wormhole = new ArrayList<>();	//웜홀 정보 저장 리스트
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 처리하는 BufferedReader
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //결과값 출력하는 BufferedWriter
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        visited = new boolean[N];
+        //웜홀에 대한 정보 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            int x = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
+            wormhole.add(new position(x, y));
+        }
+        Collections.sort(wormhole);	//웜홀 x값 기준 오름차순 정렬
+        setWormhole(0, 0);	//무한 순환에 걸리는 웜홀 묶음 구하는 함수 실행
+        bw.write(answer + "");		//무한 순환 걸리는 웜홀 묶음 개수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //백트래킹으로 웜홀의 묶음을 만드는 함수
+    static void setWormhole(int count, int index){
+        if(count == N){		//묶음 완성!
+            //무한 순환인지 확인하는 함수 실행
+            for(int i=0;i<N;i++){
+                if(moveCow(i)){	//무한 순환에 만족할 때
+                    answer++;
+                    return;
+                }
+            }
+        }
+        for(int i=index;i<N;i++){
+            if(visited[i])
+                continue;
+            visited[i] = true;
+            for(int j=i+1;j<N;j++){
+                if(visited[j])
+                    continue;
+                visited[j] = true;
+                wormhole.get(i).connect(j);
+                wormhole.get(j).connect(i);
+                setWormhole(count + 2,i+1);
+                visited[j] = false;
+            }
+            visited[i] = false;
+        }
+    }
+    //소가 +x방향으로 움직이면서 웜홀을 타서 무한 순환에 걸리는지 확인하는 함수
+    static boolean moveCow(int index){
+        boolean[] use = new boolean[N];
+        while(true){
+            if(use[index])	//무한 순회에 걸렸을 때
+                return true;
+            use[index] = true;
+            int x = wormhole.get(wormhole.get(index).ci).x;
+            int y = wormhole.get(wormhole.get(index).ci).y;
+            index = searchNextHole(x, y);
+            if(index == -1)
+                return false;
+        }
+    }
+    //+x방향으로 이동하면서 다음 웜홀을 찾는 함수
+    static int searchNextHole(int x, int y){
+        for(int i=0;i<N;i++){
+            if(wormhole.get(i).y == y && wormhole.get(i).x > x)
+                return i;
+        }
+        return -1;	//다음 웜홀이 존재하지 않을 때
+    }
+}
