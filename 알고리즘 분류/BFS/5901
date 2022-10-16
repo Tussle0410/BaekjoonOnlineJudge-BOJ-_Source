@@ -1,0 +1,111 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	//도시 이동 관련 클래스
+    static class road implements Comparable<road>{
+        int c, value;
+        public road(int c, int value) {
+            this.c = c;
+            this.value = value;
+        }
+        //이동 거리 오름차순 정렬
+        @Override
+        public int compareTo(road o) {
+            return this.value - o.value;
+        }
+    }
+    static int N,M,K, answer = Integer.MAX_VALUE;
+    static boolean[] marketCheck, cityVisited;	//시장 있는 도시 확인, 도시 방문 확인 배열
+    //도로 정보 저장 리스트
+    static ArrayList<ArrayList<road>> roadInfo = new ArrayList<>();
+    static int[][] cityWidth;	//최소 거리 저장 배열
+    static int[] route, market;	//시장 있는 도시 경로, 시장 있는 도시 저장 배열
+
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        marketCheck = new boolean[N];
+        cityVisited = new boolean[K];
+        cityWidth = new int[K][N];
+        route = new int[K];
+        market = new int[K];
+        for(int i=0;i<N;i++){
+            roadInfo.add(new ArrayList<>());
+        }
+        //도시 정보 저장
+        for(int i=0;i<K;i++){
+            int cityId = Integer.parseInt(br.readLine())-1;
+            marketCheck[cityId] = true;
+            market[i] = cityId;
+        }
+        //도로 정보 저장
+        for(int i=0;i<M;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int c1 = Integer.parseInt(st.nextToken())-1;
+            int c2 = Integer.parseInt(st.nextToken())-1;
+            int value = Integer.parseInt(st.nextToken());
+            roadInfo.get(c1).add(new road(c2, value));
+            roadInfo.get(c2).add(new road(c1, value));
+        }
+        //1. 시장이 있는 도시를 기준으로 다른 도시로 갈 수 있는 최소 거리를 BFS(다익스트라)로 구합니다.
+        for(int i=0;i<K;i++){
+            Arrays.fill(cityWidth[i], Integer.MAX_VALUE);
+            bfs(i);
+        }
+        search(0);	//2. 백트래킹을 이용하여 시장이 있는 도시를 방문하는 순서를 모두 구합니다.
+        bw.write(answer +"");	//최소 거리 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //다익스트라 BFS탐색으로 도시별 최단 거리 구하는 함수
+    static void bfs(int index){
+        PriorityQueue<road> pq = new PriorityQueue<>();
+        pq.add(new road(market[index], 0));
+        while(!pq.isEmpty()){
+            road cur = pq.poll();
+            for(road next : roadInfo.get(cur.c)){
+                if(cityWidth[index][next.c]>cur.value + next.value){
+                    cityWidth[index][next.c] = cur.value + next.value;
+                    pq.add(new road(next.c,cur.value + next.value));
+                }
+            }
+        }
+    }
+    //백트래킹을 통해서 시장 있는 도시들의 모든 방문 경로 만드는 함수
+    static void search(int count){
+        if(count == K){	//경로 완성시
+            //3. "시장이 없는 도시 -> 시장이 있는 도시 방문 순서 -> 시장이 없는 도시"의 최소 거리를 구해서 결과로 출력합니다.
+            cal();
+            return;
+        }
+        for(int i=0;i<K;i++){
+            if(!cityVisited[i]){
+                cityVisited[i] = true;	//현재 도시 방문 확인
+                route[count] = i;	//경로에 저장
+                search(count+1);	//다음 경로 탐색
+                cityVisited[i] = false;	//현재 도시 방문 취소
+            }
+        }
+    }
+    //시장이 없는 도시에서 시장 있는 도시 경로를 지난 뒤 다시 돌아오는 최단 경로 구하는 함수
+    static void cal(){
+        int result = Integer.MAX_VALUE;
+        for(int i=0;i<N;i++){	//시장이 없는 도시에서 해당 도시 경로에 거리 구하기
+            if(!marketCheck[i])
+                result = Math.min(result, cityWidth[route[0]][i] + cityWidth[route[K-1]][i]);
+        }
+        //방문 경로에 대한 거리 더하기
+        for(int i=1;i<K;i++){
+            result += cityWidth[route[i-1]][market[route[i]]];
+        }
+        answer = Math.min(answer, result);	//최소 거리인지 비교후 적용
+    }
+}
