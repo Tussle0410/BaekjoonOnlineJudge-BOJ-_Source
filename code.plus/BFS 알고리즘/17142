@@ -1,0 +1,111 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    //연구소 위치 관련 클래스
+    static class position{
+        int x, y;
+        public position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int N,M, answer = Integer.MAX_VALUE;
+    static int[][] laboratory;	//연구소 정보 저장 배열
+    static position[] route;	//M개 선택한 바이러스 저장 배열
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x 변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y 변경값
+    //바이러스 놓을 수 있는 위치 저장 리스트
+    static ArrayList<position> virus = new ArrayList<>();
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        laboratory = new int[N][N];
+        //1. 입력되는 연구소의 정보에서 바이러스의 위치를 저장합니다.
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for(int j=0;j<N;j++) {
+                laboratory[i][j] = Integer.parseInt(st.nextToken());
+                if(laboratory[i][j]==2)
+                    virus.add(new position(j,i));
+            }
+        }
+        route = new position[M];
+        //2. 모든 바이러스에서 M개의 바이러스를 선택합니다.
+        search(0, 0);
+        //4. 모든 바이러스의 경우에 소요되는 요일에 최소 값을 결과로 출력합니다.
+        if(answer == Integer.MAX_VALUE)	//모든 칸 바이러스 감염 불가능할 때
+            bw.write("-1");
+        else
+            bw.write(answer + "");
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+    //바이러스 놓일 수 있는 위치 M개 선택하는 함수
+    static void search(int count, int start){
+        if(count == M){
+            //3. 선택한 바이러스에 대하여 BFS탐색으로 문제에 목표에 만족하는 요일을 구합니다.
+            bfs();
+            return;
+        }
+        for(int i=start;i<virus.size();i++){
+            route[count] = virus.get(i);
+            search(count+1, i + 1);
+        }
+    }
+    //M개 선택한 바이러스 위치 기준 BFS탐색으로 모두 감염되는 요일 구하는 함수
+    static void bfs(){
+        Queue<position> queue = new LinkedList<>();
+        int result = 0;
+        boolean[][] visited = new boolean[N][N];
+        //M개 선택한 바이러스 위치 Queue 저장
+        for(int i=0;i<M;i++){
+            queue.add(new position(route[i].x, route[i].y));
+            visited[route[i].y][route[i].x] = true;
+        }
+        while(!queue.isEmpty()){
+            if(result >= answer)	//최소 요일보다 더 커질 경우 탐색 종료
+                return;
+            if(laboratoryCheck(visited)){	//모든 빈 칸 바이러스 감염시
+                answer = Math.min(answer, result);
+                return;
+            }
+            int size = queue.size();
+            //바이러스 인접한 칸 탐색
+            for(int i=0;i<size;i++){
+                position cur = queue.poll();
+                for(int j=0;j<4;j++){
+                    int tempX = cur.x + dx[j];
+                    int tempY = cur.y + dy[j];
+                    if(inLaboratory(tempX,tempY) && !visited[tempY][tempX] && laboratory[tempY][tempX]!=1){
+                        visited[tempY][tempX] = true;
+                        queue.add(new position(tempX, tempY));
+                    }
+                }
+            }
+            result++;
+        }
+    }
+    //모든 빈 칸이 바이러스에 감염되었는지 확인하는 함수
+    static boolean laboratoryCheck(boolean[][] visited){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++){
+                if(laboratory[i][j]==0 && !visited[i][j])
+                    return false;
+            }
+        }
+        return true;
+    }
+    //이동하는 좌표가 연구소 안에 존재하는지 확인하는 함수
+    static boolean inLaboratory(int x, int y){
+        if(x>=0 && y>=0 && x<N && y<N)
+            return true;
+        return false;
+    }
+}
