@@ -1,0 +1,35 @@
+import java.util.*;
+import java.io.*;
+public class Main {
+    static int[][] DP = new int[10001][4];	//메모이제이션 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        init();	//DP[1][], DP[2][], DP[3][]을 초기화
+        getDP();	//DP[][] 4....10000의 값 메모이제이션에 저장하기
+        int T = Integer.parseInt(br.readLine());
+        //T개의 n(DP[n][1] + DP[n][2] + DP[n][3]의 값을 BufferedWriter 저장
+        for(int i=0;i<T;i++){
+            int N = Integer.parseInt(br.readLine());
+            int result = DP[N][1] + DP[N][2] + DP[N][3];
+            bw.write(result + "\n");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //점화식을 이용하여 4...10000의 DP값 구해서 저장하는 함수
+    static void getDP(){
+        for(int i=4;i<10001;i++){
+            DP[i][1] = DP[i-1][1];
+            DP[i][2] = DP[i-2][1] + DP[i-2][2];
+            DP[i][3] = DP[i-3][1] + DP[i-3][2] + DP[i-3][3];
+        }
+    }
+    //DP[1][], DP[2][], DP[3][]을 초기화하는 함수
+    static void init(){
+        DP[1][1] = DP[2][1] = DP[2][2] = DP[3][1] = DP[3][2] = DP[3][3] = 1;
+    }
+}
