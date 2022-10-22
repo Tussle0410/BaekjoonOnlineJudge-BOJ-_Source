@@ -1,0 +1,56 @@
+import java.util.*;
+import java.io.*;
+public class Main {
+    static int N,K;
+    //동전에 대한 가치 저장하는 리스트
+    static ArrayList<Integer> coins = new ArrayList<>();
+    //중복된 가치를 가진 동전 방지를 위한 확인 배열
+    static boolean[] coinCheck = new boolean[10001];
+    static int[] DP;	//k을 만드는데 사용하는 최소 동전 횟수를 저장하는 메모이제이션
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        DP = new int[K+1];
+        //입력되는 동전 정보 저장
+        for(int i=0;i<N;i++){
+            int temp = Integer.parseInt(br.readLine());
+            if(temp <= K && !coinCheck[temp]){
+                coins.add(temp);
+                coinCheck[temp] = true;
+            }
+        }
+        //DP값 초기화
+        Arrays.fill(DP, 10001);
+        DP[0] = 0;
+        cal();	//최소 동전 횟수 DP[]에 저장하는 함수 실행
+        if(DP[K] == 10001)	//k를 도달하지 못할 때
+            bw.write("-1");
+        else		//k도달 시 최소 동전 횟수 BufferedWriter 저장
+            bw.write(DP[K] + "");
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //최소 동전 횟수를 DP[]에 저장하는 함수
+    static void cal(){
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        while(!queue.isEmpty()){
+            int cur  = queue.poll();
+            if(cur==K)	//k도달 시
+                return;
+            //코인들을 사용하면서 값들을 탐색
+            for(int i=0;i<coins.size();i++){
+                if(cur + coins.get(i) <= K && DP[cur + coins.get(i)] > DP[cur] + 1){
+                    DP[cur + coins.get(i)] = DP[cur] + 1;
+                    queue.add(cur + coins.get(i));
+                }
+            }
+        }
+    }
+}
