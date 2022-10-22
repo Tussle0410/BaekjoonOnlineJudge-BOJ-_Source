@@ -1,1 +1,35 @@
 
+import java.util.*;
+import java.io.*;
+public class Main {
+    static int T, MUL = 1000000007;	//나머지를 구하기 위해 나누는 값
+    static long[] DP = new long[5001];
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        T = Integer.parseInt(br.readLine());
+        init();	//DP구성
+        //T개의 DP[L]의 값 BufferedWriter 저장
+        for(int i=0;i<T;i++){
+            int L = Integer.parseInt(br.readLine());
+            bw.write(DP[L] + "\n");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //DP구성하는 함수
+    static void init(){
+        DP[0] = DP[2] = 1;	//초기값 설정
+        //DP[] 구하는 방식 적용 후 저장
+        for(int i=4;i<=5000;i+=2){
+            for(int j=0;j<i;j+=2){
+                DP[i] += DP[j] * DP[i-j-2];
+                DP[i] %= MUL;
+            }
+        }
+    }
+}
+
