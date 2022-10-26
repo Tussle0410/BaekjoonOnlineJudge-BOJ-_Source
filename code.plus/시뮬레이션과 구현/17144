@@ -1,0 +1,111 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    static int R,C,T;
+    static int[][] room;	//방에 미세먼지 양 저장하는 배열
+    static int[][] dust;	//확산시 미세먼지 증감하는 양 저장 배열
+    static int cleanerTop = -1, cleanerBottom;	//공기 청정기 위, 아래 위치 저장
+    static int[] dx = {-1, 1, 0, 0};	//상하좌우 X변경값
+    static int[] dy = {0, 0, -1, 1};	//상하좌우 Y변경값
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        R = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
+        T = Integer.parseInt(st.nextToken());
+        room = new int[R][C];
+        //공기 청정기 및 입력되는 미세먼지의 양 저장
+        for(int i=0;i<R;i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            for(int j=0;j<C;j++){
+                room[i][j] = Integer.parseInt(st.nextToken());
+                if(room[i][j] == -1 && cleanerTop==-1){
+                    cleanerTop = i;
+                    cleanerBottom = i+1;
+                }
+            }
+        }
+        //T초 동안 확산 및 흡수 진행
+        for(int i=0;i<T;i++){
+            dust = new int[R][C];
+            //확산!
+            for(int j=0;j<R;j++){
+                for(int s=0;s<C;s++){
+                    if(room[j][s] >= 5)	//5로 나누는 양이 확산되기 때문에 5보다 커야합니다.
+                        diffusion(s, j);
+                }
+            }
+            //확산된 먼지들 방에 합치기
+            for(int j=0;j<R;j++){
+                for(int s=0;s<C;s++)
+                    room[j][s] += dust[j][s];
+            }
+            //흡수!
+            useCleaner();
+        }
+        int answer = getDust()+2;	//T초후 모든 미세먼지의 양 합 구하기
+        bw.write(answer + "");	//미세먼지의 양 BufferedWriter 저장
+        bw.flush();	//결과 출력
+        bw.close();
+        br.close();
+    }
+    //확산 진행하는 함수
+    static void diffusion(int x, int y){
+        int value = room[y][x] / 5;
+        //인접한 칸 탐색
+        for(int i=0;i<4;i++){
+            int tempX = x + dx[i];
+            int tempY = y + dy[i];
+            if(inRoom(tempX,tempY) && room[tempY][tempX] != -1){
+               dust[tempY][tempX] += value;
+               dust[y][x] -= value;
+            }
+        }
+    }
+    //흡수 진행하는 함수
+    static void useCleaner(){
+        //위쪽 공기 청정기 반시계 방향 진행
+        int row = cleanerTop;
+        for(int i=row-1;i>0;i--)
+            room[i][0] = room[i-1][0];
+        for(int i=0;i<C-1;i++)
+            room[0][i] = room[0][i+1];
+        for(int i=0;i<row;i++)
+            room[i][C-1] = room[i+1][C-1];
+        for(int i=C-1;i>1;i--)
+            room[row][i] = room[row][i-1];
+        room[row][1] = 0;
+
+        //아래쪽 공기 청정기 시계 방향 진행
+        row = cleanerBottom;
+        for(int i=row+1;i<R-1;i++)
+            room[i][0] = room[i+1][0];
+        for(int i=0;i<C-1;i++)
+            room[R-1][i] = room[R-1][i+1];
+        for(int i=R-1;i>row;i--)
+            room[i][C-1] = room[i-1][C-1];
+        for(int i=C-1;i>1;i--)
+            room[row][i] = room[row][i-1];
+        room[row][1] = 0;
+    }
+    //방에 모든 미세먼지 양 구하는 함수
+    static int getDust(){
+        int sum = 0;
+        for(int i=0;i<R;i++){
+            for(int j=0;j<C;j++)
+                sum += room[i][j];
+        }
+        return sum;
+    }
+    //이동하려는 칸이 방에 존재하는지 확인하는 함수
+    static boolean inRoom(int x, int y){
+        if(x>=0 && y>=0 && x<C && y<R)
+            return true;
+        return false;
+    }
+
+}
