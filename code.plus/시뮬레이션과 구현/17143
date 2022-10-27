@@ -1,0 +1,122 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    //상어 정보 관련 클래스
+    static class sharkInfo{
+        int r, c, s, d, z;	//r,c : 위치, s : 속도, d : 방향, z : 크기
+        boolean dead;		//상어가 죽었는지 확인하는 변수
+        public sharkInfo(int r, int c, int s, int d, int z, boolean dead) {
+            this.r = r;
+            this.c = c;
+            this.s = s;
+            this.d = d;
+            this.z = z;
+            this.dead = dead;
+        }
+    }
+    static int R,C,M, answer = 0;
+    static int[][] sharks;		//상어 번호들이 어디에 존재하는지 저장 배열
+    static int[] dx = {0, 0, 0, 1, -1};	//상어 이동 x변경값
+    static int[] dy = {0, -1, 1, 0, 0};	//상어 이동 y변경값
+    static ArrayList<sharkInfo> info = new ArrayList<>();	//상어 정보 저장 리스트
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        R = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        sharks = new int[R][C];
+        //상어1부터 존재할 것이므로 상어0은 없는 값으로 저장
+        info.add(new sharkInfo(0,0,0,0,0, false));
+        //상어 정보 저장
+        for(int i=1;i<=M;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int r = Integer.parseInt(st.nextToken())-1;
+            int c = Integer.parseInt(st.nextToken())-1;
+            int s = Integer.parseInt(st.nextToken());
+            int d = Integer.parseInt(st.nextToken());
+            int z = Integer.parseInt(st.nextToken());
+            //상어의 속도가 높아도 격자판에 이동에 반복되기 때문에 속도 조정
+            if(d==1 || d==2)
+                s = s % ((R-1)*2);
+            else
+                s = s % ((C-1)*2);
+
+            sharks[r][c] = i;	
+            info.add(new sharkInfo(r,c,s,d,z, false));
+        }
+        //C-1번 시뮬레이션 시작
+        for(int i=0;i<C-1;i++){		//for문으로 낚시왕 위치 이동
+            getShark(i);	//상어 잡기
+            sharkMove();	//상어 이동
+        }
+        getShark(C-1);	//마지막은 상어잡기만 진행합니다.
+        bw.write(answer + "");	//잡은 크기의 합 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //낚시왕이 상어를 잡는 함수
+    static void getShark(int c){
+        //현재 낚시왕 위치에서 아래로 내려가며 가장 가까운 상어를 잡기!
+        for(int i=0;i<R;i++){
+            if(sharks[i][c] != 0){
+                answer += info.get(sharks[i][c]).z;	//잡은 상어 크기 더하기
+                info.get(sharks[i][c]).dead = true;	//해당 상어 죽은 상태로 변경
+                sharks[i][c] = 0;
+                return;
+            }
+        }
+    }
+    //상어 이동을 진행하는 함수
+    static void sharkMove(){
+        //각 상어 정보를 토대로 이동
+        for(int i=1;i<info.size();i++){
+            sharkInfo cur = info.get(i);
+            if(cur.dead)
+                continue;
+            if(sharks[cur.r][cur.c] == i)
+                sharks[cur.r][cur.c] = 0;
+            for(int j=0;j<cur.s;j++){
+                int tempR = cur.r + dy[cur.d];
+                int tempC = cur.c + dx[cur.d];
+                if(outBound(tempR,tempC)){
+                    directionChange(i, cur.d);
+                    tempR = cur.r + dy[cur.d];
+                    tempC = cur.c + dx[cur.d];
+                }
+                cur.r = tempR;
+                cur.c = tempC;
+            }
+            //이동한 칸에 다른 이동한 상어 존재할 때 크기가 더 큰 상어가 잡아먹기
+            if(sharks[cur.r][cur.c] < i && sharks[cur.r][cur.c] > 0){
+                if(info.get(sharks[cur.r][cur.c]).z > cur.z)
+                    cur.dead = true;
+                else{
+                    info.get(sharks[cur.r][cur.c]).dead = true;
+                    sharks[cur.r][cur.c] = i;
+                }
+            }else
+                sharks[cur.r][cur.c] = i;
+        }
+    }
+    //방향을 반대로 바꾸는 함수
+    static void directionChange(int index, int direction){
+        if(direction%2==0)
+            info.get(index).d = direction-1;
+        else
+            info.get(index).d = direction+1;
+    }
+    //상어가 이동할 때 격자판에 벗어나는지 확인하는 함수
+    static boolean outBound(int r, int c){
+        if(r>=0 && c>=0 && r<R && c < C)
+            return false;
+        return true;
+
+    }
+}
+
