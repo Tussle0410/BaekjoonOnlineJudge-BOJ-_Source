@@ -1,0 +1,124 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+    static int N,M,T;
+    static boolean checkNum;	//인접한 숫자가 사라졌는지 확인하는 변수
+    static int[][] circle;	//원판 정보 저장 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        T = Integer.parseInt(st.nextToken());
+        circle = new int[N+2][M+2];
+        //1. 입력되는 정보들을 저장합니다.
+        for(int i=1;i<=N;i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            for(int j=1;j<=M;j++)
+                circle[i][j] = Integer.parseInt(st.nextToken());
+        }
+        //2. T번동안 원판 회전 및 숫자 값 변경에 대한 시뮬레이션을 진행합니다.
+        for(int i = 0;i<T;i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            int x = Integer.parseInt(st.nextToken());
+            int d = Integer.parseInt(st.nextToken());
+            int k = Integer.parseInt(st.nextToken());
+            checkNum = false;
+            for(int j=x;j<=N;j+=x)		//원판 회전 진행
+                rotation(d, j, k);
+            numCheck();		//인접한 숫자 확인
+            if(!checkNum)	//인접한 숫자 같은 값 없을 때 평균값 관련 숫자 변경
+                numChange();
+        }
+        //3. T번의 회전이 종료된 뒤에 원판에 수들의 합을 결과로 출력합니다.
+        int sum = 0;
+        for(int i=1;i<=N;i++){
+            for(int j=1;j<=M;j++)
+                sum+=circle[i][j];
+        }
+        bw.write(sum + "");	//원판 수의 합 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //원판 회전하는 함수
+    static void rotation(int d, int x, int k){
+        for(int i=0;i<k;i++){
+            if(d ==0){		//시계
+                int temp = circle[x][M];	//[M]
+                for(int j=M;j>1;j--)	//[i] = [i-1]
+                    circle[x][j] = circle[x][j-1];
+                circle[x][1] = temp;	//[1] = [M]
+            }else{		//반 시계
+                int temp = circle[x][1];	//[1]
+                for(int j=1;j<M;j++)	//[i] = [i+1]
+                    circle[x][j] = circle[x][j+1];
+                circle[x][M] = temp;	//[M] = [1] 
+            }
+        }
+    }
+    //평균값에 따른 숫자 변경 함수
+    static void numChange(){
+        int count = 0;
+        int sum = 0;
+        //모든 숫자 더하기
+        for(int i=1;i<=N;i++){
+            for(int j=1;j<=M;j++){
+                if(circle[i][j]!=0){
+                    sum+= circle[i][j];
+                    count++;
+                }
+            }
+        }
+        float avg = (float)sum/count;	//평균 구하기
+        //평균에 따른 값 변경 진행
+        for(int i=1;i<=N;i++){
+            for(int j=1;j<=M;j++){
+                if(circle[i][j]!=0){
+                    if(circle[i][j] > avg)
+                        circle[i][j]--;
+                    else if(circle[i][j] < avg)
+                        circle[i][j]++;
+                }
+            }
+        }
+    }
+    //인접한 숫자에 따른 원판 숫자 제거 함수
+    static void numCheck(){
+        int[][] tempArr = new int[N+2][M+2];
+        for(int i=1;i<=N;i++) {
+            for (int j = 1; j <= M; j++) {
+                if (circle[i][j] != 0) {
+                    tempArr[i][j] = circle[i][j];
+                    //왼쪽
+                    if (circle[i - 1][j] == circle[i][j]) {
+                        tempArr[i][j] = 0;
+                        checkNum = true;
+                    }
+                    //오른쪽
+                    if (circle[i + 1][j] == circle[i][j]) {
+                        tempArr[i][j] = 0;
+                        checkNum = true;
+                    }
+                    //위쪽
+                    int t = j - 1 == 0 ? M : j - 1;
+                    if (circle[i][t] == circle[i][j]) {
+                        tempArr[i][j] = 0;
+                        checkNum = true;
+                    }
+                    //아래쪽
+                    t = j + 1 == M + 1 ? 1 : j + 1;
+                    if (circle[i][t] == circle[i][j]) {
+                        tempArr[i][j] = 0;
+                        checkNum = true;
+                    }
+                }
+            }
+        }
+        circle = tempArr;
+    }
+}
