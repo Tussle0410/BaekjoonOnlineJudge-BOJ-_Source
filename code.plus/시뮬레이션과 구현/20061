@@ -1,0 +1,228 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+    static int N, point = 0;
+    static int[][] green = new int[6][4];	//초록색 구역
+    static int[][] blue = new int[4][6];	//파란색 구역
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        N = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+        //도형 정보 저장 및 시뮬레이션 진행
+        for(int i=0;i<N;i++) {
+            st = new StringTokenizer(br.readLine(), " ");
+            int t = Integer.parseInt(st.nextToken());
+            int x = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
+            blueMove(t, x);	//도형 파란색 칸으로 이동
+            greenMove(t, y);	//도형 초록색 칸으로 이동
+        }
+        bw.write( point + "\n" + getMap());	// 결과 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //도형 → 파란색 방향으로 이동
+    static void blueMove(int t,  int x){
+        int col = 5;
+        if(t==1){
+            for(int i=2;i<7;i++){
+                if(i==6){
+                    blue[x][5] = 1;
+                    break;
+                }
+                if(blue[x][i] == 1){
+                    blue[x][i-1] = 1;
+                    col = i-1;
+                    break;
+                }
+            }
+        }else if(t==2){
+            for(int i=2;i<7;i++){
+                if(i==6){
+                    blue[x][5] = 1;
+                    blue[x][4] = 1;
+                    break;
+                }
+                if(blue[x][i] == 1){
+                    blue[x][i-1] = 1;
+                    blue[x][i-2] = 1;
+                    col = i-1;
+                    break;
+                }
+            }
+        }else{
+            for(int i=2;i<7;i++){
+                if(i==6){
+                    blue[x][5] = 1;
+                    blue[x+1][5] = 1;
+                    break;
+                }
+                if(blue[x][i] == 1 || blue[x+1][i]==1){
+                    blue[x][i-1] = 1;
+                    blue[x+1][i-1] = 1;
+                    col = i-1;
+                    break;
+                }
+            }
+        }
+        blueComplete(t, col);	//이동 후 완성된 열이 있는지 확인
+        //연한 부분 탐색
+        int minus = lightBlueCheck(1) + lightBlueCheck(0);
+        if(minus!=0)	//연한 부분에 도형 존재시 해당 칸만큼 땡기기
+            blueValueMove(minus, 5);
+    }
+    //연한 부분 탐색하는 함수
+    static int lightBlueCheck(int col){
+        for(int i=0;i<4;i++)
+            if(blue[i][col]==1)	//도형 존재시.
+                return 1;
+        return 0;
+    }
+    //도형 파란색 부분 이동 후 열 확인하는 함수
+    static void blueComplete(int t, int col){
+        if(t==1 || t==3){
+            if(blueColCheck(col) == 0)
+                return;
+            blueValueMove(1, col);
+            point++;
+        }else{
+            int t1 = blueColCheck(col);
+            int t2 = blueColCheck(col-1);
+            if (t1 + t2==0)
+                return;
+            if(t1==0 && t2 == 1)
+                blueValueMove(1, col-1);
+            else
+                blueValueMove(t1 + t2, col);
+            point+=t1 + t2;
+        }
+    }
+    //연한 파란색에 도형이 있거나 열이 완성된 경우 땡겨지는 것 진행하는 함수
+    static void blueValueMove(int minus, int col){
+        for(int i=col;i >= minus; i--) {
+            for (int j = 0; j < 4; j++)
+                blue[j][i] = blue[j][i - minus];
+        }
+        blue[0][0] = blue[1][0] = blue[2][0] = blue[3][0] = 0;
+        if(minus==2)
+            blue[0][1] = blue[1][1] = blue[2][1] = blue[3][1] = 0;
+    }
+    //해당 열의 칸에 모두 도형이 존재하는지 확인하는 함수
+    static int blueColCheck(int col){
+        for(int i=0;i<4;i++)
+            if(blue[i][col]==0)
+                return 0;
+        return 1;
+    }
+    //도형 ↓ 초록색 방향으로 이동
+    static void greenMove(int t, int y){
+        int row = 5;
+        if(t==1){
+            for(int i=2;i<7;i++){
+                if(i==6){
+                    green[5][y] = 1;
+                    break;
+                }
+                if(green[i][y] == 1){
+                    green[i-1][y] = 1;
+                    row = i-1;
+                    break;
+                }
+            }
+        }else if(t==2){
+            for(int i=2;i<7;i++){
+                if(i==6){
+                    green[5][y] = 1;
+                    green[5][y+1] = 1;
+                    break;
+                }
+                if(green[i][y] == 1 || green[i][y+1]==1){
+                    green[i-1][y] = 1;
+                    green[i-1][y+1] = 1;
+                    row = i-1;
+                    break;
+                }
+            }
+        }else{
+            for(int i=2;i<7;i++){
+                if(i==6){
+                    green[4][y] = 1;
+                    green[5][y] = 1;
+                    break;
+                }
+                if(green[i][y] == 1){
+                    green[i-1][y] = 1;
+                    green[i-2][y] = 1;
+                    row = i-1;
+                    break;
+                }
+            }
+        }
+        greenComplete(t, row);	////이동 후 완성된 행이 있는지 확인
+        //연한 부분 탐색
+        int minus = lightGreenCheck(1) + lightGreenCheck(0);
+        if(minus!=0)	//연한 부분에 도형 존재시 해당 칸만큼 땡기기
+            greenValueMove(minus, 5);
+    }
+    //연한 부분 탐색하는 함수
+    static int lightGreenCheck(int row){
+        for(int i=0;i<4;i++)
+            if(green[row][i]==1)
+                return 1;
+        return 0;
+    }
+    //도형 초록색 부분 이동 후 행 확인하는 함수
+    static void greenComplete(int t, int row){
+        if(t==1 || t==2){
+            if(greenRowCheck(row) == 0)
+                return;
+            greenValueMove(1, row);
+            point++;
+        }else{
+            int t1 = greenRowCheck(row);
+            int t2 = greenRowCheck(row-1);
+            if (t1 + t2==0)
+                return;
+            if(t1==0 && t2 == 1)
+                greenValueMove(1, row-1);
+            else
+                greenValueMove(t1 + t2, row);
+            point += t1 + t2;
+        }
+    }
+    //연한 초록색에 도형이 있거나 행이 완성된 경우 땡겨지는 것 진행하는 함수
+    static void greenValueMove(int minus, int row){
+        for(int i=row;i >=minus; i--) {
+            for (int j = 0; j < 4; j++)
+                green[i][j] = green[i-minus][j];
+        }
+        green[0][0] = green[0][1] = green[0][2] = green[0][3] = 0;
+        if(minus==2)
+            green[1][0] = green[1][1] = green[1][2] = green[1][3] = 0;
+    }
+    //해당 행의 칸에 모두 도형이 존재하는지 확인하는 함수
+    static int greenRowCheck(int row){
+        for(int i=0;i<4;i++)
+            if(green[row][i]==0)
+                return 0;
+        return 1;
+    }
+    //파란색, 초록색 부분에 도형이 남아있는 칸의 개수를 구하는 함수
+    static int getMap(){
+        int result = 0;
+        for(int i=0;i<4;i++){
+            for(int j=0;j<6;j++)
+                result += blue[i][j];
+        }
+        for(int i=0;i<6;i++){
+            for(int j=0;j<4;j++)
+                result += green[i][j];
+        }
+        return result;
+    }
+}
