@@ -1,0 +1,43 @@
+import java.io.*;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+public class Main {
+    static HashMap<String, Integer> map = new HashMap<>();	//패턴 저장하는 HashMap
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        init();		//2. 번호판이 나올 수 있는 패턴의 개수를 구합니다.
+        String str = br.readLine();		//1. 입력되는 정보들을 저장합니다.
+        String temp = str.charAt(0) + "";
+        int answer = 1;
+        //3. 번호판 형식이 주어졌을 때 패턴을 조합하여 개수를 결과로 출력합니다.
+        for(int i=1;i<str.length();i++){
+            if(str.charAt(i) == str.charAt(i-1))
+                temp += str.charAt(i);
+            else{
+                answer *= map.get(temp);
+                temp = str.charAt(i) + "";
+            }
+        }
+        answer *= map.get(temp);
+        bw.write(answer + "");	//번호판의 개수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //패턴 정의하는 함수
+    static void init(){
+        map.put("d" , 10);
+        map.put("dd", 90);
+        map.put("ddd", 810);
+        map.put("dddd", 7290);
+        map.put("c", 26);
+        map.put("cc", 650);
+        map.put("ccc", 16250);
+        map.put("cccc",406250);
+
+    }
+}
