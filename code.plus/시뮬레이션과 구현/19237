@@ -1,0 +1,162 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+public class Main {
+    //상어 정보 클래스
+    static class shark{
+        int x, y, d;
+        boolean dead;	//상어 격자 밖으로 나갔는지 확인 변수
+        public shark(int x, int y, int d, boolean dead) {
+            this.x = x;
+            this.y = y;
+            this.d = d;
+            this.dead = dead;
+        }
+    }
+    static int N,M,K;
+    //index : 공간의 상어 냄새 번호, space : 공간의 냄새 유효 시간
+    static int[][] index, space;
+    static int[][][] direction;	//각 상어의 방향 우선순위 저장
+    static ArrayList<shark> info = new ArrayList<>();	//상어 정보 저장 리스트
+    static int[] dx = {0, 0, 0, -1, 1};	//상하좌우 x 변경값
+    static int[] dy = {0, -1, 1, 0, 0};	//상하좌우 y 변경값
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        index = new int[N][N];
+        space = new int[N][N];
+        direction = new int[M+1][5][5];
+        for(int i=0;i<=M;i++)
+            info.add(new shark(0,0, 0, false));
+        //상어 정보 및 공간에 대한 정보 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            for(int j=0;j<N;j++){
+                int x = Integer.parseInt(st.nextToken());
+                if(x!=0){
+                    index[i][j] = x;
+                    space[i][j] = K;
+                    info.get(x).x = j;
+                    info.get(x).y = i;
+                }
+            }
+        }
+        //현재 상어 방향 정보 저장
+        st = new StringTokenizer(br.readLine(), " ");
+        for(int i=1;i<=M;i++)
+            info.get(i).d = Integer.parseInt(st.nextToken());
+
+        //상어 방향 우선순위 정보 저장
+        for(int i=1;i<=M;i++){
+            for(int j=1;j<5;j++){
+                st = new StringTokenizer(br.readLine()," ");
+                for(int s=1;s<5;s++)
+                    direction[i][j][s] = Integer.parseInt(st.nextToken());
+            }
+        }
+        int answer = start();	//시뮬레이션 시작 및 결과 저장
+        bw.write(answer + "");	//경과된 초 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //시뮬레이션 진행하는 함수
+    static int start(){
+        int time = 0;
+        while(true){
+            //1000초를 초과시
+            if(time>1000)
+                return -1;	//-1 반환
+            if(sharkCheck())	//1번 상어만 남았을 때
+                break;
+            sharkMove();	//상어 이동 진행
+            time++;		//시간 증가
+        }
+        return time;	//경과된 초 반환
+    }
+    //상어 이동을 진행하는 함수
+    static void sharkMove(){
+        int[][] temp = new int[N][N];
+        for(int i=1;i<=M;i++){
+            shark cur = info.get(i);
+            if(cur.dead)	//쫓겨난 상어는 넘기기
+                continue;
+            boolean moveCheck = false;	//상어가 이동했는지 확인 변수
+            //상어 방향 우선순위에 따라 빈 칸 탐색 후 이동
+            for(int j=1;j<=4;j++){
+                int tempD = direction[i][cur.d][j];
+                int tempX = cur.x + dx[tempD];
+                int tempY = cur.y + dy[tempD];
+                if(inSpace(tempX, tempY) && index[tempY][tempX]==0){
+                    //이동한 칸에 더 낮은 번호 상어 존재시 쫓겨남
+                    if(temp[tempY][tempX]!=0){
+                        cur.dead = true;
+                        break;
+                    }
+                    moveCheck = true;
+                    cur.x = tempX;
+                    cur.y = tempY;
+                    cur.d = tempD;
+                    temp[tempY][tempX] = i;
+                    break;
+                }
+            }
+            //빈 칸의 이동이 없을 때 우선순위에 따라 자신의 냄새가 존재하는 칸 탐색 후 이동
+            if(!moveCheck){
+                for(int j=1;j<=4;j++) {
+                    int tempD = direction[i][cur.d][j];
+                    int tempX = cur.x + dx[tempD];
+                    int tempY = cur.y + dy[tempD];
+                    if (inSpace(tempX, tempY) && index[tempY][tempX] == i) {
+                        cur.x = tempX;
+                        cur.y = tempY;
+                        cur.d = tempD;
+                        break;
+                    }
+                }
+            }
+        }
+        spaceChange();	//냄새 시간 줄이기
+        //상어 이동한 칸에 냄새 남기기
+        for(int i=1;i<=M;i++){
+            shark cur = info.get(i);
+            if(cur.dead)
+                continue;
+            index[cur.y][cur.x] = i;
+            space[cur.y][cur.x] = K;
+        }
+    }
+    //냄새가 경과된 초를 줄이는 함수
+    static void spaceChange(){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++){
+                if(space[i][j]!=0)
+                    space[i][j]--;
+                if(space[i][j]==0)
+                    index[i][j] = 0;
+            }
+        }
+    }
+    //1번 상어만 존재하는지 확인하는 함수
+    static boolean sharkCheck(){
+        for(int i=2;i<=M;i++){
+            if(!info.get(i).dead)
+                return false;
+        }
+        return true;
+    }
+    //상어의 이동이 공간 내부인지 확인하는 함수
+    static boolean inSpace(int x, int y){
+        if(x>=0 && y>=0 && x<N && y<N)
+            return true;
+        return false;
+    }
+}
