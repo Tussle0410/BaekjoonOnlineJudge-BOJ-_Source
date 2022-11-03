@@ -1,0 +1,22 @@
+import java.io.*;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+public class Main {
+    static int[] piece = {1, 1, 2, 2, 2, 8};	//올바른 세트의 피스 개수
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //올바른 피스에서 입력된 피스를 뺀 결과값 BufferedWriter 저장
+        for(int i=0;i<6;i++){
+            piece[i] -= Integer.parseInt(st.nextToken());
+            bw.write(piece[i] + " ");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
