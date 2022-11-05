@@ -1,0 +1,31 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+    static int N,X;
+    public static void main(String[] args) throws IOException {
+        //입력값을 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값을 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        X = Integer.parseInt(br.readLine());
+        N = Integer.parseInt(br.readLine());
+        int sum = 0;
+        //물건 가격과 개수를 곱한 뒤 합하기
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            sum += a * b;
+        }
+        //합한 값과 X가 같은지 확인
+        if(sum == X)	//같으면 Yes
+            bw.write("Yes");
+        else	//다르면 No
+            bw.write("No");
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
