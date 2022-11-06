@@ -1,0 +1,39 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+    static int N, answer = 0;
+    static int[] num = {1, 5, 10, 50};	//로마 숫자
+    static boolean[][] DP = new boolean[21][1001];	//로마 숫자 탐색 확인 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        N = Integer.parseInt(br.readLine());
+        cal(0, 0);		//모든 경우 구하기
+        bw.write(answer + "");	//표현 가능 개수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //로마 숫자 모든 경우 구하는 함수
+    static void cal(int count, int value){
+        if(count==N){		//N개의 로마 숫자 형태 완성시.
+            if(!DP[count][value]){
+                answer++;
+                DP[count][value] = true;
+            }
+            return;
+        }
+
+        if(DP[count][value])	//해당 개수에 대한 숫자 이미 탐색시
+            return;
+
+        DP[count][value] = true;	//현재 숫자 사용 개수와 표현 값 탐색 확인
+        //로마 숫자 덧붙여서 탐색!
+        for(int i=0;i<4;i++){
+            cal(count+1, value + num[i]);
+        }
+    }
+}
