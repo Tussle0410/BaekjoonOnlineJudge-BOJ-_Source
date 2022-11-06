@@ -1,0 +1,117 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
+
+public class Main {
+    //십자가 정보 클래스
+    static class info{
+        int x, y, size;
+        public info(int x, int y, int size) {
+            this.x = x;
+            this.y = y;
+            this.size = size;
+        }
+    }
+    static int N,M, scale;
+    static char[][] map;	//격자판 정보 배열
+    static boolean[][] visited;		//방문 확인 배열
+    static ArrayList<info> answer = new ArrayList<>();
+    static int[] dx = {-1, 1, 0, 0};	//상하좌우 X변경값
+    static int[] dy = {0, 0, -1, 1};	//상하좌우 Y변경값
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        map = new char[N][M];
+        visited = new boolean[N][M];
+        //격자판 정보 저장
+        for(int i=0;i<N;i++){
+            String str = br.readLine();
+            for(int j=0;j<M;j++)
+                map[i][j] = str.charAt(j);
+        }
+        start();	//격자판 십자가로 채울 수 있는지 탐색
+        if(mapCheck()){	//격자판 만들었을 때
+            //십자가 정보 BufferedWriter 저장
+            bw.write(answer.size() + "\n");
+            for(info cur : answer)
+                bw.write(cur.x + " " + cur.y + " " + cur.size +"\n");
+        }else	//격자판 만들지 못할 때
+            bw.write("-1");
+
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //입력된 격자판을 십자가로 모두 채울 수 있는지 찾는 함수
+    static void start(){
+        for(int i=1;i<N-1;i++){
+            for(int j=1;j<M-1;j++){
+                if(map[i][j] =='.')	// .은 중심이 되지 못함
+                    continue;
+                if(search(j, i))	//십자가 가능한지 탐색
+                    if(scale != Integer.MAX_VALUE){	//십자가 될 때 십자가 정보 저장
+                        answer.add(new info(i+1,j+1, scale));
+                        for(int s=1;s<=scale;s++){
+                            visited[i-s][j] = true;
+                            visited[i+s][j] = true;
+                            visited[i][j-s] = true;
+                            visited[i][j+s] = true;
+                        }
+                    }
+            }
+        }
+    }
+    //십자가 중심이 되는지 확인 및 크기를 구하는 함수 호출하는 함수
+    static boolean search(int x, int y){
+        for(int i=0;i<4;i++){
+            int tempX = x + dx[i];
+            int tempY = y + dy[i];
+            if(map[tempY][tempX]=='.')
+                return false;
+        }
+        visited[y][x] = true;
+        scale = Integer.MAX_VALUE;
+        //상하좌우 방향으로 이동하며 만들 수 있는 최대 크기 구하기
+        sizeCal(x, y, 0);
+        sizeCal(x, y, 1);
+        sizeCal(x, y, 2);
+        sizeCal(x, y, 3);
+        return true;
+    }
+    //각 방향으로 나아가 십자가의 최대 크기를 구하는 함수
+    static void sizeCal(int x, int y, int d){
+        int count = 0;
+        while(true){
+            int tempX = x + dx[d];
+            int tempY = y + dy[d];
+            if(!inSpace(tempX,tempY) || map[tempY][tempX]=='.')
+                break;
+            count+=1;
+            x = tempX;
+            y = tempY;
+        }
+        scale = Math.min(scale, count);
+    }
+    //입력된 격자판과 동일한지 확인하는 함수
+    static boolean mapCheck(){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++)
+                if(map[i][j]=='*' && !visited[i][j])
+                    return false;
+        }
+        return true;
+    }
+    //이동하려는 칸이 격자판에 존재하는지 확인하는 함수
+    static boolean inSpace(int x, int y){
+        if(x>=0 && y>=0 && x<M && y<N)
+            return true;
+        return false;
+    }
+}
