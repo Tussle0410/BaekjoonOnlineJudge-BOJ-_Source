@@ -1,0 +1,60 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.StringTokenizer;
+
+public class Main {
+    static int N,L,R,X, answer = 0;
+    static ArrayList<Integer> dif = new ArrayList<>();	//문제 난이도 저장 리스트
+    static boolean[] check;	//방문 확인 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        N = Integer.parseInt(st.nextToken());
+        L = Integer.parseInt(st.nextToken());
+        R = Integer.parseInt(st.nextToken());
+        X = Integer.parseInt(st.nextToken());
+        st = new StringTokenizer(br.readLine(), " ");
+        //입력값 저장
+        for(int i=0;i<N;i++){
+            int A = Integer.parseInt(st.nextToken());
+            if(A <= R)	//난이도가 R보다 크면 사용할 수 없습니다.
+                dif.add(A);
+        }
+        check = new boolean[dif.size()];
+        //모든 경우 탐색
+        for(int i=0;i<dif.size();i++){
+            check[i] = true;
+            cal(i, 1, dif.get(i), dif.get(i), dif.get(i));
+        }
+
+        bw.write(answer + "");	//경우의 수 개수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //문제를 선택하는 모든 경우 탐색
+    static void cal(int index, int count, int value, int max, int min){
+        //2개 이상 문제를 선택한 경우
+        if(count>1){
+            //조건에 만족하는 경우
+            if(value <= R && value>=L && max-min >=X)
+                answer++;
+        }
+        //현재 경우에서 다른 문제 선택하기
+        for(int i=index+1;i<dif.size();i++){
+            if(value + dif.get(i) > R || check[i])
+                continue;
+            check[i] = true;
+            //최대, 최소 난이도 구하기
+            int tempMax = Math.max(max, dif.get(i));
+            int tempMin = Math.min(min, dif.get(i));
+            cal(i, count+1, value + dif.get(i),tempMax, tempMin);
+            check[i] = false;
+        }
+    }
+}
