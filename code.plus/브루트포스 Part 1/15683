@@ -1,0 +1,179 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.StringTokenizer;
+
+public class Main {
+    //CCTV 관련 정보 클래스
+    static class cctv implements Comparable<cctv>{
+        int x, y, index;
+        public cctv(int x, int y, int index) {
+            this.x = x;
+            this.y = y;
+            this.index = index;
+        }
+        //CCTV 번호 기준 내림차순 정렬
+        @Override
+        public int compareTo(cctv o) {
+            return o.index - this.index;
+        }
+    }
+    static int[][] map;		//공간 정보 저장 배열
+    static int N,M, answer = Integer.MAX_VALUE;
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y변경값
+    static ArrayList<cctv> list = new ArrayList<>();
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        map = new int[N][M];
+        //공간 정보 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for(int j=0;j<M;j++){
+                int num = Integer.parseInt(st.nextToken());
+                if(num>0){
+                    if(num<=5)
+                        list.add(new cctv(j,i, num));
+                    map[i][j] = num;
+                }
+
+            }
+        }
+        Collections.sort(list);	//CCTV 번호 기준 내림차순 정렬
+        search(0);		//CCTV 감시하는 모든 경우 탐색 및 최소 크기 구하기
+        bw.write(answer + "");		//최소크기 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    static void search(int depth ){
+        if(depth==list.size()){		//모든 CCTV 감시 완료시
+            cctvCheck();
+            return;
+        }
+        cctv cur = list.get(depth);	//현재 CCTV
+        if(cur.index==5){		//5번 CCTV일 때
+            cctv5(cur);
+            search(depth+1);
+            return;
+        }
+        //현재 공간 상태 복사
+        int[][] temp = new int[N][M];
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++)
+                temp[i][j] = map[i][j];
+        }
+        //4번 CCTV일 때
+        if(cur.index==4){
+            //외곽에 있을 때
+            if(cur.x==0 || cur.x==M-1 || cur.y == 0 || cur.y==N-1){
+                for(int i=0;i<4;i++)
+                    cctvSearch(cur.x, cur.y, i);
+                search(depth+1);
+            }else{
+                cctv4(cur, 0,3,1);
+                search(depth+1);
+                rollback(temp);
+                cctv4(cur, 3,1,2);
+                search(depth+1);
+                rollback(temp);
+                cctv4(cur, 0,1,2);
+                search(depth+1);
+                rollback(temp);
+                cctv4(cur, 2,0,3);
+                search(depth+1);
+                rollback(temp);
+            }
+        }else if(cur.index==3){		//3번 CCTV일 때
+            //꼭지점에 있을 때
+            if((cur.x==0&&cur.y==0)||(cur.x==0&&cur.y==N-1) ||(cur.x==M-1 && cur.y==0) || (cur.x==M-1 && cur.y==N-1)){
+                for(int i=0;i<4;i++)
+                    cctvSearch(cur.x, cur.y, i);
+                search(depth+1);
+            }else{
+                cctv3And2(cur, 0, 3);
+                search(depth+1);
+                rollback(temp);
+                cctv3And2(cur, 3, 1);
+                search(depth+1);
+                rollback(temp);
+                cctv3And2(cur, 1, 2);
+                search(depth+1);
+                rollback(temp);
+                cctv3And2(cur, 2, 0);
+                search(depth+1);
+                rollback(temp);
+            }
+        }else if(cur.index==2){	//2번 CCTV일 때
+            cctv3And2(cur, 0, 1);
+            search(depth+1);
+            rollback(temp);
+            cctv3And2(cur, 2, 3);
+            search(depth+1);
+            rollback(temp);
+        }else if(cur.index==1){	//1번 CCTV일 때
+            for(int i=0;i<4;i++){
+                cctvSearch(cur.x, cur.y, i);
+                search(depth+1);
+                rollback(temp);
+            }
+        }
+    }
+    //CCTV5번이 감시를 진행하는 함수
+    static void cctv5(cctv cur) {
+        for (int i = 0; i < 4; i++)
+            cctvSearch(cur.x, cur.y, i);
+    }
+    //CCTV 4번이 감시를 진행하는 함수
+    static void cctv4(cctv cur, int d1, int d2, int d3){
+        cctvSearch(cur.x, cur.y, d1);
+        cctvSearch(cur.x, cur.y, d2);
+        cctvSearch(cur.x, cur.y, d3);
+    }
+    //CCTV 2번, 3번이 감시를 진행하는 함수
+    static void cctv3And2(cctv cur, int d1, int d2){
+        cctvSearch(cur.x, cur.y, d1);
+        cctvSearch(cur.x, cur.y, d2);
+    }
+    //CCTV 감시 이전으로 돌리는 함수
+    static void rollback(int[][] temp){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++)
+                map[i][j] = temp[i][j];
+        }
+    }
+    //CCTV 주어진 방향으로 탐색하는 함수
+    static void cctvSearch(int x, int y, int direction){
+        while(true){
+            x += dx[direction];
+            y += dy[direction];
+            if(!inSpace(x,y) || map[y][x]==6)
+                break;
+            if(map[y][x]==0)
+                map[y][x] = -1;
+        }
+    }
+    //이동하려는 칸이 공간에 존재하는지 확인하는 함수
+    static boolean inSpace(int x, int y){
+        if(x >= 0 && y>=0 && x<M && y<N)
+            return true;
+        return false;
+    }
+    //사각지대 개수 구하는 함수
+    static void cctvCheck(){
+        int result = 0;
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++){
+                if(map[i][j]==0)
+                    result++;
+            }
+        }
+        answer = Math.min(answer, result);
+    }
+}
