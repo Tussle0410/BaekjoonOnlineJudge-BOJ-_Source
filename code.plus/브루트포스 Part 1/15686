@@ -1,0 +1,76 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+public class Main {
+    //집, 치킨집 위치 관련 클래스
+    static class position{
+        int x, y;
+        public position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int N,M, answer = Integer.MAX_VALUE;
+    //치킨집 위치 정보 저장 리스트
+    static ArrayList<position> chickenHouse = new ArrayList<>();
+    //집 위치 정보 저장 리스트
+    static ArrayList<position> house = new ArrayList<>();
+    static position[] selectHouse;	//M개의 선택된 집 저장 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        selectHouse = new position[M];
+        //입력되는 지도의 정보에 따른 정보들 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            for(int j=0;j<N;j++){
+                int num = Integer.parseInt(st.nextToken());
+                if(num==2){
+                    chickenHouse.add(new position(j, i));
+                }else if(num==1)
+                    house.add(new position(j, i));
+             }
+        }
+        //모든 치킨집에서 M개를 선택하는 모든 경우 구하기
+        for(int i=0;i<chickenHouse.size();i++){
+            selectHouse[0] = chickenHouse.get(i);
+            search(i,1);
+        }
+        bw.write(answer + ""); //도시 치킨 거리 최소값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //M개의 치킨집 선택하는 모든 경우 구하는 재귀 함수
+    static void search(int index, int depth){
+        if(depth == M){		//M개의 치킨집 선택 완료시!
+            cal();	//해당 경우의 도시 치킨 거리 구하기
+            return;
+        }
+        //치킨집 탐색
+        for(int i=index+1;i<chickenHouse.size();i++){
+            selectHouse[depth] = chickenHouse.get(i);
+            search(i, depth+1);
+        }
+    }
+    //M개 선택된 치킨집 기준 도시 치킨 거리 구하는 함수
+    static void cal(){
+        int result = 0;
+        //모든 집을 기준으로 거리 구하기
+        for(position cur : house){
+            int distance = Integer.MAX_VALUE;
+            //점화식을 이용해 집에서 최소 거리의 치킨 거리 구하기
+            for(position chicken : selectHouse)
+                distance = Math.min(Math.abs(cur.x-chicken.x) + Math.abs(cur.y - chicken.y), distance);
+            result += distance;
+        }
+        //도시의 치킨 거리 최소값 비교하기
+        answer = Math.min(answer, result);
+    }
+}
