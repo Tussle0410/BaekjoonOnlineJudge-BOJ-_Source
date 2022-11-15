@@ -1,0 +1,117 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    //회전 연산 정보 클래스
+    static class info{
+        int x, y, s;
+        public info(int x, int y, int s) {
+            this.x = x;
+            this.y = y;
+            this.s = s;
+        }
+    }
+    static int N,M,K, answer = Integer.MAX_VALUE;
+    static int[][] arr;	//입력되는 배열 저장 배열
+    static boolean[] visited;		//회전연산 사용 확인 배열
+    static ArrayList<info> list = new ArrayList<>();	//회전 연산 저장 리스트
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st= new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        arr = new int[N][M];
+        visited = new boolean[K];
+        //입력 배열 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for(int j=0;j<M;j++)
+                arr[i][j] = Integer.parseInt(st.nextToken());
+        }
+        //입력되는 회전 연산 저장
+        for(int i=0;i<K;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int y = Integer.parseInt(st.nextToken())-1;
+            int x = Integer.parseInt(st.nextToken())-1;
+            int s = Integer.parseInt(st.nextToken());
+            list.add(new info(x-s, y-s, s*2));
+        }
+        search(0);	//회전 연산 임의의 순서에 대한 모든 경우 탐색
+        bw.write(answer + "");		//배열의 최소값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //회전 연산을 임의의 순서로 진행하는 함수
+    static void search(int depth){
+        if(depth==K){
+            cal();
+            return;
+        }
+        //기존 배열 복사.
+        int[][] temp = new int[N][M];
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++){
+                temp[i][j] = arr[i][j];
+            }
+        }
+        //탐색
+        for(int i=0;i<K;i++){
+            if(visited[i])		//사용한 회전 연산인 경우
+                continue;
+            //회전연산 사용
+            visited[i] = true;
+            rotate(list.get(i));
+            search(depth + 1);
+            //회전연산 복구
+            visited[i] = false;
+            rollBack(temp);		//기존 배열로 복구 함수 실행
+        }
+    }
+    //배열의 값 구하는 함수
+    static void cal(){
+        int result = Integer.MAX_VALUE;
+        for(int i=0;i<N;i++){
+            int temp = 0;
+            for(int j=0;j<M;j++)
+                temp += arr[i][j];
+            result = Math.min(result, temp);
+        }
+        answer = Math.min(answer, result);		//최소값과 비교하기
+    }
+    //회전 연산에 맞게 배열 회전하는 함수
+    static void rotate(info value){
+        for(int i=0;i<value.s/2;i++){
+            int sx = value.x + i;		//왼쪽 상단 x
+            int sy = value.y + i;		//왼쪽 상단 y
+            int ex = value.x + value.s - i;		//오른쪽 하단 x
+            int ey = value.y + value.s - i;		//오른쪽 하단 y
+            int temp = arr[sy][sx];	//기준 값(sy, sx) 저장
+            //↑
+            for(int j=sy;j<ey;j++)
+                arr[j][sx] = arr[j+1][sx];
+            //←
+            for(int j=sx;j<ex;j++)
+                arr[ey][j] = arr[ey][j+1];
+            //↓
+            for(int j=ey;j>sy;j--)
+                arr[j][ex] = arr[j-1][ex];
+            //→
+            for(int j=ex;j>sx+1;j--)
+                arr[sy][j] = arr[sy][j-1];
+            arr[sy][sx+1] = temp;	//기준 값도 회전
+
+        }
+    }
+    //기존 배열로 되돌아오는 함수
+    static void rollBack(int[][] temp){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++)
+                arr[i][j] = temp[i][j];
+        }
+    }
+}
