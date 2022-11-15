@@ -1,0 +1,55 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    static int N,M, answer = Integer.MAX_VALUE;
+    static boolean[][] friend;	//친구 관계 저장 배열
+    static int[] count;		//인물의 친구 수 저장 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st= new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        
+        friend = new boolean[N+1][N+1];
+        count = new int[N+1];
+        //입력값 저장
+        for(int i=0;i<M;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            friend[a][b] = true;
+            friend[b][a] = true;
+            count[a]++;
+            count[b]++;
+        }
+        //N명 중 A,B,C를 선택하는 모든 경우의 탐색하는 함수
+        search();
+        //조건에 만족하는 경우가 없을 때
+        if(answer == Integer.MAX_VALUE)
+            bw.write("-1");
+        else
+            bw.write(answer + "");	//최소합 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //N명 중 A,B,C를 선택하는 모든 경우 탐색 및 친구 최소 수 구하는 함수
+    static void search(){
+        for(int i=1;i<=N;i++){		//A선택
+            for(int j=i+1;j<=N;j++){		//B선택
+                if(friend[i][j]){		//A-B가 친구인지 확인
+                    for(int s =j+1;s<=N;s++){		//C선택
+                        if(friend[i][s] && friend[j][s])	//A-C, B-C 친구인지 확인
+                            //최소수 구하기
+                            answer = Math.min(answer,
+                                    count[i] + count[j] + count[s] - 6);
+                    }
+                }
+            }
+        }
+    }
+}
