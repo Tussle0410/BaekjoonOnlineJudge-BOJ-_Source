@@ -1,0 +1,150 @@
+ 
+
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    //시뮬레이션 도중 위치 정보 클래스
+    static class info implements Comparable<info> {
+        int x, y, d;
+
+        public info(int x, int y, int d) {
+            this.x = x;
+            this.y = y;
+            this.d = d;
+        }
+        public info(int x, int y) {
+            this.x = x;
+            this.y = y;
+            this.d = 0;
+        }
+        //거리 오름차순, x값 오름차순
+        @Override
+        public int compareTo(info o) {
+            if(this.d==o.d)
+                return this.x - o.x;
+            else
+                return this.d - o.d;
+        }
+    }
+
+    static int N, M, D, attackSize = 0, answer = 0;
+    static int[][] map, temp;
+    static int[] select = new int[3];	//선택한 궁수들 저장 배열
+    static info[] attackPosition = new info[3];	//궁수들 공격할 위치 저장 배열
+    static int[] dx = {-1, 0, 1};	//좌상우 x변경값
+    static int[] dy = {0, -1, 0};	//좌상우 y변경값
+
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        D = Integer.parseInt(st.nextToken());
+        map = new int[N+1][M];
+        temp = new int[N+1][M];
+        //입력값 저장
+        for (int i = 1; i <= N; i++) {
+            st = new StringTokenizer(br.readLine(), " ");
+            for (int j = 0; j < M; j++) {
+                map[i][j] = Integer.parseInt(st.nextToken());
+                temp[i][j] = map[i][j];
+                //적 이동 반복할 횟수 저장
+                if (map[i][j] == 1 && attackSize == 0)
+                    attackSize = N - i + 1;
+            }
+        }
+        //궁수 배치 모든 경우 탐색
+        for (int i = 0; i < M; i++) {
+            select[0] = i;
+            search(1, i);
+        }
+        bw.write(answer + "");	//적 제외한 최대값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //궁수를 배치하는 모든 경우 및 시뮬레이션 진행함수 호출
+    static void search(int depth, int index) {
+        if (depth == 3) {
+            simulation();	//시뮬레이션 호출
+            rollBack();		//원상태 복구
+            return;
+        }
+        //궁수 배치 탐색
+        for (int i = index + 1; i < M; i++) {
+            select[depth] = i;
+            search(depth + 1, i);
+        }
+    }
+    //시뮬레이션 진행하는 함수
+    static void simulation() {
+        int result = 0;
+        int size = attackSize;
+        while (size > 0) {
+            //궁수 공격 위치 구하기!
+            for (int i = 0; i < 3; i++)
+                attack(select[i], i);
+            //궁수 공격 진행
+            for (int i = 0; i < 3; i++) {
+                if (map[attackPosition[i].y][attackPosition[i].x] == 1) {
+                    map[attackPosition[i].y][attackPosition[i].x] = 0;
+                    result++;
+                }
+            }
+            enemyMove();	//적 이동
+            size--;
+        }
+        answer = Math.max(answer, result);	//최대값인지 비교하기
+    }
+    //궁수가 공격할 위치 구하는 BFS함수
+    static void attack(int col, int index){
+        PriorityQueue<info> q = new PriorityQueue<>();
+        boolean[][] visited = new boolean[N+1][M];
+        visited[N][col] = true;
+        q.add(new info(col, N, 1));
+        while(!q.isEmpty()){
+            info cur = q.poll();
+            //가장 가까운 적에 도착시.
+            if(cur.d<=D && map[cur.y][cur.x]==1){
+                attackPosition[index] = new info(cur.x, cur.y);
+                return;
+            }
+            if(cur.d==D)		//사정거리가 더 갈 수 없을 때
+                continue;
+            //좌상우 탐색
+            for(int i=0;i<3;i++){
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                if(inSpace(tempX,tempY) && !visited[tempY][tempX]){
+                    visited[tempY][tempX] = true;
+                    q.add(new info(tempX,tempY,cur.d+1));
+                }
+            }
+        }
+        attackPosition[index] = new info(0, 0);	//공격할 적이 없을 때
+    }
+    //적 이동하는 함수
+    static void enemyMove(){
+        for(int i=N;i>0;i--){
+            for(int j=0;j<M;j++)
+                map[i][j] = map[i-1][j];
+        }
+    }
+    //이동시 공간에 존재하는지 확인하는 함수
+    static boolean inSpace(int x, int y){
+        if(x>=0 && y>=0 && x<M && y<=N)
+            return true;
+        return false;
+    }
+    //기존 공간에 상태로 되돌리는 함수
+    static void rollBack(){
+        for(int i=0;i<=N;i++)
+            for(int j=0;j<M;j++)
+                map[i][j] = temp[i][j];
+    }
+}
+
