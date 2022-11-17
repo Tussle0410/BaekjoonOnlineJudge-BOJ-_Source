@@ -1,0 +1,115 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    static int N, answer = Integer.MAX_VALUE, sum = 0;
+    static int[][] map;		//구역에 인구수 저장 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        map = new int[N+1][N+1];
+        //입력값 저장 및 총 인구수 구하기
+        for(int i=1;i<=N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for(int j=1;j<=N;j++){
+                map[i][j] = Integer.parseInt(st.nextToken());
+                sum+=map[i][j];
+            }
+        }
+        search();	//경계선 모든 경우 탐색
+        bw.write(answer + "");	//최대 인구 - 최소 인구 최소값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //경계선 만드는 모든 경우 탐색
+    static void search(){
+        for(int y=1;y<=N;y++)
+            for(int x=1;x<=N;x++)
+                for(int d1=1;d1<N;d1++)
+                    for(int d2=1;d2<N;d2++)
+                        if(y + d1 + d2 <= N && x-d1>=1 && x+d2<=N)	//경계선 조건
+                            cal(y, x, d1, d2);
+    }
+    //경계선 만들어서 구역들의 인구들을 구하는 함수
+    static void cal(int y, int x, int d1, int d2){
+        int voteSum = 0;
+        int temp = 0;
+
+        //구역 1.
+        int tempD = 1;
+        for(int i=1;i<y;i++)
+            for(int j=1;j<=x;j++)
+                temp += map[i][j];
+        for(int i=y;i<y+d1;i++) {
+            for (int j=1;j<=x-tempD;j++)
+                temp += map[i][j];
+            tempD++;
+        }
+        //구역1. 비교
+        voteSum += temp;
+        int voteMax = temp;
+        int voteMin = temp;
+
+        //구역2.
+        tempD = 1;
+        temp = 0;
+        for(int i=1;i<=y;i++)
+            for(int j=x+1;j<=N;j++)
+                temp += map[i][j];
+        for(int i=y+1;i<=y+d2;i++) {
+            for (int j=x+1+tempD;j<=N;j++)
+                temp += map[i][j];
+            tempD++;
+        }
+
+        //구역2. 비교
+        voteSum += temp;
+        voteMax = Math.max(voteMax, temp);
+        voteMin = Math.min(voteMin, temp);
+
+        //구역3.
+        tempD = 1;
+        temp = 0;
+        for(int i=N;i>=y+d1+d2;i--)
+            for(int j=1;j<=x+(d2-d1)-1;j++)
+                temp += map[i][j];
+        for(int i=y+d1+d2-1;i>=y+d1;i--) {
+            for (int j=1;j<=x+(d2-d1)-1 - tempD;j++)
+                temp += map[i][j];
+            tempD++;
+        }
+        //구역3. 비교
+        voteSum += temp;
+        voteMax = Math.max(voteMax, temp);
+        voteMin = Math.min(voteMin, temp);
+
+        //구역4.
+        tempD = 1;
+        temp = 0;
+        for(int i=N;i>y+d1+d2;i--)
+            for(int j=x+(d2-d1);j<=N;j++)
+                temp += map[i][j];
+        for(int i=y+d1+d2;i>y+d2;i--) {
+            for (int j=x+(d2-d1)+tempD;j<=N;j++)
+                temp += map[i][j];
+            tempD++;
+        }
+        //구역4. 비교
+        voteSum += temp;
+        voteMax = Math.max(voteMax, temp);
+        voteMin = Math.min(voteMin, temp);
+
+        //구역5. 구하기 및 비교
+        temp = sum - voteSum;
+        voteMax = Math.max(voteMax, temp);
+        voteMin = Math.min(voteMin, temp);
+
+        //최대 인구 - 최소 인구 최소값인지 비교
+        answer = Math.min(answer, voteMax-voteMin);
+    }
+}
