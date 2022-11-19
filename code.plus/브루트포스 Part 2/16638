@@ -1,0 +1,98 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    static int N, answer = Integer.MIN_VALUE;
+    static String input;		//입력되는 연산식 저장
+    static boolean[] bracket;	//괄호 확인 함수
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        N = Integer.parseInt(br.readLine());
+        bracket = new boolean[N];
+        input = br.readLine();	//입력된 식 저장
+        //식의 길이가 1개일 때 해당 값이 최대값
+        if(input.length()==1)		
+            answer = Character.getNumericValue(input.charAt(0));
+        else	//식의 길이 1개 이상일 때 괄호 놓는 모든 경우 탐색
+            search(0);
+        bw.write(answer + "");	//최대값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //식의 괄호를 놓는 모든 경우 탐색
+    static void search(int depth){
+        if(depth==N+1){		//식 완성시.
+            start(setCalculation());	//해당 식 계산하기
+            return;
+        }
+        //식의 처음에 괄호를 추가할 때
+        if(depth==0){
+            bracket[depth]=true;
+            search(depth+2);
+            bracket[depth]=false;
+        }else{	//처음이후 괄호를 추가할 때
+            //중첩되면 안되기 때문에 이전 피연산자에 괄호가 존재하는지 확인
+            if(!bracket[depth-2] && depth!=N-1){
+                bracket[depth] = true;
+                search(depth+2);
+                bracket[depth] = false;
+            }
+        }
+        search(depth+2);		//괄호 추가하지 않을 때
+    }
+    //우선순위 기준으로 괄호와 곱하기를 진행하여 더하기와 뺄셈으로 된 식 구하는 함수
+    static ArrayList<String> setCalculation(){
+        int index=0;
+        ArrayList<String> list = new ArrayList<>();	//식 저장 함수
+        while(index<N){
+            char temp = input.charAt(index);
+            if(temp == '+' || temp =='-'){
+                list.add(String.valueOf(temp));
+            }else if(temp == '*'){		//곱하기일 때는 연산 진행
+                int n1 = Integer.parseInt(list.get(list.size()-1));
+                int n2;
+                if(bracket[index+1]){	//피연산자가 괄호가 있을 때 괄호 먼저 계산
+                    int t1 = Character.getNumericValue(input.charAt(index+1));
+                    int t2 = Character.getNumericValue(input.charAt(index+3));
+                    n2 = cal(t1, t2, input.charAt(index+2));
+                    index+=3;
+                }else{		//피연산자가 괄호가 없을 때
+                    n2 = Character.getNumericValue(input.charAt(index+1));
+                    index++;
+                }
+                list.set(list.size()-1,String.valueOf(cal(n1, n2, temp)));
+            }else{	//피연산자(숫자)일 때
+                if(bracket[index]){	//숫자의 괄호가 있으면 해당 괄호에 연산 계산
+                    int n1 = Character.getNumericValue(temp);
+                    int n2 = Character.getNumericValue(input.charAt(index+2));
+                    list.add(String.valueOf(cal(n1, n2, input.charAt(index+1))));
+                    index+=2;
+                }else		//숫자의 괄호가 없으면 바로 식의 저장
+                    list.add(String.valueOf(temp));
+            }
+            index++;
+        }
+        return list;
+    }
+    //더하기와 빼기로 구성된 식 계산하는 함수
+    static void start(ArrayList<String> list){
+        int result = Integer.parseInt(list.get(0));
+        for(int i=1;i<list.size();i+=2)
+            result = cal(result, Integer.parseInt(list.get(i+1)),list.get(i).charAt(0));
+
+        answer = Math.max(answer, result);
+    }
+    //연산자에 따른 피연산자들 계산하는 함수
+    static int cal(int n1, int n2, char operation){
+        if(operation == '+')		//덧셈
+            return n1+n2;
+        else if(operation == '-')	//뺄셈
+            return n1-n2;
+        else	//곱셈
+            return n1*n2;
+    }
+}
