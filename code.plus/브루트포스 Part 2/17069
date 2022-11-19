@@ -1,0 +1,92 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    static int N;
+    static int[][] map;		//칸 관련 정보 배열
+    static long[][][] DP;	//메모이제이션 배열([y][x][파이프 형태])
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        map = new int[N][N];
+        DP = new long[N][N][3];
+        //입력값 값 저장
+        for (int i = 0; i < N; i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for (int j = 0; j < N; j++)
+                map[i][j] = Integer.parseInt(st.nextToken());
+        }
+        map[0][0] = map[0][1] = 1;		//초기 파이프 (1, 1), (1, 2) 설정
+        search(0, 1, 0);		//파이프 놓는 모든 경우 탐색
+        bw.write(DP[0][1][0] + "");		//(N, N)에 도착하는 경우 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //파이프 연결 모든 경우 탐색
+    static void search(int y, int x, int index){
+        if(y==N-1 && x == N-1){		//파이프 (N, N)도착시
+            return 1;
+        }
+        
+        if(DP[y][x][index]!=0)
+        	return DP[y][x][index];
+        //이전 파이프 0번(-)일 때 연결
+        if(index==0){
+            if(widthCheck(y, x)){		// -연결
+                map[y][x+1] = 1;
+                DP[y][x][index] += search(y, x+1, 0);
+                map[y][x+1] = 0;
+            }
+            if(diagonalCheck(y, x)){	// \연결
+                map[y][x+1]=map[y+1][x]=map[y+1][x+1] = 1;
+                DP[y][x][index] += search(y+1, x+1, 2);
+                map[y][x+1]=map[y+1][x]=map[y+1][x+1] = 0;
+            }
+        }else if (index==1) {		//이전 파이프 1번(|)일 때 연결
+            if(heightCheck(y, x)){	// | 연결
+                map[y+1][x] = 1;
+                DP[y][x][index] += search(y+1, x, 1);
+                map[y+1][x] = 0;
+            }
+            if(diagonalCheck(y, x)){	// \ 연결
+                map[y][x+1]=map[y+1][x]=map[y+1][x+1] = 1;
+                DP[y][x][index] += search(y+1, x+1, 2);
+                map[y][x+1]=map[y+1][x]=map[y+1][x+1] = 0;
+            }
+        }else{		//이전 파이프 2번(\)일 때 연결
+            if(widthCheck(y, x)){	// - 연결
+                map[y][x+1] = 1;
+                DP[y][x][index] += search(y, x+1, 0);
+                map[y][x+1] = 0;
+            }
+            if(heightCheck(y, x)){	// | 연결
+                map[y+1][x] = 1;
+                DP[y][x][index] += search(y+1, x, 1);
+                map[y+1][x] = 0;
+            }
+            if(diagonalCheck(y, x)){	// \ 연결
+                map[y][x+1]=map[y+1][x]=map[y+1][x+1] = 1;
+                DP[y][x][index] += search(y+1, x+1, 2);
+                map[y][x+1]=map[y+1][x]=map[y+1][x+1] = 0;
+            }
+        }
+        return DP[y][x][index];
+    }
+    //0번(-)파이프 연결 조건 확인
+    static boolean widthCheck(int y, int x){
+        return x+1<N && map[y][x+1]==0;
+    }
+    //1번(|)파이프 연결 조건 확인
+    static boolean diagonalCheck(int y, int x){
+        return x+1<N && y+1<N && map[y][x+1]==0 && map[y+1][x]==0 && map[y+1][x+1]==0;
+    }
+    //2번(\)파이프 연결 조건 확인
+    static boolean heightCheck(int y, int x){
+        return y+1<N && map[y+1][x]==0;
+    }
+}
