@@ -1,0 +1,281 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    //윷놀이 말의 위치 관련 클래스
+    static class position{
+        int num;
+        boolean inside;
+        public position(int num, boolean inside) {
+            this.num = num;
+            this.inside = inside;
+        }
+    }
+    static int[] input = new int[10];	//윷놀이 주사위 정보
+    static boolean[][] check = new boolean[41][2];	//말의 현재 위치 확인 배열
+    static ArrayList<position> piece = new ArrayList<>();	//말의 위치 저장 배열
+    static int answer = 0;
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //입력값 저장
+        for(int i=0;i<10;i++)
+            input[i] = Integer.parseInt(st.nextToken());
+        //첫 번째 주사위의 값을 첫 번째 말이 이동합니다.
+        piece.add(new position(input[0] * 2,false));
+        
+        //나머지 말 초기화
+        for(int i=1;i<4;i++)
+            piece.add(new position(0, false));
+
+        search(1, input[0] * 2);	//첫 번째 말 이동한 상태로 모든 경우 탐색
+        bw.write(answer + "");	//최대 점수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //첫 번째 말 이동한 환경에서 말의 이동 모든 경우 탐색하는 함수
+    static void search(int depth, int value){
+        //윷놀이 종료시
+        if(depth==10){
+            answer = Math.max(answer, value);	//얻은 점수와 최대 점수 비교
+            return;
+        }
+        //말이 이동하는 방법 탐색
+        for(int i=0;i<4;i++){
+            position cur = piece.get(i);
+            if(cur.num>40)	//말이 도착칸에 있을 때
+                continue;
+            int temp = cur.num;
+            if(!cur.inside) {	//외부에 있을 때
+                if (cur.num == 10) {		//10칸에 있을 때
+                    int next;
+                    if (input[depth] <= 3)
+                        next = 10 + input[depth] * 3;
+                    else
+                        next = 25 + (input[depth] - 4) * 5;
+                    if (!check[next][1]) {
+                        check[10][0] = false;
+                        cur.num = next;
+                        cur.inside = true;
+                        check[next][1] = true;
+                        search(depth + 1, value + next);
+                        cur.num = temp;
+                        cur.inside = false;
+                        check[next][1] = false;
+                        check[10][0] = true;
+                    }
+                } else if (cur.num == 20) {		//20칸에 있을 때
+                    int next;
+                    if (input[depth] <= 2)
+                        next = 20 + input[depth] * 2;
+                    else
+                        next = 25 + (input[depth] - 3) * 5;
+                    if (!check[next][1]) {
+                        check[20][0] = false;
+                        cur.num = next;
+                        cur.inside = true;
+                        check[next][1] = true;
+                        search(depth + 1, value + next);
+                        cur.num = temp;
+                        cur.inside = false;
+                        check[next][1] = false;
+                        check[20][0] = true;
+                    }
+                } else if (cur.num == 30) {		//30칸에 있을 때
+                    int next;
+                    if (input[depth] <= 3)
+                        next = 29 - input[depth];
+                    else
+                        next = 25 + (input[depth] - 4) * 5;
+                    if (!check[next][1]) {
+                        check[30][0] = false;
+                        cur.num = next;
+                        cur.inside = true;
+                        check[next][1] = true;
+                        search(depth + 1, value + next);
+                        cur.num = temp;
+                        cur.inside = false;
+                        check[next][1] = false;
+                        check[30][0] = true;
+                    }
+                } else {	//10,20,30이 아닌 외부 칸에 있을 때
+                    int next = cur.num + 2 * input[depth];
+                    if (next > 40) {	//이동하였을 때 도착칸일 때
+                        cur.num = 50;
+                        check[temp][0] = false;
+                        search(depth + 1, value);
+                        cur.num = temp;
+                        check[temp][0] = true;
+                    }else if(next==40){	//이동할 때 40칸일 때
+                        if (!check[40][0] && !check[40][1]) {
+                            check[temp][0] = false;
+                            cur.num = next;
+                            check[40][0] = true;
+                            check[40][1] = true;
+                            search(depth + 1, value + next);
+                            cur.num = temp;
+                            check[40][0] = false;
+                            check[40][1] = false;
+                            check[temp][0] = true;
+                        }
+                    }else {		//그 이외에 칸일 때
+                        if (!check[next][0]) {
+                            check[temp][0] = false;
+                            cur.num = next;
+                            check[next][0] = true;
+                            search(depth + 1, value + next);
+                            cur.num = temp;
+                            check[next][0] = false;
+                            check[temp][0] = true;
+                        }
+                    }
+                }
+            }
+            //내부에 있을 때
+            else{
+                //13~19사이에 있을 때
+                if(cur.num>=13 && cur.num<=19){
+                    int next = cur.num + 3 * input[depth];
+                    if(next > 19)	//19를 벗어나서 25줄로 이동할 때
+                        next = 20 + 5 * (input[depth] + (cur.num-19)/3);
+                    if(next>40){	//이동한 칸이 도착칸일 때
+                        check[cur.num][1] = false;
+                        cur.num=50;
+                        search(depth+1, value);
+                        cur.num = temp;
+                        check[cur.num][1] = true;
+                    }else if(next==40){	//이동한 칸이 40칸일 때
+                        if (!check[40][0] && !check[40][1]) {
+                            check[temp][1] = false;
+                            cur.num = next;
+                            check[40][0] = true;
+                            check[40][1] = true;
+                            search(depth + 1, value + next);
+                            cur.num = temp;
+                            check[40][0] = false;
+                            check[40][1] = false;
+                            check[temp][1] = true;
+                        }
+                    }else{		//도착칸이 13, 16, 19일 때
+                        if(!check[next][1]){
+                            check[cur.num][1] = false;
+                            cur.num = next;
+                            check[next][1] = true;
+                            search(depth+1, value + next);
+                            cur.num = temp;
+                            check[next][1] = false;
+                            check[cur.num][1] = true;
+                        }
+                    }
+                }
+                //내부 22, 24일 때
+                else if(cur.num==22 || cur.num==24){
+                    int next = cur.num + 2 * input[depth];
+                    if(next > 24)	//22, 24범위에 벗어나 25범위에 들어갈 때
+                        next = 20 + 5 * (input[depth] + (cur.num-24)/2);
+                    if(next>40){	//이동한 칸이 도착칸일 때
+                        check[cur.num][1] = false;
+                        cur.num=50;
+                        search(depth+1, value);
+                        cur.num = temp;
+                        check[cur.num][1] = true;
+                    } else if(next==40){	//이동한 칸이 40칸일 때
+                        if (!check[40][0] && !check[40][1]) {
+                            check[temp][1] = false;
+                            cur.num = next;
+                            check[40][0] = true;
+                            check[40][1] = true;
+                            search(depth + 1, value + next);
+                            cur.num = temp;
+                            check[40][0] = false;
+                            check[40][1] = false;
+                            check[temp][1] = true;
+                        }
+                    }else{		//도착칸이 22, 24일 때
+                        if(!check[next][1]){
+                            check[temp][1] = false;
+                            cur.num = next;
+                            check[next][1] = true;
+                            search(depth+1, value + next);
+                            cur.num = temp;
+                            check[next][1] = false;
+                            check[temp][1] = true;
+                        }
+                    }
+                }
+                //내부 26, 27, 28일 때
+                else if(cur.num>=26 && cur.num<=28){
+                    int next = cur.num - input[depth];
+                    if(next < 26)	//26, 27, 28범위에 벗어나 25범위에 들어갈 때
+                        next = 20 + 5 * (input[depth] - (cur.num-26));
+                    if(next>40){	//이동한 칸이 도착칸일 때
+                        check[temp][1] = false;
+                        cur.num=50;
+                        search(depth+1, value);
+                        cur.num = temp;
+                        check[temp][1] = true;
+                    }else if(next==40){		//이동한 칸이 40칸일 때
+                        if (!check[40][0] && !check[40][1]) {
+                            check[temp][1] = false;
+                            cur.num = next;
+                            check[40][0] = true;
+                            check[40][1] = true;
+                            search(depth + 1, value + next);
+                            cur.num = temp;
+                            check[40][0] = false;
+                            check[40][1] = false;
+                            check[temp][1] = true;
+                        }
+                    } else{		//도착칸이 26, 27, 28일 때
+                        if(!check[next][1]){
+                            check[temp][1] = false;
+                            cur.num = next;
+                            check[next][1] = true;
+                            search(depth+1, value + next);
+                            cur.num = temp;
+                            check[next][1] = false;
+                            check[temp][1] = true;
+                        }
+                    }
+                }
+                //25칸 범위일 때
+                else{
+                    int next = cur.num + 5 * input[depth];
+                    if(next>40){		//이동하려는 칸이 도착칸일 때
+                        check[cur.num][1] = false;
+                        cur.num=50;
+                        search(depth+1, value);
+                        cur.num = temp;
+                        check[cur.num][1] = true;
+                    } else if(next==40){		//이동하려는 칸이 40칸일 때
+                        if (!check[40][0] && !check[40][1]) {
+                            check[temp][1] = false;
+                            cur.num = next;
+                            check[40][0] = true;
+                            check[40][1] = true;
+                            search(depth + 1, value + next);
+                            cur.num = temp;
+                            check[40][0] = false;
+                            check[40][1] = false;
+                            check[temp][1] = true;
+                        }
+                    }else{	//도착칸이 30, 35일 때
+                        if(!check[next][1]){
+                            check[temp][1] = false;
+                            cur.num = next;
+                            check[next][1] = true;
+                            search(depth+1, value + next);
+                            cur.num = temp;
+                            check[next][1] = false;
+                            check[temp][1] = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
