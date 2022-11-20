@@ -1,0 +1,110 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    static int N,M, answer = 1;
+    static char[][] map;		//격자판 정보
+    static boolean[][] visited;		//십자가 놓인 곳 확인 배열
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y변경값
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        map = new char[N][M];
+        //격자판 정보 저장
+        for(int i=0;i<N;i++){
+            String str = br.readLine();
+            for(int j=0;j<M;j++)
+                map[i][j] = str.charAt(j);
+        }
+        
+        //첫 번째 십자가 놓기
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++){
+                if(map[i][j] == '#'){
+                    visited = new boolean[N][M];
+                    int temp = Math.max(i,j);	//놓일 수 있는 최대 십자가 크기
+                    for(int s=0;s<=temp;s++){
+                        //해당 크기의 십자가 격자판에 놓일 수 있는지 확인
+                        if(!crossCheck(i, j ,s))
+                            break;
+                        search(i, j, s);	//놓일 수 있을 때 두 번째 십자가 탐색
+                    }
+                }
+            }
+        }
+        bw.write(answer + "");	//두 십자가 넓이의 곱의 최대값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //입력받은 좌표에서 해당 크기에 십자가 놓을 수 있는지 확인하는 함수
+    static boolean crossCheck(int y, int x, int size){
+        for(int i=0;i<4;i++){
+            int tempX = x + dx[i] * size;
+            int tempY = y + dy[i] * size;
+            //해당 크기에 십자가 놓을 수 없을 때
+            if(!inSpace(tempX ,tempY) || map[tempY][tempX] !='#'){
+                return false;
+            }
+        }
+        visited[y+size][x] = visited[y-size][x] = visited[y][x+size] = visited[y][x-size] = true;
+        return true;
+    }
+    //해당 좌표에서 놓을 수 있는 십자가의 최대 크기를 구하는 함수
+    static int crossMaxSizeCheck(int y, int x){
+        int result = 1;
+        while(true){
+            boolean check  = false;
+            //십자가 기준 상하좌우 탐색
+            for(int i=0;i<4;i++){
+                int tempX = x + dx[i] * result;
+                int tempY = y + dy[i] * result;
+                //십자가 더 이상 크기 넓히지 못할 때
+                if(!inSpace(tempX,tempY) || map[tempY][tempX]!='#' || visited[tempY][tempX]){
+                    check = true;
+                    break;
+                }
+            }
+            if(check)
+                break;
+            result++;
+        }
+        return result-1;
+    }
+    //첫 번째 십자가가 놓인 환경에서 두 번째 십자가의 최대 크기 탐색하는 함수
+    static void search(int y, int x, int size){
+        int result = 0;
+        for(int i=x+1;i<M;i++){
+            if(map[y][i]=='#'){
+                result = Math.max(result, crossMaxSizeCheck(y, i));
+            }
+        }
+        for(int i=y+1;i<N;i++){
+            for(int j=0;j<M;j++){
+                if(map[i][j]=='#'){
+                    result = Math.max(result, crossMaxSizeCheck(i, j));
+                }
+            }
+        }
+        //(첫 번째 십자가 넓이 × 두 번째 십자가 넓이)가 최대값인지 비교
+        answer = Math.max(answer, crossSize(size) * crossSize(result));
+    }
+    //십자가 크기에 따른 넓이 구하는 함수
+    static int crossSize(int size){
+        return size * 4 + 1;		//점화식 : 크기 × 4 + 1
+    }
+    //이동하려는 칸이 격자판 안에 존재하는지 확인하는 함수
+    static boolean inSpace(int x, int y){
+        //격자판 안에 존재하는 공간일 때
+        if(x>=0 && y>=0 && x<M && y<N)
+            return true;
+        return false;
+    }
+}
+
