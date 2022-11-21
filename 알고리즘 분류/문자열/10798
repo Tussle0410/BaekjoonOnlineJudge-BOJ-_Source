@@ -1,0 +1,29 @@
+import java.io.*;
+import java.util.ArrayList;
+
+public class Main {
+    //각 열 위치별 만들어지는 문자열 저장 리스트
+    static ArrayList<String> list = new ArrayList<>();
+    public static void main(String[] args) throws IOException {
+        //입력값을 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값을 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //5가지 입력되는 단어들 탐색
+        for(int i=0;i<5;i++){
+            String input = br.readLine();
+            for(int j=0;j<input.length();j++){
+                if(list.size()<=j)		//해당 열 위치의 첫 글자인 경우
+                    list.add(input.charAt(j)+"");
+                else		//열 위치에 문자열에 글자 추가
+                    list.set(j,list.get(j) + input.charAt(j));
+            }
+        }
+        //각 열 위치 문자열 순차 연결 및 BufferedWriter 저장
+        for(int i=0;i<list.size();i++)
+            bw.write(list.get(i));
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
