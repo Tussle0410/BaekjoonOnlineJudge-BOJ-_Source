@@ -1,0 +1,36 @@
+import java.io.*;
+import java.util.*;
+public class Main{
+    static public void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        String input = br.readLine();
+        int one = 0;		//연속되는 0의 횟수 저장 변수
+        int zero = 0;		//연속되는 1의 횟수 저장 변수
+        char previousNum = input.charAt(0);	//이전 숫자
+        //문자열을 탐색하여 0과 1이 연속되는 개수를 구하기
+        for(int i=1;i<input.length();i++){
+            char cur = input.charAt(i);
+            //이전 숫자와 다르면 연속이 중단으로 판정
+            if(cur != previousNum){	
+                previousNum = cur;	//이전 숫자 변경
+                if(cur == '0')	//현재 숫자가 0이면 이전 숫자는 1
+                    one++;
+                else		//현재 숫자가 1이면 이전 숫자는 0
+                    zero++;
+            }
+        }
+        //마지막 연속된 숫자도 확인!
+        if(previousNum == '1')
+            one++;
+        else
+            zero++;
+        //연속되는 개수가 더 작은 값을 BufferedWriter 저장
+        bw.write(Math.min(one, zero) + "");
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
