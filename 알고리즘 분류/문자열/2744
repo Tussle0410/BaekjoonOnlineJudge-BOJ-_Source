@@ -1,0 +1,23 @@
+import java.io.*;
+public class Main {
+    public static void main(String[] args) throws IOException {
+        //입력값을 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값을 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        String input = br.readLine();		//입력 단어 저장
+        StringBuilder sb = new StringBuilder();		//결과 저장할 StringBuilder
+        //입력된 단어 탐색
+        for(int i=0;i<input.length();i++){
+            char temp = input.charAt(i);
+            if(temp >= 65 && temp <=90)		//대문자일 때
+                sb.append((char) (temp + 32));	//+32을 진행하여 소문자로 변경
+            else		//소문자일 때
+                sb.append((char) (temp - 32));	//-32을 진행하여 대문자로 변경
+        }
+        bw.write(sb.toString());		//변경된 단어 BufferedWriter저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
