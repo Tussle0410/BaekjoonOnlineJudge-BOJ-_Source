@@ -1,0 +1,40 @@
+import java.io.*;
+public class Main {
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        String input = br.readLine();		//입력되는 성적 저장
+        //성적에 해당하는 평점 BufferedWriter 저장
+        if(input.equals("A+"))
+            bw.write("4.3");
+        else if(input.equals("A0"))
+            bw.write("4.0");
+        else if(input.equals("A-"))
+            bw.write("3.7");
+        else if(input.equals("B+"))
+            bw.write("3.3");
+        else if(input.equals("B0"))
+            bw.write("3.0");
+        else if(input.equals("B-"))
+            bw.write("2.7");
+        else if(input.equals("C+"))
+            bw.write("2.3");
+        else if(input.equals("C0"))
+            bw.write("2.0");
+        else if(input.equals("C-"))
+            bw.write("1.7");
+        else if(input.equals("D+"))
+            bw.write("1.3");
+        else if(input.equals("D0"))
+            bw.write("1.0");
+        else if(input.equals("D-"))
+            bw.write("0.7");
+        else
+            bw.write("0.0");
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
