@@ -1,0 +1,79 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+    //계란의 정보 관련 클래스
+    static class egg{
+        int S, W;
+        public egg(int s, int w) {
+            S = s;
+            W = w;
+        }
+    }
+    static int N, answer = -1;
+    static boolean[] breaks;	//계란 깨지는 경우 확인
+    static egg[] e;		//계란 정보 관련 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        e = new egg[N];
+        breaks = new boolean[N];
+        //입력되는 계란 정보 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int S = Integer.parseInt(st.nextToken());
+            int W = Integer.parseInt(st.nextToken());
+            e[i] = new egg(S,W);
+        }
+        search(0, 0);		//계란 부딪치는 모든 경우 탐색
+        bw.write(answer + "");	//계란 깨지는 최대값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //순차적으로 계란이 부딪쳐서 깨지는 모든 경우 탐색
+    static void search(int depth, int value){
+        //모든 경우 종료되거나 계란이 N-1개 깨진 경우
+        if(depth==N || value==N-1){
+            answer = Math.max(answer, value);
+            return;
+        }
+        //기준이 되는 계란이 깨진 경우
+        if(breaks[depth]){
+            search(depth+1, value);
+            return;
+        }
+        //기준이 되는 계란이 깨지지 않은 경우 부딪치기 진행
+        for(int i=0;i<N;i++){
+            if(breaks[i] || i == depth)	//상대 계란이 깨지거나 자신인 경우
+                continue;
+
+            e[depth].S -= e[i].W;
+            e[i].S -= e[depth].W;
+            //부딪힌 계란 모두 깨지는 경우
+            if(e[depth].S <= 0 && e[i].S <= 0){
+                breaks[depth] = true;
+                breaks[i] = true;
+                search(depth+1, value+2);
+                breaks[depth] =false;
+                breaks[i] = false;
+            }else if(e[i].S <= 0){		//상대 계란만 깨지는 경우
+                breaks[i] = true;
+                search(depth+1, value+1);
+                breaks[i] = false;
+            }else if(e[depth].S <= 0){	//기준 계란만 깨지는 경우
+                breaks[depth] = true;
+                search(depth+1, value+1);
+                breaks[depth] = false;
+            }else{		//둘 다 깨지지 않는 경우
+                search(depth+1, value);
+            }
+            e[depth].S += e[i].W;
+            e[i].S += e[depth].W;
+        }
+    }
+}
