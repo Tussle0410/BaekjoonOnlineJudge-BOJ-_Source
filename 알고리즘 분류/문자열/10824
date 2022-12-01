@@ -1,0 +1,25 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //입력값 저장 및 4가지 수로 나누기
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        String A = st.nextToken();
+        String B = st.nextToken();
+        String C = st.nextToken();
+        String D = st.nextToken();
+        long num1 = Long.parseLong(A + B);		//A, B 붙이기
+        long num2 = Long.parseLong(C + D);		//C, D 붙이기
+        long result = num1 + num2;		//붙인 값 더하기
+        bw.write(result + "");		//더한 결과 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+
+    }
+}
