@@ -1,0 +1,75 @@
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+public class Main{
+    static int[] parent, depth;	//부모 노드와 깊이 저장하는 배열
+    static ArrayList<ArrayList<Integer>> tree = new ArrayList<>();	//트리 형성 리스트
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        int N = Integer.parseInt(br.readLine());
+        parent = new int[N+1];
+        depth = new int[N+1];
+        for(int i=0;i<=N;i++)
+            tree.add(new ArrayList<>());
+        //트리에 대한 정보로 노드간 관계 만들기
+        for(int i=1;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            tree.get(a).add(b);
+            tree.get(b).add(a);
+        }
+        setTree(1, 1, 0);	//트리 만들기
+
+        int M = Integer.parseInt(br.readLine());
+        //M개의 노드 쌍 최소 공통 조상 노드 탐색 및 결과 BufferedWriter 저장
+        for(int i=0;i<M;i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            bw.write(LCA(a, b) + "\n");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //트리를 형성 및 부모 노드와 깊이 저장하는 재귀함수
+    static void setTree(int cur, int d, int p){
+        depth[cur] = d;		//깊이 저장
+        parent[cur] = p;	//부모 노드 저장
+        //자식 노드들 탐색
+        for(int next : tree.get(cur)){
+            if(next == p)
+                continue;
+            setTree(next, d+1, cur);
+        }
+    }
+    //최소 공통 조상 노드 구하는 함수
+    static int LCA(int a, int b){
+        int ah = depth[a];		//a의 깊이
+        int bh = depth[b];		//b의 깊이
+        //a의 깊이가 b보다 클 경우 감소시키기
+        while(ah > bh){
+            a = parent[a];
+            ah--;
+        }
+        //b깊이가 a보다 클 경우 감소시키기
+        while(ah < bh){
+            b = parent[b];
+            bh--;
+        }
+        //깊이가 같아졌을 때 동시에 올라가면서 공통 조상 노드 찾기
+        while(true){
+            if(a==b)
+                return a;
+            a = parent[a];
+            b = parent[b];
+        }
+    }
+}
