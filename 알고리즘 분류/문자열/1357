@@ -1,0 +1,26 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //입력값 저장
+        int X = Integer.parseInt(st.nextToken());
+        int Y = Integer.parseInt(st.nextToken());
+        bw.write(Rex(Rex(X) + Rex(Y)) + "");//Rex(Rex(X)+Rex(Y)) 결과 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //자연수를 반대로 바꾸는 Rex 함수
+    static int Rex(int num){
+        StringBuilder sb = new StringBuilder(num +"");
+        sb.reverse();		//바꾸기
+        return Integer.parseInt(sb.toString());	//Integer형으로 변경 후 반환
+    }
+}
