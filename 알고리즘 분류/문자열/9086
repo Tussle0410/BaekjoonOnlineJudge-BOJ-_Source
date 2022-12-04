@@ -1,0 +1,21 @@
+import java.io.*;
+
+
+public class Main {
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        //N개의 문자열 첫 글자와 마지막 글자를 연속한 값 BufferedWriter 저장
+        for(int i=0;i<N;i++){
+            String str = br.readLine();		//문자열 저장
+            //charAt()을 이용하여 첫 글자와 마지막 글자 합치기
+            bw.write(str.charAt(0) + "" + str.charAt(str.length()-1) + "\n");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
