@@ -1,0 +1,110 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+
+public class Main {
+    //트리 노드 관련 정보 클래스
+    static class node{
+        int next, width;
+        public node(int next, int width){
+            this.next = next;
+            this.width = width;
+        }
+    }
+    static int N,M, maxDepth = -1;
+    static ArrayList<ArrayList<node>> tree = new ArrayList<>();	//트리 정보 저장 리스트
+    static int[] depth, width;		//정점 깊이, 루트 정점에서의 거리 저장 배열
+    static int[][] parent;		//각 부모 노드의 메모이제이션
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        getMaxDepth();
+        parent = new int[N+1][maxDepth+1];
+        width = new int[N+1];
+        depth = new int[N+1];
+        for(int i=0;i<=N;i++)
+            tree.add(new ArrayList<>());
+        //트리의 정보 저장
+        for(int i=1;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+            tree.get(a).add(new node(b, w));
+            tree.get(b).add(new node(a, w));
+        }
+        setTree(1, 1, 0, 0);	//트리의 형태 설정
+        fillParent();		//점화식을 통한 부모 노드 설정
+        M = Integer.parseInt(br.readLine());
+        //M개의 두 노드의 거리 BufferedWriter 저장
+        for(int i=0;i<M;i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            //점화식
+            int result = width[a] + width[b] - (width[LCA(a, b)] * 2);
+            bw.write(result+ "\n");		//BufferedWriter 저장
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //최대 깊이 구하는 함수
+    static void getMaxDepth(){
+        maxDepth = (int)Math.ceil(Math.log(N) / Math.log(2)) + 1;
+    }
+    //트리 형태로 깊이와 루트 노드에서의 거리 저장 함수
+    static void setTree(int c, int d, int p, int w){
+        depth[c] = d;
+        width[c] = w;
+        for(node next : tree.get(c)){
+            if(next.next == p)
+                continue;
+            parent[next.next][0] = c;
+            setTree(next.next, d+1, c, w + next.width);
+        }
+    }
+    //점화식으로 부모 노드 관련 배열 설정하는 함수
+    static void fillParent(){
+        for(int i=1;i<=maxDepth;i++){
+            for(int j=1;j<=N;j++){
+                parent[j][i] = parent[parent[j][i-1]][i-1];
+            }
+        }
+    }
+    //이분 탐색으로 최소 공통 조상 노드 구하는 함수
+    static int LCA(int a, int b){
+        int ah = depth[a];
+        int bh = depth[b];
+        //항상 ah > bh가 되도록 설정
+        if(ah < bh){
+            int temp = b;
+            b = a;
+            a = temp;
+        }
+        //깊이 동일하게 맞추기
+        for(int i=maxDepth-1;i>=0;i--){
+            if(Math.pow(2, i) <= depth[a] - depth[b]){
+                a = parent[a][i];
+            }
+        }
+        //a와 b가 동일하면 탐색하지 않아도 가능
+        if(a == b)
+            return a;
+
+        //동시에 같이 올라가기
+        for(int i=maxDepth-1;i>=0;i--){
+            if(parent[a][i]!=parent[b][i]){
+                a = parent[a][i];
+                b = parent[b][i];
+            }
+        }
+        return parent[a][0];	//최소 공통 조상 노드 반환
+    }
+}
