@@ -1,0 +1,51 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+
+public class Main {
+    static StringBuilder sb = new StringBuilder();	//후위 순회 정보 저장 StringBuilder
+    static int[] in, pre;	//전위, 중위 순회 입력값 저장 배열
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        int T = Integer.parseInt(br.readLine());
+        //각 TC 진행
+        for(int i=0;i<T;i++){
+            int N = Integer.parseInt(br.readLine());
+            in = new int[N+1];
+            pre = new int[N+1];
+            st = new StringTokenizer(br.readLine()," ");
+            //전위 순회 저장
+            for(int j=0;j<N;j++)
+                pre[j] = Integer.parseInt(st.nextToken());
+            st = new StringTokenizer(br.readLine()," ");
+            //중위 순회 저장
+            for(int j=0;j<N;j++)
+                in[j] = Integer.parseInt(st.nextToken());
+            postOrder(0, 0, N);		//후위 순회 시작
+            sb.append("\n");
+        }
+        bw.write(sb.toString() + "");	//각 후위 순회 정보 BufferedWriter저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //후위 순회 진행하는 함수
+    static void postOrder(int root, int start, int end){
+        int r = pre[root];		//Root 값
+        //InOrder 범위 탐색
+        for(int i=start;i<end;i++){
+            if(r == in[i]){		//Root값 찾았을 때
+                //Left는 RootIndex + 1
+                postOrder(root+1, start, i);		//Left
+                //Right는 RootIndex + Left자식 수(i - start) + 1
+                postOrder(root+(i - start + 1), i + 1, end);	//Right
+                sb.append(r).append(" ");		//Root
+                return;
+            }
+        }
+    }
+}
