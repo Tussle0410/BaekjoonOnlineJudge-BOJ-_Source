@@ -1,0 +1,47 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
+
+public class Main {
+    static HashMap<String, Integer> map = new HashMap<>();	//책 구매 횟수 저장 Map
+    static int N, max = Integer.MIN_VALUE;
+    static String answer = "";
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        N = Integer.parseInt(br.readLine());
+        //입력되는 책의 제목 Map에 저장
+        for(int i=0;i<N;i++){
+            String str = br.readLine();
+            if(map.containsKey(str))
+                map.put(str, map.get(str) + 1);
+            else
+                map.put(str, 1);
+        }
+        //각 책의 제목에 대하여 구매한 횟수 가장 큰 책 구하기
+        for(String key : map.keySet()){
+            //구매한 횟수가 현재 최대값보다 큰 책인 경우
+            if(map.get(key) > max){
+                answer = key;
+                max = map.get(key);
+            }
+            //최대값과 같은 경우 사전 순 더 빠른 책의 제목 비교하기
+            else if(map.get(key) == max){
+                ArrayList<String> list = new ArrayList<>();
+                list.add(answer);
+                list.add(key);
+                Collections.sort(list);		//정렬
+                if(list.get(0).equals(key))
+                    answer = key;
+            }
+        }
+        bw.write(answer + "");	//최대 구매 책의 제목 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
