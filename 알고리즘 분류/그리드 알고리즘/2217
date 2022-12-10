@@ -1,0 +1,27 @@
+import java.io.*;
+import java.util.Arrays;
+
+public class Main{
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        int[] num = new int[N];
+        //로프 정보 저장
+        for(int i=0;i<N;i++)
+            num[i] = Integer.parseInt(br.readLine());
+        Arrays.sort(num);		//로프 정보 오름차순 정렬
+        int answer = Integer.MIN_VALUE;
+        //모든 로프가 가벼운 로프가 되었을 때 점화식 진행
+        for(int i=0;i<N;i++){
+            int temp = num[i] * (N-i);
+            answer = Math.max(answer, temp);	//무게 비교하기
+        }
+        bw.write(answer + "");	//최대 무게 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
