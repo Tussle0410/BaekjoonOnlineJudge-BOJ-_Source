@@ -1,0 +1,38 @@
+import java.io.*;
+import java.util.*;
+
+
+public class Main {
+    static int N;
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        Integer[] A = new Integer[N];
+        Integer[] B = new Integer[N];
+        st = new StringTokenizer(br.readLine()," ");
+        //A[] 설정
+        input(A, st);
+        st = new StringTokenizer(br.readLine()," ");
+        //B[] 설정
+        input(B, st);
+        Arrays.sort(A);		//A 오름차순 정렬
+        Arrays.sort(B, Collections.reverseOrder());	//B 내림차순 정렬
+        int answer = 0;
+        //함수 S 진행
+        for(int i=0;i<N;i++)
+            answer += A[i] * B[i];
+        bw.write(answer + "");		//결과 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //입력값을 배열에 저장하는 함수
+    static void input(Integer[] arr, StringTokenizer st){
+        for(int i=0;i<N;i++)
+            arr[i] = Integer.parseInt(st.nextToken());
+    }
+}
