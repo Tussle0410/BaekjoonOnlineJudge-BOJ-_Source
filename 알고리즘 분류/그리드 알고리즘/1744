@@ -1,0 +1,63 @@
+import java.io.*;
+import java.util.*;
+
+
+public class Main {
+    static int N;
+    //양수 관련 값 저장, 내림차순 정렬
+    static PriorityQueue<Integer> plus = new PriorityQueue<>(Comparator.reverseOrder());
+    //음수 관련 값 저장, 오름차순 정렬
+    static PriorityQueue<Integer> minus = new PriorityQueue<>();
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        N = Integer.parseInt(br.readLine());
+        //N개의 입력값 양수와 음수로 나뉘어 저장
+        for(int i=0;i<N;i++){
+            int num = Integer.parseInt(br.readLine());
+            if(num <= 0)
+                minus.add(num);
+            else
+                plus.add(num);
+        }
+        int answer = 0;
+        //음수일 때 최대값 구하기
+        while(!minus.isEmpty()){
+            int cur = minus.poll();
+            if(minus.isEmpty()){	//마지막 하나 남은 값일 때 더하기
+                answer += cur;
+                break;
+            }
+            //다음 남은 값이 0일 때
+            if(minus.peek() == 0)
+                minus.poll();
+            //작은 값 × 작은 값
+            else
+                answer += cur * minus.poll();
+        }
+        //양수일 때 최대값 구하기
+        while(!plus.isEmpty()){
+            int cur = plus.poll();
+            //마지막 하나 남은 값일 때 더하기
+            if(plus.isEmpty()){
+                answer += cur;
+                break;
+            }
+            //값이 1일 때 더하기.
+            if(cur == 1)
+                answer += 1;
+            //다음 묶을 쌍이 1일 때에도 더하기
+            else if(plus.peek() == 1)
+                answer += cur + plus.poll();
+            //큰 값 × 큰 값
+            else
+                answer += cur * plus.poll();
+        }
+        bw.write(answer + "");	//최대합 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
