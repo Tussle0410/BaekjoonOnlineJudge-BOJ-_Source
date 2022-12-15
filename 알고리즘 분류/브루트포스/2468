@@ -1,0 +1,104 @@
+import java.io.*;
+import java.util.*;
+
+
+public class Main {
+    //지역 위치 관련 클래스
+    static class position{
+        int x, y;
+        public position(int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int N;
+    static int[][] region;		//지역 높이 저장 배열
+    static int[][] tempRegion;		//임의 지역 높이 저장 배열
+    static boolean[][] visited;		//지역 방문 확인 배열
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 X변경 값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 Y변경 값
+    static ArrayList<Integer> list = new ArrayList<>();	//비의 양 저장리스트
+    static int answer = 1;
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        N = Integer.parseInt(br.readLine());
+        region = new int[N][N];
+        StringTokenizer st;
+        //지역 정보 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for(int j=0;j<N;j++) {
+                int height = Integer.parseInt(st.nextToken());
+                if(!list.contains(height))	//비의 양 저장
+                    list.add(height);
+                region[i][j] = height;
+            }
+        }
+        //모든 비의 양에 따른 안전 구역 개수 구하기
+        for(int i=0;i<list.size();i++){
+            tempRegion = new int[N][N];
+            visited = new boolean[N][N];
+            int count = 0;
+            copyRegion();		//임시 지역 정보에 지역 정보 복사
+            fillRegion(list.get(i));	//비의 양으로 지역 채우기
+            //브루트 포스와 BFS로 안전구역 개수 탐색
+            for(int j=0;j<N;j++){
+                for(int s = 0;s<N;s++){
+                    if(tempRegion[j][s] != -1 && !visited[j][s]){
+                        bfs(j, s);
+                        count++;
+                    }
+                }
+            }
+            //안전 구역 개수가 최대값인지 비교
+            answer = Math.max(answer, count);
+        }
+        bw.write(answer + "");	//안전 구역 개수 최대값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //임시 지역 정보에 입력받은 지역 정보 복사하는 함수
+    static void copyRegion(){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++)
+                tempRegion[i][j] = region[i][j];
+        }
+    }
+    //비의 양에 따른 지역에 침수 정보 변경 함수
+    static void fillRegion(int height){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++){
+                if(tempRegion[i][j] <= height)
+                    tempRegion[i][j] = -1;
+            }
+        }
+    }
+    //BFS 탐색으로 안전 구역의 영역 나누기
+    static void bfs(int y, int x){
+        Queue<position> q = new LinkedList<>();
+        q.add(new position(x, y));
+        visited[y][x] = true;
+        while(!q.isEmpty()){
+            position cur = q.poll();
+            for(int i=0;i<4;i++){
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                //인접한 구역도 침수되지 않은 지역일 경우
+                if(inSpace(tempX,tempY) && !visited[tempY][tempX] && tempRegion[tempY][tempX] != -1){
+                    visited[tempY][tempX] = true;
+                    q.add(new position(tempX, tempY));
+                }
+            }
+        }
+    }
+    //지역의 범위를 벗어나지 않는지 확인하는 함수
+    static boolean inSpace(int x, int y){
+        if(x >=0 && y>=0 && x<N && y<N)
+            return true;
+        return false;
+    }
+}
