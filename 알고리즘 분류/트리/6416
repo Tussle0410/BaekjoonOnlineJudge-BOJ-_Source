@@ -1,0 +1,125 @@
+import java.io.*;
+import java.util.*;
+
+
+public class Main {
+    static HashMap<Integer, ArrayList<Integer>> tree;	//트리 정보
+    static HashSet<Integer> check;	//들어오는 간선이 존재하는 노드
+    static HashMap<Integer, Boolean> visited;	//BFS탐색으로 방문하는 노드 확인
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        int index = 1;
+        //각 테스트케이스 진행
+        while(true){
+            String str = br.readLine();
+            if(str.equals("-1 -1"))		//테스트 종료
+                break;
+            else if(str.equals(""))		//다음 테스트 케이스 이동
+                continue;
+            else if(str.equals("0 0")){		//비어있는 트리일 때
+                bw.write("Case " + index + " is a tree.\n");
+                index++;
+                continue;
+            }
+            boolean treeCheck = true;
+            tree = new HashMap<>();
+            check = new HashSet<>();
+            //현재 테스트 케이스 트리 구성.
+            while(true){
+                boolean caseCheck = false;
+                st = new StringTokenizer(str, " ");
+                while(st.hasMoreTokens()) {
+                    int u = Integer.parseInt(st.nextToken());
+                    int v = Integer.parseInt(st.nextToken());
+                    if (u == 0 && v == 0) {
+                        caseCheck = true;
+                        break;
+                    }
+                    //들어오는 간선이 2개이상인 경우.(트리 조건3.)
+                    if (check.contains(v))
+                        treeCheck = false;
+
+                    check.add(v);
+                    treeAdd(v);
+                    treeAdd(u);
+                    tree.get(u).add(v);
+                }
+                if(caseCheck)
+                    break;
+                str = br.readLine();
+            }
+            //트리의 조건 확인.
+            if(treeCheck){
+                int root = rootSearch();
+                //트리의 조건1, 2, 4이 만족하는지 확인
+                if(root == -1 || !bfs(root) || !visitedCheck()){
+                    bw.write("Case " + index + " is not a tree.\n");
+                }else		//트리의 조건 모두 만족.
+                    bw.write("Case " + index + " is a tree.\n");
+            }else	//트리의 조건 3번 만족하지 않음
+                bw.write("Case " + index + " is not a tree.\n");
+            index++;
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //트리의 노드 추가
+    static void treeAdd(int key){
+        if(!tree.containsKey(key))
+            tree.put(key, new ArrayList<>());
+    }
+    //루트 노드 찾기
+    static int rootSearch(){
+        int root = -1;
+        for(int key : tree.keySet()){
+            if(!check.contains(key)){
+                //루트 노드의 형태가 2개 이상일 때
+                if(root != -1)
+                    return -1;
+                root = key;
+            }
+        }
+        return root;
+    }
+    //BFS탐색으로 중복 방문 확인하는 함수
+    static boolean bfs(int root){
+        Queue<Integer> q = new LinkedList<>();
+        setVisitedHash();
+        visited.put(root, true);
+        q.add(root);
+        while(!q.isEmpty()){
+            int cur = q.poll();
+            //트리 인접 노드 탐색
+            for(int next : tree.get(cur)){
+                //트리 중복 방문일 때
+                if(visited.get(next))
+                    return false;
+                visited.put(next, true);
+                q.add(next);
+            }
+        }
+        return true;
+    }
+    //방문 확인 HashMap 초기화하는 함수
+    static void setVisitedHash(){
+        visited = new HashMap<>();
+        for(int key : tree.keySet()){
+            visited.put(key, false);
+        }
+    }
+    //모든 노드를 방문하였는지 확인하는 함수
+    static boolean visitedCheck(){
+        for(int key : visited.keySet()){
+            //방문하지 못한 노드가 존재할 때
+            if(!visited.get(key))
+                return false;
+        }
+        return true;
+    }
+}
+
