@@ -1,0 +1,41 @@
+import java.io.*;
+import java.util.*;
+
+
+public class Main {
+    static int N,K, answer = 0;
+    static ArrayList<Integer> list = new ArrayList<>();	//좌표 저장 리스트
+    static ArrayList<Integer> dif = new ArrayList<>();	//차이 저장 리스트
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        N = Integer.parseInt(br.readLine());
+        K = Integer.parseInt(br.readLine());
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //좌표값 저장
+        for(int i=0;i<N;i++){
+            int num = Integer.parseInt(st.nextToken());
+            if(!list.contains(num))	//중복 좌표가 아닌 경우
+                list.add(num);
+        }
+        Collections.sort(list);		//좌표 오름차순 정렬
+        int curNum = list.get(0);
+        //순서대로 좌표의 차이 구하기
+        for(int i=1;i<list.size();i++){
+            dif.add(list.get(i) - curNum);
+            curNum = list.get(i);
+        }
+        //내림차순 정렬
+        Collections.sort(dif,Collections.reverseOrder());
+        //(K-1)번째부터 차이의 합 구하기
+        for(int i=K-1;i<dif.size();i++)
+            answer += dif.get(i);
+        bw.write(answer + "");	//최소 수신 영역 거리 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
+
