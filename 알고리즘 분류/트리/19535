@@ -1,0 +1,55 @@
+import java.awt.*;
+import java.io.*;
+import java.util.*;
+
+
+public class Main {
+    static int N;
+    static long D=0, G=0;	//ㄷ, ㅈ 모양 개수
+    static int[] child;	//연결된 노드 개수 저장 배열
+    static ArrayList<Point> line = new ArrayList<>();	//간선 정보 저장 리스트
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
+        child = new int[N+1];
+        //트리의 정보 저장
+        for(int i=1;i<N;i++) {
+            st = new StringTokenizer(br.readLine(), " ");
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            child[u]++;	//연결된 노드 +1
+            child[v]++;	//연결된 노드 +1
+            line.add(new Point(u, v));	//간선 추가
+        }
+        //ㅈ모양 개수 구하기.
+        for(int i=1;i<=N;i++){
+            if(child[i] >= 3)	//연결된 노드가 3개 이상이어야 ㅈ모양 가능
+                G += GCal(child[i]);
+        }
+        //ㄷ모양 개수 구하기
+        DCal();
+        //ㄷ개수가 ㅈ개수의 3배보다 많을 때
+        if(D > G * 3)
+            bw.write("D");
+        else if(D < G * 3)	//ㄷ개수가 ㅈ개수의 3배보다 적을 때
+            bw.write("G");
+        else	//ㄷ개수가 ㅈ개수의 3배와 같을 때
+            bw.write("DUDUDUNGA");
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //모든 간선에 대하여 ㄷ개수 구하는 점화식 진행하는 함수
+    static void DCal(){
+        for(Point cur : line)
+            D += (child[cur.x] - 1) *(long)(child[cur.y] - 1);
+    }
+    //ㅈ개수 구하는 점화식 진행하는 함수
+    static long GCal(int n){
+        return (long)n * (n-1) * (n-2) / 6;
+    }
+}
