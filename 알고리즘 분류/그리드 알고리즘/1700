@@ -1,0 +1,77 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+    static int N,K, answer = 0;
+    //전기 용품 순서 저장 리스트
+    static ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+    //멀티탭 관련 리스트
+    static ArrayList<Integer> cur = new ArrayList<>();
+    static int[] num, index;	//입력값 및 현재 전기 용품 순서 Index 저장 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //입력값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        num = new int[K];
+        index = new int[K+1];
+        st = new StringTokenizer(br.readLine()," ");
+        for(int i=0;i<=K;i++){
+            list.add(new ArrayList<>());
+            index[i] = -1;	//index -1로 초기화
+        }
+        //입력값 및 순서 저장
+        for(int i=0;i<K;i++){
+            num[i] = Integer.parseInt(st.nextToken());
+            list.get(num[i]).add(i);
+        }
+        //멀티탭 비어있는 공간 없을 때까지 모두 꽂기
+        int id = 0;
+        while (id < K && cur.size() != N) {
+            index[num[id]]++;
+            if (!cur.contains(num[id]))
+                cur.add(num[id]);
+            id++;
+        }
+        //전기용품 순서대로 탐색
+        for(int i=id;i<K;i++){
+            index[num[i]]++;
+            if(cur.contains(num[i]))	//현재 멀티탭에 존재하는 전기용품일 때
+                continue;
+
+            boolean check = false;
+            int max = -1;
+            int tempIndex = -1;
+            //멀티탭에 존재하지 않는 전기용품일 때 멀티탭 탐색
+            for(int j=0;j<N;j++){
+                int curNum = cur.get(j);
+                //더이상 사용하지 않는 전기용품일 때
+                if(list.get(curNum).size() <= index[curNum]+1){
+                    check = true;
+                    cur.set(j, num[i]);	//플러그 교체
+                    break;
+                }else{	//다음에도 사용하는 전기용품일 때
+                    //다음 순서까지의 거리
+                    int temp = list.get(curNum).get(index[curNum]+1) - i;
+                    //거리 최대값 구하기
+                    if(max < temp){
+                        tempIndex = j;
+                        max = temp;
+                    }
+                }
+            }
+            //거리 최대값인 전기용품 변경
+            if(!check)
+                cur.set(tempIndex, num[i]);
+            answer++;	//교체 횟수 증가
+        }
+        bw.write(answer + "");	//교체 횟수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
