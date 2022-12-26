@@ -1,0 +1,24 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int answer = -1;
+        int N = Integer.parseInt(br.readLine());
+        //5원을 사용할 수 있는 횟수 기준 내림차순 탐색
+        for(int i=N/5;i>=0;i--){
+            if((N - (5 * i))%2 == 0){	//5원을 i개 쓰고 2원으로 거스를 수 있을 때
+                answer = i + (N - (5 * i))/2;	//동전의 개수 저장
+                break;	//가장 먼저 거슬러 줄 때가 최소 개수
+            }
+        }
+        bw.write(answer + "");		//최소 개수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
