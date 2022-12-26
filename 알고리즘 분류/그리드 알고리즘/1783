@@ -1,0 +1,41 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main{
+    static int N, M;
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        if(N == 1)		//세로의 크기가 1일 때
+            bw.write( "1");
+        else if(N==2){	//세로의 크기가 2일 때
+            if(M>7)		//가로의 크기가 7보다 클 때
+                bw.write("4");	//이동 횟수 1, 4을 3번 사용 : 4칸 방문
+            else{		//가로의 크기가 7이하일 때
+                //짝수와 홀수를 구분하여 방문한 칸 확인
+                if(M%2==0)
+                    bw.write(M/2 + "");
+                else
+                    bw.write((M/2+1) + "");
+            }
+        }else{		//세로의 크기가 3이상일 때
+            if(M<=4)		//가로의 크기가 4이하일 때
+                bw.write(M + "");	//초기칸 + 이동방법 2, 3 최대 사용 : M칸
+            else if(M <= 6)	//가로의 크기가 6이하일 때
+                bw.write( "4");	//초기칸 + 이동방법 2, 3을 3번 사용 : 4칸
+            else{		//가로의 크기가 7이상일 때
+                //초기칸 + 이동방법 1, 4을 1번 사용, 이동방법 2, 3 최대 사용 : M-2칸
+                bw.write((M-2) + "");
+            }
+        }
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+}
+
