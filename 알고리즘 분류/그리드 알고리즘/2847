@@ -1,0 +1,28 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        int answer = 0;
+        int[] num = new int[N];
+        //입력값 저장
+        for(int i=0;i<N;i++)
+            num[i] = Integer.parseInt(br.readLine());
+        //레벨 내림차순 다음 레벨과 비교 진행
+        for(int i=N-2;i>=0;i--){
+            if(num[i] >= num[i+1]){	//다음 레벨보다 클 때
+                answer += num[i] - (num[i+1]-1);	//감소한 횟수 구하기
+                num[i] = num[i+1] - 1;	//감소 진행
+            }
+        }
+        bw.write(answer + "");	//감소한 횟수 BufferedWriter 저장
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+}
