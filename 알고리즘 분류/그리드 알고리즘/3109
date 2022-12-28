@@ -1,0 +1,63 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+    static int R, C, answer = 0;
+    static char[][] map;		// 격자 정보 배열
+    static boolean[][] visited;		//방문 확인 배열
+    static int[] dx = {1, 1, 1};	//파이프 연결 (↗, →, ↘) x 변경값
+    static int[] dy = {-1, 0, 1};	//파이프 연결 (↗, →, ↘) y 변경값
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        R = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
+        map = new char[R][C];
+        visited = new boolean[R][C];
+        //격자 정보 저장.
+        for(int i=0;i<R;i++){
+            String str = br.readLine();
+            for(int j=0;j<C;j++)
+                map[i][j] = str.charAt(j);
+        }
+        //위쪽부터 DFS 탐색 진행.
+        for(int i=0;i<R;i++){
+            visited[i][0] = true;
+            if(dfs(i, 0))	//true : 파이프 라인 연결, false : 파이프 라인 실패
+                answer++;
+        }
+
+        bw.write(answer + "");	//파이프 라인 개수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //DFS + 그리드 알고리즘으로 탐색하는 DFS 함수
+    static boolean dfs(int y, int x){
+        if(x==C-1)		//파이프 라인 연결 성공시!
+            return true;
+
+        //파이프 연결 탐색
+        for(int i=0;i<3;i++){
+            int tempX = x + dx[i];
+            int tempY = y + dy[i];
+            //파이프 연결 가능한 공간일 때
+            if(inSpace(tempX, tempY) && !visited[tempY][tempX] && map[tempY][tempX]=='.'){
+                visited[tempY][tempX] = true;
+                if(dfs(tempY,tempX))	//파이프 연결하였을 때 파이프 라인 연결 성공시.
+                    return true;
+            }
+        }
+        return false;	//파이프 연결하였을 때 파이프 라인 연결 실패시
+    }
+    //다음 연결하려는 파이프가 격자내에 존재하는지 확인하는 배열
+    static boolean inSpace(int x, int y){
+        //격자 안에 존재할 때
+        if(x>=0 && y>=0 && x<C && y<R)
+            return true;
+        return false;	//격자 안에 존재하지 않을 때
+    }
+}
