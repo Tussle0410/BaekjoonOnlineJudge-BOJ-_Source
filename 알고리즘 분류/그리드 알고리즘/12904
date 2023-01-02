@@ -1,0 +1,36 @@
+import java.io.*;
+import java.util.ArrayList;
+
+public class Main{
+    static String S,T;
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //S, T 값 저장
+        S = br.readLine();
+        T = br.readLine();
+        int size = T.length()-1;
+        //T → S로 변경하기!
+        for(int i=size;i>=S.length();i--){
+            char c = T.charAt(i);
+            T = T.substring(0, i);	//마지막 글자 제거하기
+            if(c == 'B') {	//마지막 글자 'B'일 때 단어 T 뒤짚기
+                StringBuilder temp = new StringBuilder();
+                //뒤짚기 진행
+                for (int j = i-1; j>=0;j--)
+                    temp.append(T.charAt(j));
+                T = temp.toString();
+            }
+        }
+        //S == T가 같은지 확인
+        if(S.equals(T))		//S → T 가능!
+            bw.write("1");
+        else		//S → T 불가능!
+            bw.write("0");
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
