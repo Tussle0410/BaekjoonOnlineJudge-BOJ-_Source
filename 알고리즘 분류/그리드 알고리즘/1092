@@ -1,0 +1,65 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+    static int N, M;
+    static ArrayList<Integer> crane = new ArrayList<>();	//크레인 무게 제한 정보 리스트
+    static ArrayList<Integer> box = new ArrayList<>();	//박스 무게 정보 리스트
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        boolean check = true;
+        N = Integer.parseInt(br.readLine());
+        st = new StringTokenizer(br.readLine()," ");
+        int max = -1;
+        //크레인 무게 제한 저장 및 최대 무게 제한 구하기
+        for(int i=0;i<N;i++){
+            crane.add(Integer.parseInt(st.nextToken()));
+            max = Math.max(max, crane.get(i));
+        }
+        M = Integer.parseInt(br.readLine());
+        st = new StringTokenizer(br.readLine()," ");
+        //박스 무게 저장
+        for(int i=0;i<M;i++){
+            box.add(Integer.parseInt(st.nextToken()));
+            //크레인 최대 무게 제한보다 큰 박스일 때
+            // = 모든 박스 옮길 수 없음!
+            if(box.get(i) > max){	
+                check  = false;
+                bw.write("-1");
+                break;
+            }
+        }
+        //모든 박스 옮길 수 있을 때
+        if(check){
+            crane.sort(Collections.reverseOrder());	//크레인 무게 제한 내림차순 정렬
+            Collections.sort(box);	//박스 무게 오름차순 정렬
+            int answer = 0;
+            //cur = 크레인 인덱스, index = 박스 인덱스
+            int cur = 0, index = M-1;
+            //박스 옮기기 진행
+            while(!box.isEmpty()){
+                //현재 크레인 옮기기 성공!
+                if(box.get(index) <= crane.get(cur)){
+                    box.remove(index);	//해당 박스 제거!
+                    cur++;	//크레인 인덱스 증가!
+                }
+                index--;	//박스 인덱스 감소
+                //박스 옮기기 1 싸이클 진행시!
+                if(cur == N || index == -1){
+                    //박스와 크레인 인덱스 초기화
+                    cur = 0;
+                    index = box.size()-1;
+                    answer++;	//1초 증가~
+                }
+            }
+            bw.write(answer + "");	//최소 시간 BufferedWriter 저장
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
