@@ -1,0 +1,59 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+    //숙제 정보 관련 클래스
+    static class info implements Comparable<info>{
+        int day, score;
+        public info(int day, int score){
+            this.day = day;
+            this.score = score;
+        }
+        //숙제 정보에서 점수 기준 내림차순 정렬
+        @Override
+        public int compareTo(info o) {
+            return o.score - this.score;
+        }
+    }
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+        //숙제 정보 저장할 우선순위 큐
+        PriorityQueue<info> pq = new PriorityQueue<>();
+        boolean[] check = new boolean[1001];	//숙제 수행 여부 확인 배열
+        //숙제 정보 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int d = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+            pq.add(new info(d, w));
+        }
+        int answer = 0;
+        //숙제 해결과정 탐색
+        while(!pq.isEmpty()){
+            info cur = pq.poll();
+            //마감일에 숙제를 수행!
+            if(!check[cur.day]){
+                answer += cur.score;
+                check[cur.day] = true;
+            }else{
+                //마감일에서 가장 가까운 날에 숙제를 수행!
+                for(int j=cur.day-1;j>=1;j--){
+                    if(!check[j]){
+                        answer += cur.score;
+                        check[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
+        bw.write(answer + "");	//얻은 점수의 합 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
