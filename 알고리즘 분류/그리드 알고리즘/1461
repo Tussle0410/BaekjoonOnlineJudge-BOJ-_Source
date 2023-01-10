@@ -1,0 +1,108 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+    static ArrayList<Integer> plus = new ArrayList<>();	//양수 저장 리스트
+    static ArrayList<Integer> minus = new ArrayList<>();	//음수 저장 리스트
+    static int N, M;
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        st = new StringTokenizer(br.readLine()," ");
+        int max = -1;
+        boolean check = false;
+        //각 책의 위치 저장
+        for(int i=0;i<N;i++){
+            int n = Integer.parseInt(st.nextToken());
+            //책의 위치 최대값 구하기
+            if(Math.abs(n) > max){
+                max = Math.abs(n);
+                check = n > 0;
+            }
+            //양수, 음수별 나눠서 저장하기
+            if(n>0)
+                plus.add(n);
+            else
+                minus.add(n);
+        }
+        Collections.sort(plus);	//오름차순 정렬
+        Collections.sort(minus, Collections.reverseOrder());	//내림차순 정렬
+        int answer = 0;
+        //양수가 최대값일 때
+        if(check){
+            answer += minusSearch(false);	//음수 탐색
+            answer += plusSearch(true);	//양수 탐색
+        }else{		//음수가 최대값일 때
+            answer += minusSearch(true);	//음수 탐색
+            answer += plusSearch(false);	//양수 탐색
+        }
+        bw.write(answer + "");	//이동한 횟수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //양수 위치인 책을 놓는데 이동하는 횟수 구하는 함수
+    static int plusSearch(boolean check){
+        int c = plus.size()%M;
+        int result = 0;
+        //M으로 나누어 떨어지지 않을 때 가장 가까운 책들 나머지값 먼저 놓기
+        if(c != 0){
+            if(plus.size()/M > 0)
+                result = plus.get(c-1)*2;
+            else
+                result = plus.get(c-1);
+        }
+        //남은 책 제자리에 놓기
+        if(plus.size()/M > 0){
+            int count = 0;
+            for(int i=c;i<plus.size();i++){
+                count++;
+                if(count == M){
+                    count = 0;
+                    if(i == plus.size()-1)
+                        result += plus.get(i);
+                    else
+                        result += plus.get(i)*2;
+                }
+            }
+        }
+        //최대값이 양수가 아닐 때 되돌아간다.
+        if(!check && !plus.isEmpty())
+            result += plus.get(plus.size()-1);
+        return result;
+    }
+    static int minusSearch(boolean check){
+        int c = minus.size()%M;
+        int result = 0;
+        //M으로 나누어 떨어지지 않을 때 가장 가까운 책들 나머지값 먼저 놓기
+        if(c != 0){
+            if(minus.size()/M > 0)
+                result = minus.get(c-1)*2;
+            else
+                result = minus.get(c-1);
+        }
+        //남은 책 제자리에 놓기
+        if(minus.size() / M > 0){
+            int count = 0;
+            for(int i=c;i<minus.size();i++){
+                count++;
+                if(count == M){
+                    count = 0;
+                    if(i == minus.size()-1)
+                        result += minus.get(i);
+                    else
+                        result += minus.get(i) * 2;
+                }
+            }
+        }
+        //최대값이 음수가 아닐 때 되돌아간다.
+        if(!check && !minus.isEmpty())
+            result += minus.get(minus.size()-1);
+        return Math.abs(result);
+    }
+}
