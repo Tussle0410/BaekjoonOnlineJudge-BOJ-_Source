@@ -1,0 +1,47 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main{
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        int N = Integer.parseInt(st.nextToken());
+        int kim = Integer.parseInt(st.nextToken());
+        int lim = Integer.parseInt(st.nextToken());
+        //김지민 번호 홀수 일 때 경기 번호를 위해서 + 1
+        if(kim % 2 == 1)
+            kim++;
+        //임한수 번호 홀수 일 때 경기 번호를 위해서 + 1
+        if(lim % 2 == 1)
+            lim++;
+        int round = 1;
+        //라운드 진행 탐색
+        while(true){
+            if(kim/2 == lim/2)	//대결 성사!
+                break;
+            kim = win(kim);
+            lim = win(lim);
+            round++;	//라운드 증가
+        }
+        bw.write(round + "");	//대결 성사된 라운드 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //다음 라운드 번호 구하는 함수
+    static int win(int n){
+        int result;
+        if(n%2 == 1)	//홀수 일 때
+            result =  (n+1)/2;
+        else		//짝수일 때
+            result = n/2;
+
+        if(result %2 == 1)
+            return result+1;
+        else
+            return result;
+    }
+}
