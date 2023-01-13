@@ -1,0 +1,65 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class Main{
+    static int[] arr;
+    static ArrayList<Long> list;
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        arr = new int[10];
+        if(N < 10)	//N이 10미만일 때는 N이 N번째 감소하는 수
+            bw.write(N + "");
+        else {
+            //십의 자리일 때 감소하는 수 개수 설정
+            for (int i = 1; i < 10; i++)
+                arr[i] = i;
+            list = new ArrayList<>();
+            //count : 감소하는 수 개수, size : 자릿수, index : 맨 앞자리 수
+            int count = 9, size = 0, index = 0;
+            boolean check = false;
+            //감소하는 수 가장 가까운 자릿수 얻기
+            while (!check && size != 9) {
+                for (int i = 1; i < 10 - size; i++) {
+                    count += arr[i];
+                    if (count >= N) {	// N보다 커졌을 때
+                        check = true;
+                        count -= arr[i];
+                        index = i + size;
+                        break;
+                    }else	//다음 자릿수 개수
+                        arr[i] = arr[i-1] + arr[i];
+                }
+                if (!check)
+                    size++;
+            }
+            //9876543210이 최대 감소하는 수, N번째 감소하는 수는 이보다 클 때
+            if(size == 9)
+                bw.write("-1");
+            else{
+                int dif = N - count;	//만들어야 하는 자릿수 i번째 수
+                search(index, 0, size + 1);	//감소하는 모든 경우 만들기
+                Collections.sort(list);	//오름차순 정렬
+                bw.write(list.get(dif - 1) + "");	//i번째 수 BufferedWriter 저장
+            }
+        }
+        bw.flush();	//결과 출력
+        bw.close();
+        br.close();
+    }
+    //자릿수와 앞자리에 따른 만들 수 있는 모든 경우의 수 구하는 재귀함수
+    static void search(long num, int size, int maxSize){
+        //원하는 자릿수만큼 완성시
+        if(size  == maxSize){
+            list.add(num);	//완성 숫자 저장
+            return;
+        }
+        //자릿수 증가, 앞자리와 비교하여 작은 수를 붙이는 과정
+        for(int i=0;i<num%10;i++)
+            search(num * 10 + i, size+1, maxSize);
+    }
+}
