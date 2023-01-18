@@ -1,0 +1,32 @@
+import java.io.*;
+
+public class Main{
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        String info = br.readLine();
+        int n = 0;
+        int answer = 0;
+        //시뮬레이션 진행
+        for(int i=0;i<info.length()-1;i++){
+            if(info.charAt(i) == '('){		//현재 괄호가 '('일 때
+                //다음 괄호가 ')' 일 때 레이저 발사!
+                if(info.charAt(i+1) == ')') {
+                    answer += n;	//현재 막대기 개수만큼 잘려집니다.
+                    i++;	//다다음 괄호로 이동하도록 위치 +1
+                }else	//다음 괄호가 '(' 일 때 쇠막대기 추가
+                    n++;
+            }else{	//현재 괄호가 ')'일 때
+                n--;	//현재 막대기 개수 -1
+                answer++;	//잘라진 막대기 개수 + 1
+            }
+        }
+        answer++;		//마지막 괄호')'이기 때문에 + 1
+        bw.write(answer + "");		//잘려진 막대기 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
