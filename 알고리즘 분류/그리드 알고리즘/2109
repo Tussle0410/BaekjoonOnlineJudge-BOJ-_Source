@@ -1,0 +1,60 @@
+import java.io.*;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
+
+public class Main{
+    //강연에 대한 정보 관련 클래스
+    static class info implements Comparable<info>{
+        int p, d;	//금액, 제한일
+        //생성자
+        public info(int p, int d){
+            this.p = p;
+            this.d = d;
+        }
+        //클래스 정렬관련
+        @Override
+        public int compareTo(info o) {
+            if(this.p == o.p)	//금액이 같을 때 제한일 내림차순
+                return o.d - this.d;
+            return o.p - this.p;	//금액에 내림차순 정렬
+        }
+
+    }
+    static PriorityQueue<info> pq = new PriorityQueue<>();	//강연 정보 저장할 우선순위 큐
+    static boolean[] check;	//강연 진행 확인 배열
+    static int n, max = -1, answer = 0;
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
+        n = Integer.parseInt(br.readLine());
+        //강연에 대한 정보 우선순위 큐에 저장
+        for(int i=0;i<n;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int p = Integer.parseInt(st.nextToken());
+            int d = Integer.parseInt(st.nextToken());
+            max = Math.max(max, d);		//제한일 최대값
+            pq.add(new info(p, d));	//우선순위 큐에 저장
+        }
+        //최대값 만큼 배열 설정
+        check = new boolean[max+1];
+        //우선순위 큐에 정보들 탐색
+        while(!pq.isEmpty()){
+            info cur = pq.poll();
+            //해당 강연 가능한지 탐색
+            for(int i=cur.d-1;i>=0;i--){
+                if(!check[i]){		//가능한 날짜 존재시
+                    check[i] = true;	//해당 날짜 강연 진행
+                    answer += cur.p;	//금액 증가
+                    break;		//탐색 종료
+                }
+            }
+        }
+        bw.write(answer + "");	//총 금액 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
