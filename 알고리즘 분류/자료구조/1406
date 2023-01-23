@@ -1,0 +1,46 @@
+import java.io.*;
+import java.util.Stack;
+
+public class Main{
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        String str = br.readLine();
+        Stack<Character> leftStack = new Stack<>();	//LeftStack
+        Stack<Character> rightStack = new Stack<>();	//RightStack
+        //입력된 문자열 LeftStack에 저장
+        for(int i=0;i<str.length();i++)
+            leftStack.push(str.charAt(i));
+        int N = Integer.parseInt(br.readLine());
+        //편집 진행!
+        for(int i=0;i<N;i++){
+            String command = br.readLine();
+            char c = command.charAt(0);
+            if(c == 'L'){	//명령어 'L'
+                if(!leftStack.isEmpty())	//맨 앞이 아닐 때
+                    rightStack.add(leftStack.pop());//LeftStack.peek() -> RightStack
+            }else if(c == 'D'){	//명령어 'D'
+                if(!rightStack.isEmpty())	//맨 뒤가 아닐 때
+                    leftStack.add(rightStack.pop());//RightStack.peek() -> LeftStack
+            }else if(c == 'B'){	//명령어 'B'
+                if(!leftStack.isEmpty())	//맨 앞이 아닐 때
+                    leftStack.pop();	//LeftStack Pop!
+            }else{	//명령어 'P $'
+                char s = command.charAt(2);	//추가할 '$'
+                leftStack.add(s);	//LeftStack Add!
+            }
+        }
+        //LeftStack의 값 -> RightStack 추가!
+        while(!leftStack.isEmpty())
+            rightStack.push(leftStack.pop());
+        //RightStack을 순차적으로 pop()하여 BufferedWriter 저장
+        while(!rightStack.isEmpty()){
+            bw.write(rightStack.pop());
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
