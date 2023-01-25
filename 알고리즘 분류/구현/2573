@@ -1,0 +1,108 @@
+import java.io.*;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+public class Main{
+    //빙산 위치 관련 클래스
+    static class iceberg{
+        //x : 열, y : 행, count : 주변 바다 개수
+        int x, y, count = 0;
+        public iceberg(int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y변경값
+    //빙산 위치 저장 Queue
+    static Queue<iceberg> icebergs = new LinkedList<>();
+    static int[][] map;	//바다 및 빙산 높이 저장된 배열
+    static boolean[][] visited;	//빙산 방문 확인 배열
+    static int N,M;
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        map = new int[N][M];
+        //빙산 정보 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for(int j=0;j<M;j++){
+                int n = Integer.parseInt(st.nextToken());
+                if(n != 0)
+                    icebergs.add(new iceberg(j, i));
+                map[i][j] = n;
+            }
+        }
+        int answer = 0;
+        //시뮬레이션 진행!
+        while(true){
+            //빙산이 모두 녹았을 때
+            if(icebergs.isEmpty()){
+                answer = 0;
+                break;
+            }
+            answer++;	// 1년 추가!
+            int size = icebergs.size();
+            //1) 모든 빙산 바다의 개수 확인
+            for(iceberg cur : icebergs){
+                cur.count = 0;
+                for(int j=0;j<4;j++){
+                    int tempX = cur.x + dx[j];
+                    int tempY = cur.y + dy[j];
+                    if(map[tempY][tempX] == 0)
+                        cur.count++;
+                }
+            }
+            //2) 바다의 개수만큼 모든 빙산의 높이 감소
+            for(int i=0;i<size;i++){
+                iceberg cur = icebergs.poll();
+                map[cur.y][cur.x] = Math.max(0, map[cur.y][cur.x] - cur.count);
+                if(map[cur.y][cur.x] != 0)
+                    icebergs.add(cur);
+            }
+            int count = 0;
+            visited = new boolean[N][M];
+            //3) BFS탐색으로 영역 개수 확인
+            for(iceberg cur : icebergs){
+                if(!visited[cur.y][cur.x]){
+                    mapCheck(cur.y, cur.x);
+                    count++;
+                }
+            }
+            //4-1) 영역의 개수가 2개 이상일 때 시뮬레이션 종료
+            if(count >= 2)
+                break;
+        }
+        bw.write(answer + "");	//시뮬레이션에 따른 결과 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //BFS탐색으로 빙산의 영역 확인하는 함수
+    static void mapCheck(int y, int x){
+        Queue<iceberg> queue = new LinkedList<>();
+        visited[y][x] = true;	//기준 빙산 방문 확인
+        queue.add(new iceberg(x, y));	//기준 빙산 저장
+        //BFS탐색 진행
+        while(!queue.isEmpty()){
+            iceberg cur = queue.poll();
+            //상하좌우 탐색
+            for(int i=0;i<4;i++){
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                //방문하지 않았던 빙산일 경우
+                if(map[tempY][tempX] != 0 && !visited[tempY][tempX]){
+                    visited[tempY][tempX] = true;
+                    queue.add(new iceberg(tempX, tempY));
+                }
+            }
+        }
+    }
+}
+
