@@ -1,0 +1,54 @@
+import java.io.*;
+import java.util.Stack;
+
+public class Main{
+    //괄호에 대한 정보 클래스
+    static class info{
+        char c;		//열린 괄호 '(' , '['
+        int value;	//괄호의 값
+        //생성자
+        public info(char c, int value){
+            this.c = c;
+            this.value = value;
+        }
+    }
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        String str = br.readLine();
+        int answer = 0;
+        Stack<info> stack = new Stack<>();
+        //괄호 탐색 시작!
+        for(int i=0;i<str.length();i++){
+            char c = str.charAt(i);
+            //열린 괄호일 때
+            if(c == '(' || c == '[')
+                stack.push(new info(c, 0));	//Stack에 Push!
+            else{		//닫힌 괄호일 때
+                //올바르지 않은 괄호 문자열일 때 1), 2), 3)
+                if(stack.isEmpty() || (stack.peek().c == '(' && c == ']')
+                        || (stack.peek().c=='[' && c == ')')){
+                    answer = 0;
+                    break;
+                }
+                info cur = stack.pop();		//Stack에 값 가져오기!
+                int mul = c == ')' ? 2 : 3;	//괄호에 따른 값 구하기
+                //괄호의 값이 0일 때 1로 변경!
+                cur.value = cur.value==0 ? 1 : cur.value;
+                //스택이 비어있을 때 answer += 괄호 값
+                if(stack.isEmpty())
+                    answer += cur.value * mul;
+                else	//stack.peek()값에 현재 괄호값 더하기!
+                    stack.peek().value += mul * cur.value;
+            }
+        }
+        if(!stack.isEmpty())	//올바르지 않는 괄호 문자열일 때 4)
+            answer = 0;
+        bw.write(answer + "");	//탐색에 따른 결과 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
