@@ -1,0 +1,89 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    //치즈 위치 정보 클래스
+    static class position{
+		int x, y;	//x : x 좌표 , y : y 좌표
+		public position(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
+	static int[][] map;	//사각형 판 정보 저장 배열
+	static int[] dx = {0, 0, -1, 1};	//상하좌우 x변경값
+	static int[] dy = {-1, 1, 0, 0};	//상하좌우 y변경값
+	static int cheesesCount = 0;	//현재 치즈 개수
+	public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		int N = Integer.parseInt(st.nextToken());
+		int M = Integer.parseInt(st.nextToken());
+		map = new int[N][M];
+        //입력되는 사각형 판 정보 저장
+        for(int i=0;i<N;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			for(int j=0;j<M;j++) {
+				map[i][j] = Integer.parseInt(st.nextToken());
+				if(map[i][j] == 1)	//치즈일 때
+					cheesesCount++;
+			}
+		}
+		int answer = 0;
+		//시뮬레이션 진행
+        while(cheesesCount != 0) {
+			answer++;	//1시간 증가
+			setCheese(N, M);	//치즈 녹기 진행
+		}
+		bw.write(answer + "");	//모두 녹았을 때 시간 BufferedWriter 저장
+		bw.flush();		//결과 출력
+		bw.close();
+		br.close();		
+	}
+	//치즈 녹는 과정 진행하는 BFS함수
+    static void setCheese(int N, int M) {
+		Queue<position> q = new LinkedList<>();	//BFS에 사용할 Queue
+		int[][] visited = new int[N][M];	//방문 횟수 배열
+		ArrayList<position> removeCheeses = new ArrayList<>();	//제거되는 치즈
+		visited[0][0]++;	//(0, 0)은 항상 외부 공기
+		q.add(new position(0,  0));	//(0, 0)은 항상 외부 공기
+        //탐색 시작
+        while(!q.isEmpty()) {
+			position cur = q.poll();
+            //상하좌우 탐색
+            for(int i=0;i<4;i++) {
+				int tempX = cur.x + dx[i];
+				int tempY = cur.y + dy[i];
+                //사각형 판에 있는 칸일 때
+                if(inSpace(tempX, tempY, N, M)) {
+                    //외부 공기일 때
+                    if(map[tempY][tempX] == 0 && visited[tempY][tempX] == 0) {
+						visited[tempY][tempX] = 1;	//방문!
+						q.add(new position(tempX, tempY));
+					}
+                    //치즈일 때, 외부 공기 만난 횟수 증가
+                    else if(map[tempY][tempX] == 1 && visited[tempY][tempX] < 2) {
+						visited[tempY][tempX]++;	//외부 공기 만난 횟수 증가!
+						if(visited[tempY][tempX] == 2)	//2회 만나면 반드시 녹음!
+							removeCheeses.add(new position(tempX, tempY));
+					}
+				}
+			}
+		}
+		//녹는 치즈들 녹기!
+        for(int i=0;i<removeCheeses.size();i++)
+			map[removeCheeses.get(i).y][removeCheeses.get(i).x] = 0;
+		cheesesCount -= removeCheeses.size();	//녹은 치즈 수만큼 치즈 수 감소
+	}
+	//이동하려는 칸이 사각형 판에 존재하는지 확인하는 함수
+    static boolean inSpace(int x, int y, int N, int M) {
+		if(x >= 0 && y>=0 && y<N && x < M)
+			return true;
+		return false;
+	}
+
+}
+
