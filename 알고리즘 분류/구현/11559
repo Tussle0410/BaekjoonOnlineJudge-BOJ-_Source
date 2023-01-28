@@ -1,0 +1,109 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    //위치 관련 클래스
+    static class position{
+        int x, y;
+        public position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static char[][] board = new char[12][6];	//게임 보드 정보 배열
+    static boolean[][] visited;	//방문 확인 배열
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y변경값
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //상대 필드정보 저장
+        for(int i=11;i>=0;i--) {
+            String line = br.readLine();
+            for(int j=0;j<6;j++)
+                board[i][j] = line.charAt(j);
+        }
+        int answer = start();	//시뮬레이션 진행
+        bw.write(answer + "");	//연쇄 횟수 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //시뮬레이션 진행 함수
+    static int start() {
+        int result = 0;
+        //시뮬레이션 진행
+        while(true) {
+            visited = new boolean[12][6];
+            int count = 0;	//그룹 개수
+            //현재 필드 탐색
+            for(int i=0;i<12;i++) {
+                for(int j=0;j<6;j++) {
+                    //1. BFS탐색 진행하여 그룹 분류
+                    if(board[i][j] != '.' && !visited[i][j]) {
+                        char cur = board[i][j];
+                        visited[i][j] = true;
+                        count += search(cur, i , j);
+                    }
+                }
+            }
+            //2 - 2. 그룹이 존재하지 않을 때
+            if(count == 0)
+                break;
+            result++;	//연쇄 횟수 증가
+            //중력으로 떨어지기 진행
+            for(int i=0;i<6;i++) {
+                boolean c = false;
+                int height = 0;
+                for(int j=0;j<12;j++) {
+                    if(board[j][i] != '.') {
+                        if(height > 0) {
+                            board[j-height][i] = board[j][i];
+                            board[j][i] = '.';
+                        }
+                    }else
+                        height++;
+                }
+            }
+        }
+        return result;	//연쇄 횟수 반환
+    }
+    //이동하는 칸이 필드에 존재하는지 확인하는 함수
+    static boolean inBoard(int x, int y) {
+        if(x >= 0 && x< 6 && y>=0 && y<12)
+            return true;
+        return false;
+    }
+    //BFS으로 같은 색으로 4개 이상 연결되었는지 탐색하는 함수
+    static int search(char cur, int y, int x) {
+        Queue<position> q = new LinkedList<>();
+        q.add(new position(x, y));
+        ArrayList<position> list = new ArrayList<>();
+        list.add(new position(x,  y));
+        //BFS탐색 시작
+        while(!q.isEmpty()) {
+            position c = q.poll();
+            //상하좌우 탐색
+            for(int i=0;i<4;i++) {
+                int tempX = c.x + dx[i];
+                int tempY = c.y + dy[i];
+                //같은 색이 존재할 때
+                if(inBoard(tempX, tempY) && !visited[tempY][tempX] && board[tempY][tempX] == cur) {
+                    visited[tempY][tempX] = true;
+                    q.add(new position(tempX, tempY));
+                    list.add(new position(tempX, tempY));
+                }
+            }
+        }
+        //연결된 개수가 4개 이상일 때
+        if(list.size()>=4) {
+            //지우기 진행
+            for(position c : list)
+                board[c.y][c.x]= '.';
+            return 1;	//그룹 존재
+        }
+        return 0;	//그룹 미존재
+    }
+}
