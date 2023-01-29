@@ -1,0 +1,62 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+    static int[] switchValue;	//스위치 정보 배열
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        switchValue = new int[N+1];
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //스위치 정보 저장
+        for(int i=1;i<=N;i++)
+            switchValue[i] = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(br.readLine());
+        //학생들 스위치 변경 진행!
+        for(int i=0;i<K;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int gender = Integer.parseInt(st.nextToken());
+            int num = Integer.parseInt(st.nextToken());
+            if(gender == 1)	//남학생일 때
+                manCheck(num, N);
+            else		//여학생일 때
+                womanCheck(num, N);
+        }
+        //스위치 정보 BufferedWriter 저장
+        for(int i=1;i<=N;i++){
+            if(i % 20 == 1 && i > 1)
+                bw.newLine();
+            bw.write(switchValue[i] + " ");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //남학생일 때 스위치 변경 함수
+    static void manCheck(int num, int N){
+        //숫자 배수의 스위치 변경
+        for(int i=num;i<=N;i+=num)
+            switchValue[i] = switchValue[i] == 1 ? 0 : 1;
+    }
+    //여학생일 때 스위치 변경 함수
+    static void womanCheck(int num, int N){
+        int start = num-1;	//범위 시작 위치
+        int end = num+1;	//범위 끝 위치
+        //대칭 확인 및 범위 변경
+        while(start > 0 && end <= N){
+            if(switchValue[start] == switchValue[end]){
+                start--;
+                end++;
+            }else
+                break;
+        }
+        start++;
+        end--;
+        //대칭 범위에 스위치 변경
+        for(int i=start;i<=end;i++)
+            switchValue[i] = switchValue[i] == 1 ? 0 : 1;
+    }
+}
