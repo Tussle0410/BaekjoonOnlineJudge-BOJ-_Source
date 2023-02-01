@@ -1,0 +1,71 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    //위치 관련 클래스
+    static class position{
+        int x, y;
+        public position(int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int[][] map;	//시험관 정보 저장 배열
+    static Queue<position>[] viruses;	//각 번호 바이러스들 위치 저장 Queue
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y변경값
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        map = new int[N+1][N+1];
+        viruses = new LinkedList[K+1];
+        for(int i=0;i<=K;i++)
+            viruses[i] = new LinkedList<>();
+        //시험관 정보 및 바이러스 저장
+        for(int i=1;i<=N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for(int j=1;j<=N;j++){
+                map[i][j] = Integer.parseInt(st.nextToken());
+                viruses[map[i][j]].add(new position(j, i));
+            }
+        }
+        st = new StringTokenizer(br.readLine()," ");
+        int S = Integer.parseInt(st.nextToken());
+        int X = Integer.parseInt(st.nextToken());
+        int Y = Integer.parseInt(st.nextToken());
+        //S초 전염 시작
+        for(int i=0;i<S;i++){
+            for(int j=1;j<=K;j++){	//1~K번 바이러스 탐색
+                int size = viruses[j].size();
+                for(int s=0;s<size;s++){
+                    position cur = viruses[j].poll();
+                    //인접한 칸 탐색
+                    for(int t=0;t<4;t++){
+                        int tempX = cur.x + dx[t];
+                        int tempY = cur.y + dy[t];
+                        if(inSpace(tempX,tempY,N) && map[tempY][tempX]==0){
+                            map[tempY][tempX] = j;
+                            viruses[j].add(new position(tempX,tempY));
+                        }
+                    }
+                }
+            }
+        }
+        bw.write(map[X][Y] + "");	//(X, Y)의 정보 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //이동하려는 좌표가 시험관에 존재하는지 확인하는 함수
+    static boolean inSpace(int x, int y, int N){
+        //시험관에  존재할 때
+        if(x > 0 && y> 0 && x<=N && y<=N)
+            return true;
+        return false;
+    }
+}
