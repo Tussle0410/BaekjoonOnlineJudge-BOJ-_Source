@@ -1,0 +1,122 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    //착석 조건 관련 정보 클래스
+    static class info{
+        //blank : 인접 빈 칸, favoriteCount : 인접 좋아하는 친구
+        int blank, favoriteCount, x, y;
+        //생성자
+        public info(int blank, int favoriteCount, int x, int y){
+            this.blank = blank;
+            this.favoriteCount = favoriteCount;
+            this.x = x;
+            this.y = y;
+        }
+    }
+    static int[][] room;	//교실 정보 저장 배열
+    //각 학생별 좋아하는 친구 저장 리스트
+    static ArrayList<ArrayList<Integer>> favorite = new ArrayList<>();
+    static int[] dx = {0, 0, -1, 1};	//상하좌우 x변경값
+    static int[] dy = {-1, 1, 0, 0};	//상하좌우 y변경값
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        room = new int[N][N];
+        //좋아하는 친구 리스트 초기화
+        for(int i=0;i<=N*N;i++)
+            favorite.add(new ArrayList<>());
+
+        StringTokenizer st;
+        //각 학생별 순차적으로 착석 진행!
+        for(int i=0;i<N*N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int index = Integer.parseInt(st.nextToken());
+            //좋아하는 학생 정보 리스트에 저장
+            for(int j=0;j<4;j++)
+                favorite.get(index).add(Integer.parseInt(st.nextToken()));
+            search(index, N);	//착석 진행!
+        }
+        bw.write(cal(N) + "");	//학생 만족도 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //학생 착석 진행하는 함수
+    static void search(int index ,int N){
+        //조건에 가장 높은 우선순위 값
+        info max = new info(0, 0, N, N);
+        //착석할 칸 탐색 진행!
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++){
+                //이미 착석한 친구가 있을 때
+                if(room[i][j]!=0)
+                    continue;
+                int blank = 0;
+                int favoriteCount = 0;
+                //인접한 칸 탐색
+                for(int s = 0;s<4;s++){
+                    int tempX = j + dx[s];
+                    int tempY = i + dy[s];
+                    if(inSpace(tempX,tempY, N)){
+                        if(room[tempY][tempX] == 0)	//빈 공간일 때
+                            blank++;
+                        //좋아하는 친구일 때
+                        else if(favorite.get(index).contains(room[tempY][tempX])){
+                            favoriteCount++;
+                        }
+                    }
+                }
+                //조건 1. 좋아하는 친구 수 기준
+                if(favoriteCount > max.favoriteCount)
+                    max = new info(blank, favoriteCount, j, i);
+                else if(favoriteCount == max.favoriteCount){
+                    if(blank > max.blank)	//조건 2. 인접한 빈칸 수 기준
+                        max = new info(blank, favoriteCount, j, i);
+                    else if(blank == max.blank){
+                        if(i<max.y)	//조건 3. 행 낮은 값 기준
+                            max = new info(blank, favoriteCount, j, i);
+                        else if(i == max.y){
+                            if(j > max.x)	//조건 3. 열 낮은 값 기준
+                                max = new info(blank, favoriteCount, j, i);
+                        }
+                    }
+                }
+            }
+        }
+        room[max.y][max.x] = index;	//학생 착석!
+    }
+    //학생 만족도 계산하는 함수
+    static int cal(int N){
+        int result = 0;
+        for (int i = 0; i < N; i++){
+             for (int j = 0; j < N; j++){
+                 int count = 0;
+                 //인접한 칸 탐색
+                 for(int s = 0;s<4;s++){
+                     int tempX = j + dx[s];
+                     int tempY = i + dy[s];
+                     //인접하고 좋아하는 친구일 때
+                     if(inSpace(tempX,tempY, N) && favorite.get(room[i][j]).contains(room[tempY][tempX])){
+                         count++;
+                     }
+                 }
+                 //해당 학생 행복도 더하기!
+                 if(count > 0)
+                    result += Math.pow(10, count-1);
+             }
+        }
+        return result;
+    }
+    //이동하려는 칸이 교실에 벗어나는지 확인하는 함수
+    static boolean inSpace(int x, int y, int N){
+        //교실 내에 있는 칸일 때
+        if(x>=0 && y>=0 && x< N && y<N)
+            return true;
+        return false;
+    }
+}
+
