@@ -1,0 +1,151 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    //BFS 위치 정보 관련 클래스
+    static class position implements Comparable<position>{
+        int x, y, value;
+        public position(int x, int y, int value){
+            this.x = x;
+            this.y = y;
+            this.value = value;
+        }
+        //정렬 관련
+        @Override
+        public int compareTo(position o) {
+            if(this.value == o.value){	
+                if(this.x == o.x)
+                    return this.y - o.y;	//거리와 행이 같으면 열 오름차순
+                else
+                    return this.x - o.x;	//거리가 같으면 행 오름차순
+            }
+            return this.value - o.value;	//거리 오름차순
+        }
+    }
+    static int[] dx = {-1, 1, 0, 0};	//상하좌우 x변경값
+    static int[] dy = {0, 0, -1, 1};	//상하좌우 y변경값
+    static int curX, curY, curC;	//현재 위치 및 고객 저장 변수
+    //고객 정보 저장 리스트
+    static ArrayList<position> humans = new ArrayList<>();
+    public static void main(String[] args) throws IOException {
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int O = Integer.parseInt(st.nextToken());
+        int[][] map = new int[N][N];
+        //지도 정보 저장
+        for(int i = 0; i < N;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            for(int j=0;j<N;j++)
+                map[i][j] = Integer.parseInt(st.nextToken());
+        }
+        st = new StringTokenizer(br.readLine()," ");
+        //현재 택시 위치 저장
+        curX = Integer.parseInt(st.nextToken())-1;
+        curY = Integer.parseInt(st.nextToken())-1;
+        //고객 및 목적지 정보 저장
+        for(int i=2;i<M+2;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int sx = Integer.parseInt(st.nextToken())-1;
+            int sy = Integer.parseInt(st.nextToken())-1;
+            int ex = Integer.parseInt(st.nextToken())-1;
+            int ey = Integer.parseInt(st.nextToken())-1;
+            map[sx][sy] = i;
+            humans.add(new position(ex, ey, 0));
+        }
+        int count = 0;
+        //택시 운행 시뮬레이션 진행!
+        while(count < M){
+            //최단 거리 고객 탐색
+            int temp1 = searchCustomer(N, map);
+            if(O - temp1 <= 0 || temp1 == -1)	//고객에게 갈 때 연료가 부족할 때
+                break;
+
+            //목적지 최단 거리 탐색
+            int temp2 = searchGoal(N, map);
+            if(O - (temp1 + temp2) < 0 || temp2 == -1)	//목적지에 갈 때 연료가 부족할 때
+                break;
+            else
+                O += temp2 - temp1;		//temp1 : 고객갈 때 연료, temp2 : 목적지 갈 때 연료
+            count++;	//고객 1명 운행 완료!
+        }
+        //모든 고객 운행 완료시
+        if(count == M)
+            bw.write( O + "");	//남은 연료 BufferedWriter 저장
+        else	//모든 고객 운행 미완료시
+            bw.write("-1");	//-1을 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //최단거리 고객 찾는 함수
+    static int searchCustomer(int N, int[][] map){
+        PriorityQueue<position> pq = new PriorityQueue<>();
+        //방문 확인 배열
+        boolean[][] visited = new boolean[N][N];
+        pq.add(new position(curX, curY, 0));	//현재 택시 위치 저장
+        visited[curX][curY] = true;	//현재 택시위치 방문 확인!
+        //BFS탐색 시작
+        while(!pq.isEmpty()){
+            position cur = pq.poll();
+            if(map[cur.x][cur.y] > 1){	//최단 거리 고객 만났을 때
+                curC = map[cur.x][cur.y];	//현재 고객 지금 만난 고객으로 변경
+                //현재 위치 고객 위치로 변경
+                curX = cur.x;
+                curY = cur.y;
+                map[curX][curY] = 0;	//고객 만났으므로 지도에 0으로 변경
+                return cur.value;	//움직인 거리 반환
+            }
+            //인접한 공간 탐색
+            for(int i=0;i<4;i++){
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                if(inSpace(tempX,tempY, N) && !visited[tempX][tempY] && map[tempX][tempY] != 1){
+                    visited[tempX][tempY] = true;
+                    pq.add(new position(tempX,tempY, cur.value+1));
+                }
+            }
+        }
+        return -1;	//접근할 수 있는 고객이 없는 경우 -1 반환
+    }
+    //목적지까지 최단거리 구하는 함수
+    static int searchGoal(int N, int[][] map){
+        PriorityQueue<position> pq = new PriorityQueue<>();
+        //방문 확인 배열
+        boolean[][] visited = new boolean[N][N];
+        pq.add(new position(curX, curY, 0));	//고객 위치 저장
+        visited[curX][curY] = true;	//고객위치 방문 확인
+        //목적지 좌표 얻기
+        int gx = humans.get(curC-2).x;
+        int gy = humans.get(curC-2).y;
+        while(!pq.isEmpty()){
+            position cur = pq.poll();
+            if(cur.x == gx && cur.y == gy){	//목적지 도착시
+                //현재 위치 목적지로 변경
+                curX = gx;
+                curY = gy;
+                return cur.value;	//최단 거리 반환
+            }
+            //인접한 공간 탐색
+            for(int i=0;i<4;i++){
+                int tempX = cur.x + dx[i];
+                int tempY = cur.y + dy[i];
+                if(inSpace(tempX,tempY, N) && !visited[tempX][tempY] && map[tempX][tempY] != 1){
+                    visited[tempX][tempY] = true;
+                    pq.add(new position(tempX,tempY, cur.value+1));
+                }
+            }
+        }
+        return -1;	//목적지 도달 못할 때 -1 반환
+    }
+    //BFS탐색으로 이동할 때 지도에 있는 공간인지 확인하는 함수
+    static boolean inSpace(int x, int y, int N){
+        if(x>=0 && y>= 0 && x<N && y<N)
+            return true;
+        return false;
+    }
+}
