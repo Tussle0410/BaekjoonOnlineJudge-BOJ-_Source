@@ -1,0 +1,45 @@
+import java.util.*;
+import java.io.*;
+
+class Main {
+    public static void main(String args[]) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //입력값 저장
+        int N = Integer.parseInt(st.nextToken());
+        int r = Integer.parseInt(st.nextToken());
+        int c = Integer.parseInt(st.nextToken());
+        //현재 배열의 크기 구하기
+        int size = (int) Math.pow(2, N-1);
+        int answer = search(r, c, size);	//재귀를 통한 사분면 탐색 진행
+        bw.write(answer + "");	//(r, c)에 방문 번호 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //재귀를 통해 사분면 탐색
+    static int search(int r, int c, int size){
+        //N이 1일 때
+        if(size == 1){
+            //1, 2사분면일 때
+            if(r == 0)
+                return c;
+            else		//3, 4사분면일 때
+                return c + 2;
+        }
+        int sum = 0;
+        if(r >= size){	//3, 4사분면일 때 1, 2사분면 지나기
+            sum += size * size * 2;
+        }
+        if(c >= size)	//2, 4사분면일 때 1사분면이나 3사분면 방문
+            sum += size * size;
+        r %= size;	//사분면에 맞게 r 변경
+        c %= size;	//사분면에 맞게 c 변경
+        //다른 사분면 방문 정보 저장
+        sum += search(r, c, size/2);
+        return sum;
+    }
+}
