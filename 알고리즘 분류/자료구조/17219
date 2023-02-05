@@ -1,0 +1,31 @@
+import java.util.*;
+import java.io.*;
+
+class Main {
+    public static void main(String args[]) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //HashMap<>
+        HashMap<String, String> password = new HashMap<>();
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        //N개의 사이트와 비밀번호를 HashMap에 저장
+        for(int i=0;i<N;i++){
+            st = new StringTokenizer(br.readLine());
+            String site = st.nextToken();	//Key
+            String ps = st.nextToken();		//Value
+            password.put(site, ps);
+        }
+        //M개의 사이트에 대한 비밀번호 BufferedWriter 저장
+        for(int i=0;i<M;i++){
+            String site = br.readLine();
+            bw.write(password.get(site) + "\n");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
