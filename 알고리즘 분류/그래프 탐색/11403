@@ -1,0 +1,43 @@
+import java.io.*;
+import java.util.StringTokenizer;
+public class Main {
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+        int[][] graph = new int[N][N];	//그래프 정보 저장 배열
+        int[][] answer = new int[N][N];	//방문 여부 저장 배열
+        //그래프 정보 저장
+        for(int i=0;i<N;i++) {
+            st = new StringTokenizer(br.readLine()," ");
+            for(int j=0;j<N;j++)
+                graph[i][j] =  Integer.parseInt(st.nextToken());
+        }
+        //플로이드-워셜 탐색!
+        for(int i=0;i<N;i++){		//중간 정점
+            for(int j=0;j<N;j++){		//시작 정점
+                if(graph[j][i] == 0)
+                    continue;
+                answer[j][i] = 1;		//시작 ▶ 중간
+                for(int s = 0;s<N;s++) {		//도착 정점
+                    if(graph[i][s] ==0)
+                        continue;
+                    graph[j][s] = 1;	//방문 간선 추가!
+                    answer[j][s] = 1;	//중간 ▶ 도착
+                }
+            }
+        }
+        //방문 여부 저장 배열 BufferedWriter 저장
+        for(int i=0;i<N;i++) {
+            for(int j=0;j<N;j++)
+                bw.write(answer[i][j] + " " );
+            bw.newLine();
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
