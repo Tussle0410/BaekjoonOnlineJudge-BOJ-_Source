@@ -1,0 +1,56 @@
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        int M = Integer.parseInt(br.readLine());
+        String str = br.readLine();
+        //pSize : Pn의 문자열 개수
+        int pSize = 2*N + 1, answer = 0, count = 0;
+        char cur = ' ';	//현재 문자
+        //문자열 S 탐색
+        for(int i=0;i<M;i++) {
+            char c = str.charAt(i);
+            //이전 문자와 다를 때
+            if(cur != c) {
+                //P형태의 문자열 시작!
+                if(count == 0) {
+                    if(c =='I') {
+                        count++;
+                        cur = c;
+                    }
+                }else {		//문자열 증가
+                    cur = c;
+                    count++;
+                }
+            }else {
+                //IOI형태 종료, 지금까지 만들어진 IOI... 문자열 Pn 포함 개수 구하기
+                answer += cal(pSize, count, N);
+                count = 0;
+                //P형태의 문자열 시작!
+                if(c == 'I')
+                    count++;
+                cur = c;
+            }
+        }
+        //마지막 저장된 IOI..형태에서 Pn포함 개수 구하기
+        answer += cal(pSize, count, N);
+        bw.write(answer + "");	//Pn 총 포함 개수 BufferedWriter
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //IOI...형태에서 Pn포함 개수 구하는 함수
+    static int cal(int size, int count, int N) {
+        int result = 0;
+        if(count >= size) {
+            int temp = (count - 1)/2;		//IOI..형태에서 N구하기
+            result = temp - (N-1);		//포함 개수 구하기
+        }
+        return result;	//포함 개수 반환
+    }
+}
