@@ -1,0 +1,51 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        ArrayList<Integer> num = new ArrayList<>();	//자연수 저장 리스트
+        LinkedHashSet<String> set = new LinkedHashSet<>();	//완성된 수열 저장 LinkedHashSet
+        boolean[] visited = new boolean[N];	//자연수 사용 확인 배열
+        st = new StringTokenizer(br.readLine()," ");
+        //입력되는 자연수 저장
+        for(int i=0;i<N;i++)
+            num.add(Integer.parseInt(st.nextToken()));
+        Collections.sort(num);		//자연수 오름차순 정렬!
+        //M개를 선택한 모든 수열의 경우 탐색!
+        search(visited, num, set, 0, M, N, "");
+        //LinkedHashSet에 저장된 수열을 BufferedWriter 저장
+        for(String key : set)
+            bw.write(key + " \n");
+
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //M개를 선택하는 수열의 모든 경우를 탐색하는 함수
+    static void search(boolean[] visited, ArrayList<Integer> num, HashSet<String> set, int cur, int end,int size, String str){
+        if(cur == end){		//수열 완성!
+            set.add(str);		//LinkedHashSet으로 중복되지 않는 수열을 저장!
+            return;
+        }
+        //수열 만들기 진행!
+        for(int i=0;i<size;i++){
+            if(!visited[i]){
+                visited[i] = true;
+                String temp;
+                if(cur == end-1)
+                    temp = str +  num.get(i);
+                else
+                    temp = str + num.get(i) + " ";
+                search(visited, num, set, cur+1, end, size, temp);
+                visited[i] = false;
+            }
+        }
+    }
+}
