@@ -1,0 +1,40 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+    public static void main(String[] args) throws IOException{
+        //입력값을 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값을 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int T = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+        int[][] sticker, DP;	//sticker : 스티커 점수, DP : 최대값
+        //각 테스트케이스 진행!
+        for(int test_case = 0;test_case < T;test_case++){
+            int N = Integer.parseInt(br.readLine());
+            sticker = new int[2][N];
+            DP = new int[3][N];
+            //스티커 정보 저장
+            for(int i=0;i<2;i++){
+                st = new StringTokenizer(br.readLine()," ");
+                for(int j=0;j<N;j++)
+                    sticker[i][j] = Integer.parseInt(st.nextToken());
+            }
+            //DP초기값 초기화
+            DP[1][0] = sticker[0][0];
+            DP[2][0] = sticker[1][0];
+            //DP값 점화식으로 저장하기!
+            for(int i=1;i<N;i++){
+                DP[0][i] = Math.max(DP[1][i-1], DP[2][i-1]);
+                DP[1][i] = Math.max(DP[0][i-1], DP[2][i-1]) + sticker[0][i];
+                DP[2][i] = Math.max(DP[0][i-1], DP[1][i-1]) + sticker[1][i];
+            }
+            //DP의 최대값 BufferedWriter 저장
+            bw.write(Math.max(DP[1][N-1], DP[2][N-1]) + "\n");
+        }
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+}
