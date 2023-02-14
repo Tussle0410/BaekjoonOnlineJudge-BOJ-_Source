@@ -1,0 +1,80 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    //수빈이 위치 관련 정보
+    static class info{
+        int position, value;	//position : 현재 위치, value : 초
+        public info(int position, int value){
+            this.position = position;
+            this.value = value;
+        }
+    }
+    static int count = 0;	//최소 시간 방법 저장 변수
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        //동생의 위치가 수빈이보다 클 경우
+        if(N < K) {
+            int[] visited = new int[K + 3];
+            Arrays.fill(visited, Integer.MAX_VALUE);	//각 위치 시간 최대값으로 초기화
+            search(N, K, visited);		//탐색 진행!
+            bw.write(visited[K] + "\n" + count);	//최단 시간 및 방법 BufferedWriter 저장
+        }else	//동생의 위치가 수빈이보다 작거나 같은 경우
+            bw.write((N-K) + "\n1");
+
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //수빈이 행동 BFS을 통한 탐색 진행하는 함수
+    static void search(int N, int K, int[] visited){
+        Queue<info> q = new LinkedList<>();
+        q.add(new info(N, 0));	//수빈이 초기 위치 Queue 저장
+        visited[N] = 0;	//초기 위치 시간 0으로 설정
+        //BFS 탐색 진행
+        while(!q.isEmpty()){
+            info cur = q.poll();
+            //동생에게 도착했을 때
+            if(cur.position == K){
+                if(cur.value == visited[K])	//현재 최소 시간과 동일할 때
+                    count++;
+                else if(cur.value < visited[K])	//현재 최소 시간보다 더 빨리 도착했을 때
+                    count = 1;
+                continue;
+            }
+            int next;
+            //수빈이 3가지 행동 조건에 만족할 때 수행!
+            //전진!
+            if(cur.position < K){
+                next = cur.position + 1;
+                if(cur.value + 1 <= visited[next]){
+                    visited[next] = cur.value + 1;
+                    q.add(new info(next, cur.value + 1));
+                }
+
+            }
+            //후진!
+            if(cur.position != 0){
+                next = cur.position - 1;
+                if(cur.value + 1 <= visited[next]){
+                    visited[next] = cur.value + 1;
+                    q.add(new info(next, cur.value + 1));
+                }
+            }
+            //순간이동!
+            if(cur.position <= (K + 2)/2){
+                next = cur.position * 2;
+                if(cur.value + 1 <= visited[next]){
+                    visited[next] = cur.value + 1;
+                    q.add(new info(next, cur.value + 1));
+                }
+            }
+        }
+    }
+}
