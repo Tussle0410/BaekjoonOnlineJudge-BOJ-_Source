@@ -1,0 +1,83 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
+
+public class Main {
+    //길 정보 관련 클래스
+    static class node implements Comparable<node>{
+        int position, value;
+        //position : 지역 위치, value : 소요 시간
+        public node(int position, int value){
+            this.position = position;
+            this.value = value;
+        }
+        //소요 시간 오름차순 정렬
+        @Override
+        public int compareTo(node o) {
+            return this.value - o.value;
+        }
+    }
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        ArrayList<ArrayList<node>> graph = new ArrayList<>();
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int X = Integer.parseInt(st.nextToken());
+        int[][] distance = new int[N+1][N+1];
+        //그래프 초기화 및 거리 초기화
+        for(int i=0;i<=N;i++) {
+            graph.add(new ArrayList<>());
+            Arrays.fill(distance[i], Integer.MAX_VALUE);
+        }
+        //도로 정보 저장
+        for(int i=0;i<M;i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int A = Integer.parseInt(st.nextToken());
+            int B = Integer.parseInt(st.nextToken());
+            int T = Integer.parseInt(st.nextToken());
+            graph.get(A).add(new node(B, T));
+        }
+        int answer = Integer.MIN_VALUE;
+        //각 지역을 기준 최단 거리 구하기!
+        for(int i=1;i<=N;i++)
+            bfs(i, distance, graph);
+
+        //최대 소요시간 구하기
+        for(int i=1;i<=N;i++){
+            int d = distance[i][X] + distance[X][i];	//소요시간 점화식
+            answer = Math.max(answer, d);	//최대값인지 확인
+        }
+        bw.write(String.valueOf(answer));	//최대값 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+    }
+    //다익스트라로 시작 구역에서 다른 지역에 가는 최단 거리를 구하는 함수입니다.
+    static void bfs(int start, int[][] distance, ArrayList<ArrayList<node>> graph){
+        PriorityQueue<node> pq = new PriorityQueue<>();
+        pq.add(new node(start, 0));	//시작 위치 저장
+        distance[start][start] = 0;	//시작 지역 초기 위치 저장
+        //최단 거리 탐색
+        while(!pq.isEmpty()){
+            node cur = pq.poll();
+            for(node next : graph.get(cur.position)){
+                int tempValue = cur.value + next.value;
+                //이동하려는 지역이 최단 거리일 때
+                if(distance[start][next.position] > tempValue){
+                    distance[start][next.position] = tempValue;
+                    pq.add(new node(next.position, tempValue));
+                }
+            }
+        }
+    }
+}
