@@ -1,0 +1,51 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException{
+        //입력값 처리하는 BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //결과값 출력하는 BufferedWriter
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+        List<Integer> list = new ArrayList<>();	//용액 특성값 저장할 리스트
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        //입력되는 특성값 저장
+        for(int i=0; i<N; i++)
+            list.add(Integer.parseInt(st.nextToken()));
+
+        int m_id = 0, p_id = N-1;	//m_id : 최소 인덱스, p_id : 최대 인덱스
+        //0에 가까운 두 용액!
+        int n1 = 0, n2 = 0;
+        int max = Integer.MAX_VALUE;
+        //두 포인터를 이용해 용액 탐색!
+        while(m_id < p_id){
+            //현재 가리키는 두 용액 합치기!
+            int temp = list.get(m_id) + list.get(p_id);
+            if(max > Math.abs(temp)){	//0에 가장 가까운 값인지 확인
+                max = Math.abs(temp);
+                n1 = list.get(m_id);
+                n2 = list.get(p_id);
+            }
+            if(temp > 0)	//특성값의 합이 양수일 때 : 최대 용액 감소!
+                p_id--;
+            else if(temp < 0)	//특성값 합이 음수일 때 : 최소 용액 증가!
+                m_id++;
+            else{		//특성합이 0일 때(최상의 경우), 탐색 종료 후 두 용액 출력
+                n1 = list.get(m_id);
+                n2 = list.get(p_id);
+                break;
+            }
+        }
+        bw.write(n1 + " " + n2);	//0에 가까운 두 용액 BufferedWriter 저장
+        bw.flush();		//결과 출력
+        bw.close();
+        br.close();
+
+
+    }
+}
